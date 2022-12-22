@@ -57,7 +57,7 @@ function AQT_UpdateQuestsForZone()
 	AQT_PrintDebugMsg("Updating quests for: " .. currentZone .. " or " .. minimapZone)
 
 	local questZone = nil
-	
+
 	for questIndex = 1, C_QuestLog.GetNumQuestLogEntries() do
 		local questTitle, isHeader, questId, isWorldQuest, isHidden, isCalling, isOnMap, hasLocalPOI = AQT_getQuestInfo(questIndex)
 
@@ -107,3 +107,29 @@ function AQT_getQuestInfo(index)
 end
 
 AutoQuestTrackerFrame:SetScript("OnEvent", AQT_HandleEvent)
+
+
+
+
+
+
+--[[ License ===================================================================
+
+	Copyright © 2022 Thomas Floeren
+
+	This file is part of AutoQuestTracker.
+
+	AutoQuestTracker is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by the
+	Free Software Foundation, either version 3 of the License, or (at your
+	option) any later version.
+
+	AutoQuestTracker is distributed in the hope that it will be useful, but
+	WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+	or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+	more details.
+
+	You should have received a copy of the GNU General Public License along with
+	AutoQuestTracker. If not, see <https://www.gnu.org/licenses/>.
+
+==============================================================================]]

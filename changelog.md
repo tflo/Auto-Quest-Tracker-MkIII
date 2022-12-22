@@ -1,3 +1,11 @@
+## AutoQuestTracker Changelog
+
+2.0 (2022-12-22)
+- Initial version of the Dragonflight fork
+
+
+## Previous Changelog (up to January 2018)
+
 v1.5
 - Update for better filtering with new Shadowlands api.
 
