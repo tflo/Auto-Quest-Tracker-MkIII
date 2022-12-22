@@ -4,8 +4,8 @@
 ## Interface: 100002
 ## Notes: Automatically updates the quest tracker to track the quests in your current zone, and any other quests that you may have manually tracked.
 ## DefaultState: enabled
-## SavedVariables: aqt_global_db
-## SavedVariablesPerCharacter: aqt_char_db
+## SavedVariables: AQT_GlobalDB
+## SavedVariablesPerCharacter: AQT_CharDB
 
 main.lua
 
