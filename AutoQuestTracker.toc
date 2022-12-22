@@ -1,0 +1,9 @@
+## Title: Auto Quest Tracker
+## Version: v1.5
+## Author: ErrondGamer
+## Interface: 90200
+## Notes: Automatically updates the quest tracker to track the quests in your current zone, and any other quests that you may have manually tracked.
+## DefaultState: enabled
+## SavedVariablesPerCharacter: ManuallyFollowedQuests
+
+AutoQuestTracker.lua
