@@ -23,6 +23,72 @@ local function unregisterAllEvents()
 	f:UnregisterEvent 'ZONE_CHANGED_NEW_AREA'
 end
 
+local function printDebugMsg(msg)
+	if debug then print(MSG_PREFIX .. msg) end
+end
+
+local function getQuestInfo(index)
+	local quest = C_QuestLog.GetInfo(index)
+	return quest.title,
+		quest.isHeader,
+		quest.questID,
+		C_QuestLog.IsWorldQuest(quest.questID),
+		quest.isHidden,
+		C_QuestLog.IsQuestCalling(quest.questID),
+		quest.isOnMap,
+		quest.hasLocalPOI
+end
+
+local function showOrHideQuest(questIndex, questId, show)
+	-- Checks that the quest is still in the quest log, and that we are not in combat lockdown to avoid tainting
+	local questTitle, _, id = getQuestInfo(questIndex)
+	if id == questId and not (InCombatLockdown() == 1) then
+		if show then
+			printDebugMsg(string.format('Tracking: %s (%s)', questTitle, questId))
+			C_QuestLog.AddQuestWatch(questId)
+		else
+			printDebugMsg(string.format('Removing: %s (%s)', questTitle, questId))
+			C_QuestLog.RemoveQuestWatch(questId)
+		end
+	end
+end
+
+local function updateQuestsForZone()
+	local currentZone = GetRealZoneText()
+	local minimapZone = GetMinimapZoneText()
+	if currentZone == nil and minimapZone == nil then return end
+
+	printDebugMsg('Updating quests for: ' .. currentZone .. ' or ' .. minimapZone)
+
+	local questZone = nil
+
+	for questIndex = 1, C_QuestLog.GetNumQuestLogEntries() do
+		local questTitle, isHeader, questId, isWorldQuest, isHidden, isCalling, isOnMap, hasLocalPOI =
+			getQuestInfo(questIndex)
+
+		if not isWorldQuest and not isHidden then
+			if isHeader then
+				questZone = questTitle
+			else
+				if questZone == currentZone or questZone == minimapZone or isOnMap or hasLocalPOI then
+					if C_QuestLog.GetQuestWatchType(questId) == nil then
+						showOrHideQuest(questIndex, questId, true)
+					end
+				elseif C_QuestLog.GetQuestWatchType(questId) == 0 then
+					showOrHideQuest(questIndex, questId, false)
+				end
+			end
+		end
+	end
+end
+
+
+-- function AQT_HandleEvent(self, event, ...)
+-- 	-- Wait 2 seconds to reduce loading congestion.
+-- 	C_Timer.After(2, function() updateQuestsForZone() end)
+-- end
+
+
 local function onEvent(self, event, addon)
 	if event == 'ADDON_LOADED' then
 		if addon == addonName then
@@ -38,7 +104,7 @@ local function onEvent(self, event, addon)
 			end
 		end
 	else
-		AQT_HandleEvent()
+		C_Timer.After(2, function() updateQuestsForZone() end)
 	end
 end
 
@@ -61,10 +127,10 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		print(MSG_PREFIX .. 'Debug mode ' .. (debug and 'enabled' or 'disabled'))
 	elseif msg == 'quests' then
 		debug = true
-		AQT_PrintDebugMsg 'Quests currently in quest log:'
+		printDebugMsg 'Quests currently in quest log:'
 		for questIndex = 1, C_QuestLog.GetNumQuestLogEntries() do
 			local questTitle, isHeader, questId, isWorldQuest, isHidden, isCalling, isOnMap, hasLocalPOI =
-				AQT_getQuestInfo(questIndex)
+				getQuestInfo(questIndex)
 			if isHidden then
 				print(string.format('|cff707070[Hidden] %s (%s)', questTitle, tostring(questId)))
 			elseif isHeader then
@@ -96,69 +162,6 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 	end
 end
 
-function AQT_PrintDebugMsg(msg)
-	if debug then print(MSG_PREFIX .. msg) end
-end
-
-function AQT_HandleEvent(self, event, ...)
-	-- Wait 2 seconds to reduce loading congestion.
-	C_Timer.After(2, function() AQT_UpdateQuestsForZone() end)
-end
-
-function AQT_UpdateQuestsForZone()
-	local currentZone = GetRealZoneText()
-	local minimapZone = GetMinimapZoneText()
-	if currentZone == nil and minimapZone == nil then return end
-
-	AQT_PrintDebugMsg('Updating quests for: ' .. currentZone .. ' or ' .. minimapZone)
-
-	local questZone = nil
-
-	for questIndex = 1, C_QuestLog.GetNumQuestLogEntries() do
-		local questTitle, isHeader, questId, isWorldQuest, isHidden, isCalling, isOnMap, hasLocalPOI =
-			AQT_getQuestInfo(questIndex)
-
-		if not isWorldQuest and not isHidden then
-			if isHeader then
-				questZone = questTitle
-			else
-				if questZone == currentZone or questZone == minimapZone or isOnMap or hasLocalPOI then
-					if C_QuestLog.GetQuestWatchType(questId) == nil then
-						AQT_ShowOrHideQuest(questIndex, questId, true)
-					end
-				elseif C_QuestLog.GetQuestWatchType(questId) == 0 then
-					AQT_ShowOrHideQuest(questIndex, questId, false)
-				end
-			end
-		end
-	end
-end
-
-function AQT_ShowOrHideQuest(questIndex, questId, show)
-	-- Checks that the quest is still in the quest log, and that we are not in combat lockdown to avoid tainting
-	local questTitle, _, id = AQT_getQuestInfo(questIndex)
-	if id == questId and not (InCombatLockdown() == 1) then
-		if show then
-			AQT_PrintDebugMsg(string.format('Tracking: %s (%s)', questTitle, questId))
-			C_QuestLog.AddQuestWatch(questId)
-		else
-			AQT_PrintDebugMsg(string.format('Removing: %s (%s)', questTitle, questId))
-			C_QuestLog.RemoveQuestWatch(questId)
-		end
-	end
-end
-
-function AQT_getQuestInfo(index)
-	local quest = C_QuestLog.GetInfo(index)
-	return quest.title,
-		quest.isHeader,
-		quest.questID,
-		C_QuestLog.IsWorldQuest(quest.questID),
-		quest.isHidden,
-		C_QuestLog.IsQuestCalling(quest.questID),
-		quest.isOnMap,
-		quest.hasLocalPOI
-end
 
 f:SetScript('OnEvent', onEvent)
 
