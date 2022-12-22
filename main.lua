@@ -1,15 +1,63 @@
-local AutoQuestTrackerFrame = CreateFrame("Frame")
+local addon_name, a = ...
 
-AutoQuestTrackerFrame:RegisterEvent("ZONE_CHANGED")
-AutoQuestTrackerFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+aqt_global_db = aqt_global_db or {}
+aqt_char_db = aqt_char_db or {}
 
 local debug = false
-local AQT_MESSAGE_PREFIX = "|cff2196f3Auto Quest Tracker: |r"
+local AQT_MESSAGE_PREFIX = "|cff2196f3Auto Quest Tracker|r: "
+
+local function print_loadmsg(msg)
+	if a.gdb.loadmsg then C_Timer.After(8, function() print(AQT_MESSAGE_PREFIX .. msg) end) end
+end
+
+local f = CreateFrame("Frame")
+f:RegisterEvent("ADDON_LOADED")
+
+local function register_all_events()
+	f:RegisterEvent("ZONE_CHANGED")
+	f:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+end
+
+local function unregister_all_events()
+	f:UnregisterEvent("ZONE_CHANGED")
+	f:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
+end
+
+local function on_event(self, event, addon)
+	if event == "ADDON_LOADED" then
+		if addon == addon_name then
+			f:UnregisterEvent("ADDON_LOADED")
+			a.gdb, a.cdb = aqt_global_db, aqt_char_db
+			a.cdb.enabled = a.cdb.enabled == nil and true or a.cdb.enabled
+			a.gdb.loadmsg = a.gdb.loadmsg == nil and true or a.gdb.loadmsg
+			if a.cdb.enabled then
+				register_all_events()
+				print_loadmsg('Enabled')
+			else
+				print_loadmsg('Disabled')
+			end
+		end
+	else
+		AQT_HandleEvent()
+	end
+end
+
 
 SLASH_AUTOQUESTTRACKER1 = "/autoquesttracker"
 SLASH_AUTOQUESTTRACKER2 = "/aqt"
 SlashCmdList["AUTOQUESTTRACKER"] = function(msg)
-	if msg == "debug" then
+	if msg == "on" then
+		register_all_events()
+		print(AQT_MESSAGE_PREFIX .. "Enabled")
+		a.cdb.enabled = true
+	elseif msg == "off" then
+		unregister_all_events()
+		print(AQT_MESSAGE_PREFIX .. "Disabled")
+		a.cdb.enabled = false
+	elseif msg == "toggleloadingmessage" then
+		a.gdb.loadmsg = not a.gdb.loadmsg
+		print(AQT_MESSAGE_PREFIX .. "Loading message " .. (a.gdb.loadmsg and "enabled" or "disabled") .. " for all chars")
+	elseif msg == "debug" then
 		debug = not debug
 		print(AQT_MESSAGE_PREFIX .. "Debug mode " .. (debug and "enabled" or "disabled"))
 	elseif msg == "quests" then
@@ -31,7 +79,7 @@ SlashCmdList["AUTOQUESTTRACKER"] = function(msg)
 		end
 		debug = false
 	else
-		print(AQT_MESSAGE_PREFIX .. "Command not recognized. Available commands are: debug, quests")
+		print(AQT_MESSAGE_PREFIX .. "Status: " .. (a.cdb.enabled and "Enabled" or "Disabled") .. ". Available commands are: on, off, debug, quests, toggleloadingmessage")
 	end
 end
 
@@ -106,9 +154,7 @@ function AQT_getQuestInfo(index)
 	return quest.title, quest.isHeader, quest.questID, C_QuestLog.IsWorldQuest(quest.questID), quest.isHidden, C_QuestLog.IsQuestCalling(quest.questID), quest.isOnMap, quest.hasLocalPOI
 end
 
-AutoQuestTrackerFrame:SetScript("OnEvent", AQT_HandleEvent)
-
-
+f:SetScript("OnEvent", on_event)
 
 
 
