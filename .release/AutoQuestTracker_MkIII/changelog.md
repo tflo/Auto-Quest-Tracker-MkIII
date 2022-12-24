@@ -1,8 +1,9 @@
 # Auto Quest Tracker Mk III
 
-## f8486b2 (2022-12-24)
- 
+## [2.0](https://github.com/tflo/Auto-Quest-Tracker-MkIII/tree/2.0) (2022-12-24)
+[Full Changelog](https://github.com/tflo/Auto-Quest-Tracker-MkIII/commits/2.0) 
 
+- ohps, gitignore  
 - More tweaks; license; …  
 - Localized all functions  
 - Style  
