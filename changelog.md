@@ -1,5 +1,8 @@
 ## Auto Quest Tracker Mk III Changelog
 
+2.0.1 (2022-12-24)
+- Added CF ID
+
 2.0 (2022-12-22)
 - Initial version of my Dragonflight fork ("Mk III")
 - Code cleanup
