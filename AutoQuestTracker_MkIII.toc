@@ -1,7 +1,7 @@
-## Title: Auto Quest Tracker
-## Version: 2.0
-## Author: ErrondGamer
 ## Interface: 100002
+## Title: Auto Quest Tracker Mk III
+## Version: 2.0
+## Author: ErrondGamer (original version); gamer-angel05 (SL fork 2021); Mot (this fork)
 ## Notes: Automatically updates the quest tracker to track the quests in your current zone, and any other quests that you may have manually tracked.
 ## DefaultState: enabled
 ## SavedVariables: AQT_GlobalDB
@@ -28,7 +28,7 @@ main.lua
 
 # License ======================================================================
 #
-# Copyright © 2022 Thomas Floeren
+#	Portions: Copyright © 2022 Thomas Floeren for the added code of "Mk III" (v2.0)
 #
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
