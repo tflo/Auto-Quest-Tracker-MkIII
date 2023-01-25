@@ -1,3 +1,6 @@
+#### 2.0.1.2 (2023-01-25)
+- Added pkgmeta file for correct Curse packaging and changelog
+
 #### 2.0.1.1 (2023-01-25)
 - toc: updated for 10.0.5
 - Improved ReadMe
