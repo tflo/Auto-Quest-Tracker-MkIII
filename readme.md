@@ -8,7 +8,7 @@ I have updated Auto Quest Tracker, because – in my experience – it works bet
 
 _Quester + Auto Quest Tracker_ is my preferred combo.
 
-### New in version 2.0 ("Mk III"):
+## New in version 2.0 ("Mk III"):
 
 Besides an updated version number in the toc file, Mk III also brings you a new feature:
  
