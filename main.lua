@@ -42,7 +42,7 @@ end
 local function showOrHideQuest(questIndex, questId, show)
 	-- Checks that the quest is still in the quest log, and that we are not in combat lockdown to avoid tainting
 	local questTitle, _, id = getQuestInfo(questIndex)
-	if id == questId and not (InCombatLockdown() == 1) then
+	if not InCombatLockdown() and id == questId then
 		if show then
 			printDebugMsg(string.format('Tracking: %s (%s)', questTitle, questId))
 			C_QuestLog.AddQuestWatch(questId)
