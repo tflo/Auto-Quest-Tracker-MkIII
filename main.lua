@@ -84,6 +84,7 @@ local function updateQuestsForZone()
 				if questZone == currentZone or questZone == minimapZone or isOnMap or hasLocalPOI then
 					if C_QuestLog.GetQuestWatchType(questId) == nil then
 						showOrHideQuest(questIndex, questId, true)
+						printDebugMsg(format('Reason: %s %s %s %s', questZone == currentZone and 'currZone' or 'x', questZone == minimapZone and 'mmZone' or 'x', isOnMap and 'onMap' or 'x', hasLocalPOI and 'hasPOI' or 'x'))
 					end
 				elseif C_QuestLog.GetQuestWatchType(questId) == 0 then
 					showOrHideQuest(questIndex, questId, false)
