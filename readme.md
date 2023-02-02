@@ -10,21 +10,22 @@ _Quester + Auto Quest Tracker_ is my preferred combo.
 
 ## New in version 2.0 ("Mk III"):
 
-Besides an updated version number in the toc file, Mk III also brings you a new feature:
- 
+Besides an updated version number in the toc file, Mk III also brings you some minor new features:
+
 - You can now disable/enable AQT with the slash commands `/aqt off` / `/aqt on`. This is a per-char setting.
-  - Loading message (at login/reload) that shows the current state (enabled/disabled) of AQT. This can be disabled/enabled with `/aqt toggleloadingmessage` (account-wide setting).
-  - The `/aqt` slash command now shows the current state of AQT (enabled/disabled). As before, it also shows all available slash commands.
+- Loading message (at login/reload) that shows the current state (enabled/disabled) of AQT. This can be disabled/enabled with `/aqt toggleloadingmessage` (account-wide setting).
+- The `/aqt` slash command now shows the current state of AQT (enabled/disabled). As before, it also shows all available slash commands.
 
 Temporarily disabling AQT can be useful if you have a bunch of related quests and breadcrumbs that you want to keep focused as you move back and forth between adjacent zones (like leveling in Dragon Isles). You could also just re-track the quests manually (AQT allows that), but that can get tedious.  
 What happens when you disable AQT is that the two main events become unregistered, i.e. this is close to unloading the addon, but without the need to reload.
 
 For more slash commands, enter `/aqt` in the chat. These are unchanged from the previous versions and are self-explanatory.
 
-You can also enable/disable AQT in your scripts with the global function `addon_aqt_enable()`:
-  - Enable with `addon_aqt_enable(true)`
-  - Disable with `addon_aqt_enable(false)`
-  - Toggle with `addon_aqt_enable(not AQT_CharDB.enabled)`
+You can now also enable/disable AQT in your scripts with the global function `addon_aqt_enable()`:
+
+- Enable with `addon_aqt_enable(true)`
+- Disable with `addon_aqt_enable(false)`
+- Toggle with `addon_aqt_enable(not AQT_CharDB.enabled)`
 
 Feel free to post suggestions or issues in the [GitHub Issues](https://github.com/tflo/PetWalker/issues) of the repo!
 __Please do not post issues or suggestions in the comments on Curseforge.__
