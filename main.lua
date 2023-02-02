@@ -34,7 +34,19 @@ local function getQuestInfo(index)
 		quest.questID,
 		C_QuestLog.IsWorldQuest(quest.questID),
 		quest.isHidden,
+		quest.isOnMap,
+		quest.hasLocalPOI
+end
+
+local function getQuestInfoForListing(index)
+	local quest = C_QuestLog.GetInfo(index)
+	return quest.title,
+		quest.isHeader,
+		quest.questID,
+		C_QuestLog.IsWorldQuest(quest.questID),
+		quest.isHidden,
 		C_QuestLog.IsQuestCalling(quest.questID),
+		C_QuestLog.GetQuestType(quest.questID),
 		quest.isOnMap,
 		quest.hasLocalPOI
 end
@@ -63,7 +75,7 @@ local function updateQuestsForZone()
 	local questZone = nil
 
 	for questIndex = 1, C_QuestLog.GetNumQuestLogEntries() do
-		local questTitle, isHeader, questId, isWorldQuest, isHidden, isCalling, isOnMap, hasLocalPOI =
+		local questTitle, isHeader, questId, isWorldQuest, isHidden, isOnMap, hasLocalPOI =
 			getQuestInfo(questIndex)
 		if not isWorldQuest and not isHidden then
 			if isHeader then
@@ -125,33 +137,32 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 	elseif msg == 'debug' then
 		debug = not debug
 		print(MSG_PREFIX .. 'Debug mode ' .. (debug and 'enabled' or 'disabled'))
-	elseif msg == 'quests' then
-		debug = true
-		printDebugMsg 'Quests currently in quest log:'
+	elseif msg == 'q' or msg == 'quests' then
+		print 'Quests currently in quest log:'
 		for questIndex = 1, C_QuestLog.GetNumQuestLogEntries() do
-			local questTitle, isHeader, questId, isWorldQuest, isHidden, isCalling, isOnMap, hasLocalPOI =
-				getQuestInfo(questIndex)
-			if isHidden then
-				print(string.format('|cff707070[Hidden] %s (%s)', questTitle, tostring(questId)))
-			elseif isHeader then
-				print(string.format('[Header] %s', questTitle))
-			elseif isWorldQuest then
-				print(string.format('|cffC107f3[World Quest] %s (%s)', questTitle, tostring(questId)))
-			elseif isCalling then
+			local questTitle, isHeader, questId, isWorldQuest, isHidden, isCalling, questType, isOnMap, hasLocalPOI =
+				getQuestInfoForListing(questIndex)
+			if isHeader then
+				print(format('%02d| [Header] %s', questIndex, questTitle))
+			else
 				print(
-					string.format(
-						'[Calling quest] %s (%s) %s/%s',
+					format(
+						'%s%02d| %s%s (%s) - Type %s%s%s',
+						isHidden and '|cnGRAY_FONT_COLOR:'
+							or isWorldQuest and '|cnBLUE_FONT_COLOR:'
+							or isCalling and '|cnDIM_GREEN_FONT_COLOR:'
+							or '|cnORANGE_FONT_COLOR:',
+						questIndex,
+						isHidden and '[Hidden] ' or isWorldQuest and '[WQ] ' or isCalling and '[Calling] ' or '',
 						questTitle,
 						tostring(questId),
-						tostring(isOnMap),
-						tostring(hasLocalPOI)
+						tostring(questType),
+						isOnMap and ', on map ' or '',
+						hasLocalPOI and ', local POI' or ''
 					)
 				)
-			else
-				print(string.format('|cfff2cb06%s (%s)', questTitle, tostring(questId)))
 			end
 		end
-		debug = false
 	else
 		print(
 			MSG_PREFIX
