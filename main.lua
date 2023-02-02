@@ -128,14 +128,14 @@ end
 SLASH_AUTOQUESTTRACKER1 = '/autoquesttracker'
 SLASH_AUTOQUESTTRACKER2 = '/aqt'
 SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
-	if msg == 'on' then
+	if msg == 'e' or msg == 'on' then
 		aqt_enable(true)
-	elseif msg == 'off' then
+	elseif msg == 'd' or msg == 'off' then
 		aqt_enable(false)
-	elseif msg == 'toggleloadingmessage' then
+	elseif msg == 'lm' or msg == 'loadingmessage' then
 		a.gdb.loadMsg = not a.gdb.loadMsg
 		print(MSG_PREFIX .. 'Loading message ' .. (a.gdb.loadMsg and 'enabled' or 'disabled') .. ' for all chars')
-	elseif msg == 'debug' then
+	elseif msg == 'db' or msg == 'debug' then
 		debug = not debug
 		print(MSG_PREFIX .. 'Debug mode ' .. (debug and 'enabled' or 'disabled'))
 	elseif msg == 'q' or msg == 'quests' then
@@ -169,7 +169,7 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 			MSG_PREFIX
 				.. 'Status: '
 				.. (a.cdb.enabled and 'Enabled' or 'Disabled')
-				.. '. Available commands are: on, off, debug, quests, toggleloadingmessage'
+				.. '. Available commands are: e or on (enable), d or off (disable), q or quests (quest list), db or debug (debug mode), lm or loadingmessage (toggle loading message)'
 		)
 	end
 end
