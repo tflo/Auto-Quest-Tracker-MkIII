@@ -165,7 +165,15 @@ end
 
 f:SetScript('OnEvent', onEvent)
 
+-- API
 
+function _G.addon_aqt_enable(v)
+	if type(v) ~= 'boolean' then
+		error("Wrong argument type. Usage: 'addon_aqt_enable(boolean)'", 0)
+	else
+		aqt_enable(v)
+	end
+end
 
 
 --[[ License ===================================================================
