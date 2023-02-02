@@ -21,6 +21,11 @@ What happens when you disable AQT is that the two main events become unregistere
 
 For more slash commands, enter `/aqt` in the chat. These are unchanged from the previous versions and are self-explanatory.
 
+You can also enable/disable AQT in your scripts with the global function `addon_aqt_enable()`:
+  - Enable with `addon_aqt_enable(true)`
+  - Disable with `addon_aqt_enable(false)`
+  - Toggle with `addon_aqt_enable(not AQT_CharDB.enabled)`
+
 Feel free to post suggestions or issues in the [GitHub Issues](https://github.com/tflo/PetWalker/issues) of the repo!
 __Please do not post issues or suggestions in the comments on Curseforge.__
 

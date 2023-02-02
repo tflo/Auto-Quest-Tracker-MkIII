@@ -1,3 +1,11 @@
+#### 2.1 (2023-02-02)
+- If you enable AQT (via `/aqt on`), the quest tracker now is immediately updated for your current zone, not only when the next zone change event fires.
+- Added a global function that you can use in your scripts: `addon_aqt_enable()`
+  - It does the same as the slash commands and takes a boolean as argument:
+    - To enable AQT: `addon_aqt_enable(true)`
+    - To disable AQT: `addon_aqt_enable(false)`
+    - To toggle AQT: `addon_aqt_enable(not AQT_CharDB.enabled)`
+
 #### 2.0.1.2 (2023-01-25)
 - Added pkgmeta file for correct Curse packaging and changelog
 
