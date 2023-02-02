@@ -100,17 +100,25 @@ local function onEvent(self, event, addon)
 	end
 end
 
+local function aqt_enable(on)
+	if on then
+		updateQuestsForZone()
+		registerAllEvents()
+	else
+		unregisterAllEvents()
+	end
+	a.cdb.enabled = on
+	print(MSG_PREFIX .. (a.cdb.enabled and 'Enabled' or 'Disabled'))
+end
+
+
 SLASH_AUTOQUESTTRACKER1 = '/autoquesttracker'
 SLASH_AUTOQUESTTRACKER2 = '/aqt'
 SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 	if msg == 'on' then
-		registerAllEvents()
-		print(MSG_PREFIX .. 'Enabled')
-		a.cdb.enabled = true
+		aqt_enable(true)
 	elseif msg == 'off' then
-		unregisterAllEvents()
-		print(MSG_PREFIX .. 'Disabled')
-		a.cdb.enabled = false
+		aqt_enable(false)
 	elseif msg == 'toggleloadingmessage' then
 		a.gdb.loadMsg = not a.gdb.loadMsg
 		print(MSG_PREFIX .. 'Loading message ' .. (a.gdb.loadMsg and 'enabled' or 'disabled') .. ' for all chars')
