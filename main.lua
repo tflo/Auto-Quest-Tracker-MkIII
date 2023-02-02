@@ -65,7 +65,6 @@ local function updateQuestsForZone()
 	for questIndex = 1, C_QuestLog.GetNumQuestLogEntries() do
 		local questTitle, isHeader, questId, isWorldQuest, isHidden, isCalling, isOnMap, hasLocalPOI =
 			getQuestInfo(questIndex)
-
 		if not isWorldQuest and not isHidden then
 			if isHeader then
 				questZone = questTitle
@@ -82,13 +81,6 @@ local function updateQuestsForZone()
 	end
 end
 
-
--- function AQT_HandleEvent(self, event, ...)
--- 	-- Wait 2 seconds to reduce loading congestion.
--- 	C_Timer.After(2, function() updateQuestsForZone() end)
--- end
-
-
 local function onEvent(self, event, addon)
 	if event == 'ADDON_LOADED' then
 		if addon == addonName then
@@ -104,7 +96,7 @@ local function onEvent(self, event, addon)
 			end
 		end
 	else
-		C_Timer.After(2, function() updateQuestsForZone() end)
+		C_Timer.After(2, updateQuestsForZone)
 	end
 end
 
