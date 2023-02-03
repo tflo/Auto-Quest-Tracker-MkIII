@@ -1,3 +1,10 @@
+#### 2.1.1 (2023-02-03)
+- Fixed combat lockdown check
+- Better quest list and with more info (quest log index, quest type, onMap, hasPOI)
+- More debug info for quest untracking (temporarily)
+- Shorter slash commands (enter `/aqt` for a list)
+- Updated ReadMe
+
 #### 2.1 (2023-02-02)
 - If you enable AQT (via `/aqt on`), the quest tracker now is immediately updated for your current zone, not only when the next zone change event fires.
 - Added a global function that you can use in your scripts: `addon_aqt_enable()`
