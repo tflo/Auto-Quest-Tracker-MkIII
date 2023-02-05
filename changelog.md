@@ -1,7 +1,11 @@
+#### 2.1.2 (2023-02-05)
+- To illustrate the usage of the recently added global toggle function, the addon now has an external companion WeakAura (https://wago.io/3sHwNATna). See description/ReadMe.
+- ReadMe: Added mention of the companion WeakAura.
+
 #### 2.1.1 (2023-02-03)
 - Fixed combat lockdown check
 - Better quest list and with more info (quest log index, quest type, onMap, hasPOI)
-- More debug info for quest untracking (temporarily)
+- More debug info for quest tracking (temporarily)
 - Shorter slash commands (enter `/aqt` for a list)
 - Updated ReadMe
 
