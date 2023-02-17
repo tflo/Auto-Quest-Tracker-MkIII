@@ -26,12 +26,12 @@ Temporarily disabling AQT can be useful for example if you have a bunch of quest
 It can also be useful if you simply have too many quests that technically belong to your zone, but you're not interested in at the moment.
 What happens when you disable AQT is that the two main events become unregistered, i.e. this is close to unloading the addon, but without the need to reload.
 
-### Ignore instance (dungeon and raid) quests (new in v2.2)
+### Option to ignore instance (dungeon and raid) quests (new in v2.2)
 
 - To toggle, enter `/aqt in` or `/aqt instances`. This is an account-wide setting.
 - Enable this to keep the quest tracker free of dungeon quest spam. (Technically, instance quests are on a specific map and have map POIs like any other quest. However, from a player's point of view, these quests aren't tied to a specific zone in the same way as normal quests, as in most cases you enter dungeons via LFG, which is location-neutral.)
 - "Ignore" means that instance quests will not be removed from your tracker when you enable this option, but if you remove them, they won't come back when you zone into the quest's map. (And if you put them in the tracker, they will stay there wherever you are).
-- This is a new feature and may need some fine-tuning.
+- This is a new feature and may still need some fine-tuning.
 
 For more slash commands (quest list, debug mode), enter `/aqt` in the chat.
 
