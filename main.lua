@@ -5,6 +5,7 @@ AQT_CharDB = AQT_CharDB or {}
 
 local debug = false
 local MSG_PREFIX = '|cff2196f3Auto Quest Tracker|r: '
+local TYPE_DUNGEON, TYPE_RAID = 81, 62
 
 local function printLoadMsg(msg)
 	if a.gdb.loadMsg then C_Timer.After(8, function() print(MSG_PREFIX .. msg) end) end
@@ -27,6 +28,8 @@ local function printDebugMsg(msg)
 	if debug then print(MSG_PREFIX .. msg) end
 end
 
+-- Since the addition of dungeon quest exclusions, these two functions are nearly identical
+-- Merge them if you don't add additional parameters for the listing
 local function getQuestInfo(index)
 	local quest = C_QuestLog.GetInfo(index)
 	return quest.title,
@@ -34,6 +37,7 @@ local function getQuestInfo(index)
 		quest.questID,
 		C_QuestLog.IsWorldQuest(quest.questID),
 		quest.isHidden,
+		C_QuestLog.GetQuestType(quest.questID),
 		quest.isOnMap,
 		quest.hasLocalPOI
 end
@@ -75,9 +79,9 @@ local function updateQuestsForZone()
 	local questZone = nil
 
 	for questIndex = 1, C_QuestLog.GetNumQuestLogEntries() do
-		local questTitle, isHeader, questId, isWorldQuest, isHidden, isOnMap, hasLocalPOI =
+		local questTitle, isHeader, questId, isWorldQuest, isHidden, questType, isOnMap, hasLocalPOI =
 			getQuestInfo(questIndex)
-		if not isWorldQuest and not isHidden then
+		if not isWorldQuest and not isHidden and not (a.gdb.ignoreInstances and (questType == TYPE_DUNGEON or questType == TYPE_RAID)) then
 			if isHeader then
 				questZone = questTitle
 			else
@@ -101,6 +105,7 @@ local function onEvent(self, event, addon)
 			a.gdb, a.cdb = AQT_GlobalDB, AQT_CharDB
 			a.cdb.enabled = a.cdb.enabled == nil and true or a.cdb.enabled
 			a.gdb.loadMsg = a.gdb.loadMsg == nil and true or a.gdb.loadMsg
+			a.gdb.ignoreInstances = a.gdb.ignoreInstances or false
 			if a.cdb.enabled then
 				registerAllEvents()
 				printLoadMsg 'Enabled'
@@ -135,6 +140,15 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 	elseif msg == 'lm' or msg == 'loadingmessage' then
 		a.gdb.loadMsg = not a.gdb.loadMsg
 		print(MSG_PREFIX .. 'Loading message ' .. (a.gdb.loadMsg and 'enabled' or 'disabled') .. ' for all chars')
+	elseif msg == 'in' or msg == 'instances' then
+		a.gdb.ignoreInstances = not a.gdb.ignoreInstances
+		if a.cdb.enabled then updateQuestsForZone() end
+		print(
+			MSG_PREFIX
+				.. 'Instance quests are '
+				.. (a.gdb.ignoreInstances and 'ignored' or 'treated normally')
+				.. ' for all chars'
+		)
 	elseif msg == 'db' or msg == 'debug' then
 		debug = not debug
 		print(MSG_PREFIX .. 'Debug mode ' .. (debug and 'enabled' or 'disabled'))
@@ -169,7 +183,8 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 			MSG_PREFIX
 				.. 'Status: '
 				.. (a.cdb.enabled and 'Enabled' or 'Disabled')
-				.. '. Available commands are: e or on (enable), d or off (disable), q or quests (quest list), db or debug (debug mode), lm or loadingmessage (toggle loading message)'
+				.. (a.gdb.ignoreInstances and '; ignoring instance quests' or '')
+				.. '. Available commands are: e or on (enable), d or off (disable), in or instances (toggle ignore instance quests), q or quests (quest list), lm or loadingmessage (toggle loading message), db or debug (toggle debug mode)'
 		)
 	end
 end

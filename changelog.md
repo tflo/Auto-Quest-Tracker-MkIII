@@ -1,3 +1,10 @@
+#### 2.2 (2023-02-16)
+- Added the option to ignore instance quests (raid & dungeon):
+  - Enter `/aqt in` or `/aqt instances` to toggle.
+  - Enable this to keep the quest tracker free of instance quest spam. (Technically, instance quests are on a specific map and have map POIs like any other quest. However, from a player's point of view, these quests aren't tied to a specific zone in the same way as normal quests, as in most cases you enter dungeons via LFG, which is location-neutral.)
+  - "Ignore" means that instance quests will not be removed from your tracker when you enable this option, but if you remove them, they won't come back when you zone into the quest's map. (And if you put them in the tracker, they will stay there wherever you are).
+  - Currently, instance quests are identified by their quest type (62 and 81). This may need some additional criteria or fine-tuning in the future.
+
 #### 2.1.2 (2023-02-05)
 - To illustrate the usage of the recently added global toggle function, the addon now has an external companion WeakAura (https://wago.io/3sHwNATna). See description/ReadMe.
 - ReadMe: Added mention of the companion WeakAura.
