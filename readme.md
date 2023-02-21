@@ -52,7 +52,7 @@ On wago.io you will find an (exemplary) [companion WeakAura](https://wago.io/3sH
 More info on the Aura download page.
 
 
-Feel free to post suggestions or issues in the [GitHub Issues](https://github.com/tflo/PetWalker/issues) of the repo!
+Feel free to post suggestions or issues in the [GitHub Issues](https://github.com/tflo/Auto-Quest-Tracker-MkIII/issues) of the repo!
 __Please do not post issues or suggestions in the comments on Curseforge.__
 
 
