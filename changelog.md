@@ -1,3 +1,7 @@
+#### 2.2.1 (2023-03-21)
+- Some code optimization
+- toc updated for 10.0.7
+
 #### 2.2 (2023-02-16)
 - Added the option to ignore instance quests (raid & dungeon):
   - Enter `/aqt in` or `/aqt instances` to toggle.
