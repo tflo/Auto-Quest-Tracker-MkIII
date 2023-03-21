@@ -3,12 +3,23 @@ local addonName, a = ...
 AQT_GlobalDB = AQT_GlobalDB or {}
 AQT_CharDB = AQT_CharDB or {}
 
+local C_TimerAfter = C_Timer.After
+local InCombatLockdown, GetRealZoneText, GetMinimapZoneText = InCombatLockdown, GetRealZoneText, GetMinimapZoneText
+local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_QuestLogAddQuestWatch, C_QuestLogRemoveQuestWatch, C_QuestLogGetNumQuestLogEntries, C_QuestLogGetQuestWatchType =
+	C_QuestLog.GetInfo,
+	C_QuestLog.IsWorldQuest,
+	C_QuestLog.GetQuestType,
+	C_QuestLog.AddQuestWatch,
+	C_QuestLog.RemoveQuestWatch,
+	C_QuestLog.GetNumQuestLogEntries,
+	C_QuestLog.GetQuestWatchType
+
 local debug = false
 local MSG_PREFIX = '|cff2196f3Auto Quest Tracker|r: '
 local TYPE_DUNGEON, TYPE_RAID = 81, 62
 
 local function printLoadMsg(msg)
-	if a.gdb.loadMsg then C_Timer.After(8, function() print(MSG_PREFIX .. msg) end) end
+	if a.gdb.loadMsg then C_TimerAfter(8, function() print(MSG_PREFIX .. msg) end) end
 end
 
 local f = CreateFrame 'Frame'
@@ -31,26 +42,26 @@ end
 -- Since the addition of dungeon quest exclusions, these two functions are nearly identical
 -- Merge them if you don't add additional parameters for the listing
 local function getQuestInfo(index)
-	local quest = C_QuestLog.GetInfo(index)
+	local quest = C_QuestLogGetInfo(index)
 	return quest.title,
 		quest.isHeader,
 		quest.questID,
-		C_QuestLog.IsWorldQuest(quest.questID),
+		C_QuestLogIsWorldQuest(quest.questID),
 		quest.isHidden,
-		C_QuestLog.GetQuestType(quest.questID),
+		C_QuestLogGetQuestType(quest.questID),
 		quest.isOnMap,
 		quest.hasLocalPOI
 end
 
 local function getQuestInfoForListing(index)
-	local quest = C_QuestLog.GetInfo(index)
+	local quest = C_QuestLogGetInfo(index)
 	return quest.title,
 		quest.isHeader,
 		quest.questID,
-		C_QuestLog.IsWorldQuest(quest.questID),
+		C_QuestLogIsWorldQuest(quest.questID),
 		quest.isHidden,
 		C_QuestLog.IsQuestCalling(quest.questID),
-		C_QuestLog.GetQuestType(quest.questID),
+		C_QuestLogGetQuestType(quest.questID),
 		quest.isOnMap,
 		quest.hasLocalPOI
 end
@@ -61,10 +72,10 @@ local function showOrHideQuest(questIndex, questId, show)
 	if not InCombatLockdown() and id == questId then
 		if show then
 			printDebugMsg(string.format('Tracking: %s (%s)', questTitle, questId))
-			C_QuestLog.AddQuestWatch(questId)
+			C_QuestLogAddQuestWatch(questId)
 		else
 			printDebugMsg(string.format('Removing: %s (%s)', questTitle, questId))
-			C_QuestLog.RemoveQuestWatch(questId)
+			C_QuestLogRemoveQuestWatch(questId)
 		end
 	end
 end
@@ -78,7 +89,7 @@ local function updateQuestsForZone()
 
 	local questZone = nil
 
-	for questIndex = 1, C_QuestLog.GetNumQuestLogEntries() do
+	for questIndex = 1, C_QuestLogGetNumQuestLogEntries() do
 		local questTitle, isHeader, questId, isWorldQuest, isHidden, questType, isOnMap, hasLocalPOI =
 			getQuestInfo(questIndex)
 		if not isWorldQuest and not isHidden and not (a.gdb.ignoreInstances and (questType == TYPE_DUNGEON or questType == TYPE_RAID)) then
@@ -86,11 +97,11 @@ local function updateQuestsForZone()
 				questZone = questTitle
 			else
 				if questZone == currentZone or questZone == minimapZone or isOnMap or hasLocalPOI then
-					if C_QuestLog.GetQuestWatchType(questId) == nil then
+					if C_QuestLogGetQuestWatchType(questId) == nil then
 						showOrHideQuest(questIndex, questId, true)
 						printDebugMsg(format('Reason: %s %s %s %s', questZone == currentZone and 'currZone' or 'x', questZone == minimapZone and 'mmZone' or 'x', isOnMap and 'onMap' or 'x', hasLocalPOI and 'hasPOI' or 'x'))
 					end
-				elseif C_QuestLog.GetQuestWatchType(questId) == 0 then
+				elseif C_QuestLogGetQuestWatchType(questId) == 0 then
 					showOrHideQuest(questIndex, questId, false)
 				end
 			end
@@ -114,7 +125,7 @@ local function onEvent(self, event, addon)
 			end
 		end
 	else
-		C_Timer.After(2, updateQuestsForZone)
+		C_TimerAfter(2, updateQuestsForZone)
 	end
 end
 
@@ -154,7 +165,7 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		print(MSG_PREFIX .. 'Debug mode ' .. (debug and 'enabled' or 'disabled'))
 	elseif msg == 'q' or msg == 'quests' then
 		print 'Quests currently in quest log:'
-		for questIndex = 1, C_QuestLog.GetNumQuestLogEntries() do
+		for questIndex = 1, C_QuestLogGetNumQuestLogEntries() do
 			local questTitle, isHeader, questId, isWorldQuest, isHidden, isCalling, questType, isOnMap, hasLocalPOI =
 				getQuestInfoForListing(questIndex)
 			if isHeader then
