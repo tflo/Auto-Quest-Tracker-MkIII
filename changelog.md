@@ -1,3 +1,9 @@
+#### 2.2.2 (2023-05-02)
+- Readme/description: 
+  - Added note on compatibility with Classic Quest Log
+  - Added download link for the Classic Quest Log fix
+- toc updated for 10.1
+
 #### 2.2.1 (2023-03-21)
 - Some code optimization
 - toc updated for 10.0.7

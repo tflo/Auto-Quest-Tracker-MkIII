@@ -51,6 +51,12 @@ On wago.io you will find an (exemplary) [companion WeakAura](https://wago.io/3sH
 
 More info on the Aura download page.
 
+### Compatibility with Classic Quest Log
+
+If you are using [Classic Quest Log](https://www.curseforge.com/wow/addons/classic-quest-log), you will need to patch it to set the correct quest watch type (1) when you shift-click on a quest to add it to the tracker. Otherwise, AQT will not be able to recognize the quest as "manually added".
+
+You can download a plugin-style addon that will do this for you [in this GitHub thread](https://github.com/tflo/Auto-Quest-Tracker-MkIII/issues/2).  
+
 
 Feel free to post suggestions or issues in the [GitHub Issues](https://github.com/tflo/Auto-Quest-Tracker-MkIII/issues) of the repo!
 __Please do not post issues or suggestions in the comments on Curseforge.__
