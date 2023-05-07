@@ -117,30 +117,38 @@ local function onEvent(self, event, addon)
 		if addon == addonName then
 			f:UnregisterEvent 'ADDON_LOADED'
 			a.gdb, a.cdb = AQT_GlobalDB, AQT_CharDB
-			a.cdb.enabled = a.cdb.enabled == nil and true or a.cdb.enabled
+			a.cdb.enabled = (a.cdb.enabled == nil or a.cdb.re_enable) and true or a.cdb.enabled
 			a.gdb.loadMsg = a.gdb.loadMsg == nil and true or a.gdb.loadMsg
 			a.gdb.ignoreInstances = a.gdb.ignoreInstances or false
 			if a.cdb.enabled then
 				registerAllEvents()
-				printLoadMsg 'Enabled'
+				printLoadMsg(MSG_GOOD_COLOR .. (a.cdb.re_enable and 'Re-enabled' or 'Enabled'))
+				if a.cdb.re_enable then C_TimerAfter(8, updateQuestsForZone) end
 			else
-				printLoadMsg 'Disabled'
+				printLoadMsg(MSG_BAD_COLOR .. 'Disabled')
 			end
+			a.cdb.re_enable = nil
 		end
 	else
 		C_TimerAfter(2, updateQuestsForZone)
 	end
 end
 
-local function aqt_enable(on)
+local function msg_activation_status()
+	return a.cdb.enabled and MSG_GOOD_COLOR .. 'Enabled' or a.cdb.re_enable and MSG_HALFBAD_COLOR .. 'Disabled until reload/login' or MSG_BAD_COLOR .. 'Disabled'
+end
+
+local function aqt_enable(on, tmp)
 	if on then
 		updateQuestsForZone()
 		registerAllEvents()
+		a.cdb.re_enable = nil
 	else
 		unregisterAllEvents()
+		a.cdb.re_enable = tmp or nil
 	end
 	a.cdb.enabled = on
-	print(MSG_PREFIX .. (a.cdb.enabled and 'Enabled' or 'Disabled'))
+	print(MSG_PREFIX .. msg_activation_status())
 end
 
 
@@ -151,6 +159,9 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		aqt_enable(true)
 	elseif msg == 'd' or msg == 'off' then
 		aqt_enable(false)
+	-- Temporarily disable (until reload/login)
+	elseif msg == 'td' or msg == 'toff' then
+		aqt_enable(false, true)
 	elseif msg == 'lm' or msg == 'loadingmessage' then
 		a.gdb.loadMsg = not a.gdb.loadMsg
 		print(MSG_PREFIX .. 'Loading message ' .. (a.gdb.loadMsg and 'enabled' or 'disabled') .. ' for all chars')
@@ -196,9 +207,9 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		print(
 			MSG_PREFIX
 				.. 'Status: '
-				.. (a.cdb.enabled and 'Enabled' or 'Disabled')
+				.. msg_activation_status() .. '\124r'
 				.. (a.gdb.ignoreInstances and '; ignoring instance quests' or '')
-				.. '. Available commands are: e or on (enable), d or off (disable), in or instances (toggle ignore instance quests), q or quests (quest list), lm or loadingmessage (toggle loading message), db or debug (toggle debug mode)'
+				.. '. \nAvailable commands are: "e" or "on" (enable), "d" or "off" (disable), "td" or "toff" (temporarily disable), "in" or "instances" (toggle ignore instance quests), "q" or "quests" (quest list), "lm" or "loadingmessage" (toggle loading message), "db" or "debug" (toggle debug mode).\n The Enable/Disable commands are per char, the rest is global.'
 		)
 	end
 end
