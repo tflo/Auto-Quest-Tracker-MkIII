@@ -15,7 +15,10 @@ local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_Quest
 	C_QuestLog.GetQuestWatchType
 
 local debug = false
-local MSG_PREFIX = '|cff2196f3Auto Quest Tracker|r: '
+local MSG_PREFIX = '\124cff2196f3Auto Quest Tracker\124r: '
+local MSG_GOOD_COLOR = '\124cnDIM_GREEN_FONT_COLOR:'
+local MSG_HALFBAD_COLOR = '\124cnDARKYELLOW_FONT_COLOR:'
+local MSG_BAD_COLOR = '\124cnWARNING_FONT_COLOR:'
 local TYPE_DUNGEON, TYPE_RAID = 81, 62
 
 local function printLoadMsg(msg)
