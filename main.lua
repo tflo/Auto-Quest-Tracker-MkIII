@@ -16,10 +16,13 @@ local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_Quest
 
 local debug, debug_more = false, true
 local update_pending -- Serves as ignore flag during the DELAY_ZONE_CHANGE time
-local MSG_PREFIX = '\124cff2196f3Auto Quest Tracker\124r: '
-local MSG_GOOD_COLOR = '\124cnDIM_GREEN_FONT_COLOR:'
-local MSG_HALFBAD_COLOR = '\124cnDARKYELLOW_FONT_COLOR:'
-local MSG_BAD_COLOR = '\124cnWARNING_FONT_COLOR:'
+-- Colors and msgs
+local C_AQT = '\124cff2196f3'
+local C_GOOD = '\124cnDIM_GREEN_FONT_COLOR:'
+local C_HALFBAD = '\124cnORANGE_FONT_COLOR:'
+local C_BAD = '\124cnDIM_RED_FONT_COLOR:'
+local MSG_PREFIX = C_AQT .. 'Auto Quest Tracker\124r: '
+-- Misc
 local TYPE_DUNGEON, TYPE_RAID = 81, 62
 -- Serves as delay for update after zone change events and as throttle (new zone events are ignored during the time)
 local DELAY_ZONE_CHANGE = 3 -- Testwise 3; we used to use 2
@@ -153,10 +156,10 @@ local function onEvent(self, event, ...)
 			a.gdb.ignoreInstances = a.gdb.ignoreInstances or false
 			if a.cdb.enabled then
 				register_zone_events()
-				msg_load(MSG_GOOD_COLOR .. 'Enabled.', 8)
+				msg_load(C_GOOD .. 'Enabled.', 8)
 			else
 				if not a.cdb.enable_nextsession and not a.cdb.enable_nextinstance then
-					msg_load(MSG_BAD_COLOR .. 'Disabled.', 8)
+					msg_load(C_BAD .. 'Disabled.', 8)
 				else
 					f:RegisterEvent 'PLAYER_ENTERING_WORLD'
 				end
@@ -205,7 +208,7 @@ f:SetScript('OnEvent', onEvent)
 ===========================================================================]]--
 
 local function msg_activation_status()
-	return a.cdb.enabled and MSG_GOOD_COLOR .. 'Enabled.' or a.cdb.enable_nextsession and MSG_HALFBAD_COLOR .. 'Disabled for this session.' or a.cdb.enable_nextinstance and MSG_HALFBAD_COLOR .. 'Disabled for this instance.' or MSG_BAD_COLOR .. 'Disabled.'
+	return a.cdb.enabled and C_GOOD .. 'Enabled.' or a.cdb.enable_nextsession and C_HALFBAD .. 'Disabled for this session.' or a.cdb.enable_nextinstance and C_HALFBAD .. 'Disabled for this instance.' or C_BAD .. 'Disabled.'
 end
 
 --[[---------------------------------------------------------------------------
@@ -244,12 +247,12 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 	elseif msg == 'd' or msg == 'off' then
 		aqt_enable(false, nil)
 	-- Permanently disable
-	elseif msg == 'pd' or msg == 'poff' then
+	elseif msg == 'dp' or msg == 'offp' then
 		aqt_enable(false, 0)
 	-- Disable for current instance
-	elseif msg == 'id' or msg == 'ioff' then
+	elseif msg == 'di' or msg == 'offi' then
 		aqt_enable(false, 2)
-	elseif msg == 'lm' or msg == 'loadingmessage' then
+	elseif msg == 'loadingmessage' then
 		a.gdb.loadMsg = not a.gdb.loadMsg
 		msg_confirm(MSG_PREFIX .. 'Loading message ' .. (a.gdb.loadMsg and 'enabled' or 'disabled') .. ' for all chars.')
 	elseif msg == 'in' or msg == 'instances' then
@@ -290,14 +293,23 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 				)
 			end
 		end
+	elseif msg == 'h' or msg == 'help' then
+		print(MSG_PREFIX .. 'Help: \n'.. C_AQT .. '/autoquesttracker ' .. '\124ror ' .. C_AQT .. '/aqt ' .. '\124runderstands these commands: ')
+		print(C_AQT .. 'on ' .. '\124ror ' .. C_AQT .. 'e' .. '\124r: Enable AQT.')
+		print(C_AQT .. 'off ' .. '\124ror ' .. C_AQT .. 'd' .. '\124r: Disable AQT for the current session.')
+		print(C_AQT .. 'offi ' .. '\124ror ' .. C_AQT .. 'di' .. '\124r: Disable AQT for the current (map) instance.')
+		print(C_AQT .. 'offp ' .. '\124ror ' .. C_AQT .. 'dp' .. '\124r: Disable AQT permanently.')
+		print(C_AQT .. 'instances ' .. '\124ror ' .. C_AQT .. 'in' .. '\124r: Toggle auto-tracking of dungeon/raid quests.')
+		print(C_AQT .. 'loadingmessage' .. '\124r: Toggle status message in chat after reload/login.')
+		print(C_AQT .. 'quests ' .. '\124ror ' .. C_AQT .. 'q' .. '\124r: Show complete quest list.')
+		print(C_AQT .. 'debug' .. '\124r: Toggle debug mode.')
+		print('Enable/disable/debug is per char, other settings are global.')
 	else
-		print(
-			MSG_PREFIX
-				.. 'Status: '
-				.. msg_activation_status() .. '\124r'
-				.. (a.gdb.ignoreInstances and ' Ignoring instance quests.' or '')
-				.. '\nAvailable commands are: "e" or "on" (enable), "d" or "off" (disable), "td" or "toff" (temporarily disable), "in" or "instances" (toggle ignore instance quests), "q" or "quests" (quest list), "lm" or "loadingmessage" (toggle loading message), "db" or "debug" (toggle debug mode).\n The Enable/Disable commands are per char, the rest is global.'
-		)
+		print(MSG_PREFIX
+			.. 'Status: '
+			.. msg_activation_status() .. '\124r'
+			.. (a.gdb.ignoreInstances and ' Ignoring instance quests.' or '')
+			.. '\nType ' .. C_AQT .. '/aqt help ' .. '\124ror ' .. C_AQT .. '/aqt h ' .. '\124rfor a list of commands.')
 	end
 end
 
