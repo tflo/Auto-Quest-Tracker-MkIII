@@ -29,6 +29,9 @@ local DELAY_ZONE_CHANGE = 3 -- Testwise 3; we used to use 2
 -- Time between logout and login needed to consider it a new session
 local SESSION_GRACE_TIME = 360
 
+-- For the modifier click on the compartment button
+local is_mac = IsMacClient()
+
 local function msg_debug(msg)
 	if debug_mode or debug_mode_extra then print(MSG_PREFIX .. msg) end
 end
@@ -330,6 +333,17 @@ function _G.addon_aqt_enable(v)
 	else
 		aqt_enable(v)
 	end
+end
+
+function _G.addon_aqt_on_addoncompartment_click()
+	if is_mac and IsMetaKeyDown() or not is_mac and IsControlKeyDown() then
+		aqt_enable(not AQT_CharDB.enabled)
+	elseif IsShiftKeyDown() then
+		msg_help()
+	else
+		print(MSG_PREFIX .. 'Status: ' .. msg_activation_status() .. '\124r' .. (a.gdb.ignoreInstances and ' Ignoring instance quests.' or '') .. '\n\124cnYELLOW_FONT_COLOR:' .. (is_mac and 'Command-' or 'Control-') .. '\124rclick the button to toggle ' .. C_AQT .. 'AQT' .. '\124r, \124cnYELLOW_FONT_COLOR:Shift-\124rclick for a list of available slash commands.')
+	end
+
 end
 
 
