@@ -1,3 +1,7 @@
+#### 3.0.1 (2023-05-08)
+- No changes, trying to get the wrong client version listing on CurseForge fixed.
+- For the big 3.0 changes, see change notes 3.0 below.
+
 #### 3.0 (2023-05-08)
 - New: Disabling AQT (`/aqt off` or `/aqt d`) now disables it for the duration of your session, instead of permanently.
 - There are now 3 modes of disabling AQT:

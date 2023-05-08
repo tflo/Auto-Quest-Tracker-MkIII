@@ -3,7 +3,6 @@
 ## Version: 3.0
 ## IconTexture: Interface/Minimap/Tracking/QuestBlob
 ## AddonCompartmentFunc: addon_aqt_on_addoncompartment_click
-## X-Flavor: Mainline
 ## Author: ErrondGamer (original version); gamer-angel05 (SL fork 2021); Mot (this fork)
 ## Notes: Automatically updates the quest tracker to track the quests in your current zone, and any other quests that you may have manually tracked.
 ## DefaultState: enabled
