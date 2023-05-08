@@ -14,7 +14,7 @@ local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_Quest
 	C_QuestLog.GetNumQuestLogEntries,
 	C_QuestLog.GetQuestWatchType
 
-local debug = false
+local debug, debug_more = false, true
 local MSG_PREFIX = '\124cff2196f3Auto Quest Tracker\124r: '
 local MSG_GOOD_COLOR = '\124cnDIM_GREEN_FONT_COLOR:'
 local MSG_HALFBAD_COLOR = '\124cnDARKYELLOW_FONT_COLOR:'
@@ -28,18 +28,19 @@ end
 local f = CreateFrame 'Frame'
 f:RegisterEvent 'ADDON_LOADED'
 
-local function registerAllEvents()
 	f:RegisterEvent 'ZONE_CHANGED'
+local function register_zone_events()
 	f:RegisterEvent 'ZONE_CHANGED_NEW_AREA'
 end
 
-local function unregisterAllEvents()
+local function unregister_zone_events()
 	f:UnregisterEvent 'ZONE_CHANGED'
 	f:UnregisterEvent 'ZONE_CHANGED_NEW_AREA'
 end
 
-local function printDebugMsg(msg)
-	if debug then print(MSG_PREFIX .. msg) end
+local function reregister_zone_events()
+	unregister_zone_events()
+	register_zone_events()
 end
 
 -- Since the addition of dungeon quest exclusions, these two functions are nearly identical
@@ -74,21 +75,26 @@ local function showOrHideQuest(questIndex, questId, show)
 	local questTitle, _, id = getQuestInfo(questIndex)
 	if not InCombatLockdown() and id == questId then
 		if show then
-			printDebugMsg(string.format('Tracking: %s (%s)', questTitle, questId))
+			print_debug(string.format('Tracking: %s (%s)', questTitle, questId))
 			C_QuestLogAddQuestWatch(questId)
 		else
-			printDebugMsg(string.format('Removing: %s (%s)', questTitle, questId))
+			print_debug(string.format('Removing: %s (%s)', questTitle, questId))
 			C_QuestLogRemoveQuestWatch(questId)
 		end
 	end
 end
+
+
+--[[---------------------------------------------------------------------------
+  Core function
+---------------------------------------------------------------------------]]--
 
 local function updateQuestsForZone()
 	local currentZone = GetRealZoneText()
 	local minimapZone = GetMinimapZoneText()
 	if currentZone == nil and minimapZone == nil then return end
 
-	printDebugMsg('Updating quests for: ' .. currentZone .. ' or ' .. minimapZone)
+	print_debug('Updating quests for: ' .. currentZone .. ' or ' .. minimapZone)
 
 	local questZone = nil
 
@@ -102,7 +108,7 @@ local function updateQuestsForZone()
 				if questZone == currentZone or questZone == minimapZone or isOnMap or hasLocalPOI then
 					if C_QuestLogGetQuestWatchType(questId) == nil then
 						showOrHideQuest(questIndex, questId, true)
-						printDebugMsg(format('Reason: %s %s %s %s', questZone == currentZone and 'currZone' or 'x', questZone == minimapZone and 'mmZone' or 'x', isOnMap and 'onMap' or 'x', hasLocalPOI and 'hasPOI' or 'x'))
+						print_debug(format('Reason: %s %s %s %s', questZone == currentZone and 'currZone' or '', questZone == minimapZone and 'mmZone' or '', isOnMap and 'onMap' or '', hasLocalPOI and 'hasPOI' or ''))
 					end
 				elseif C_QuestLogGetQuestWatchType(questId) == 0 then
 					showOrHideQuest(questIndex, questId, false)
@@ -112,7 +118,12 @@ local function updateQuestsForZone()
 	end
 end
 
-local function onEvent(self, event, addon)
+
+--[[---------------------------------------------------------------------------
+  Doing stuff at events
+---------------------------------------------------------------------------]]--
+
+local function onEvent(self, event, ...)
 	if event == 'ADDON_LOADED' then
 		if addon == addonName then
 			f:UnregisterEvent 'ADDON_LOADED'
@@ -134,6 +145,12 @@ local function onEvent(self, event, addon)
 	end
 end
 
+f:SetScript('OnEvent', onEvent)
+
+
+--[[===========================================================================
+  UI
+===========================================================================]]--
 local function msg_activation_status()
 	return a.cdb.enabled and MSG_GOOD_COLOR .. 'Enabled' or a.cdb.re_enable and MSG_HALFBAD_COLOR .. 'Disabled until reload/login' or MSG_BAD_COLOR .. 'Disabled'
 end
@@ -164,19 +181,19 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		aqt_enable(false, true)
 	elseif msg == 'lm' or msg == 'loadingmessage' then
 		a.gdb.loadMsg = not a.gdb.loadMsg
-		print(MSG_PREFIX .. 'Loading message ' .. (a.gdb.loadMsg and 'enabled' or 'disabled') .. ' for all chars')
+		print_confirmation_msg(MSG_PREFIX .. 'Loading message ' .. (a.gdb.loadMsg and 'enabled' or 'disabled') .. ' for all chars.')
 	elseif msg == 'in' or msg == 'instances' then
 		a.gdb.ignoreInstances = not a.gdb.ignoreInstances
 		if a.cdb.enabled then updateQuestsForZone() end
-		print(
+		print_confirmation_msg(
 			MSG_PREFIX
 				.. 'Instance quests are '
 				.. (a.gdb.ignoreInstances and 'ignored' or 'treated normally')
-				.. ' for all chars'
+				.. ' for all chars.'
 		)
 	elseif msg == 'db' or msg == 'debug' then
 		debug = not debug
-		print(MSG_PREFIX .. 'Debug mode ' .. (debug and 'enabled' or 'disabled'))
+		print_confirmation_msg(MSG_PREFIX .. 'Debug mode ' .. (debug and 'enabled.' or 'disabled.'))
 	elseif msg == 'q' or msg == 'quests' then
 		print 'Quests currently in quest log:'
 		for questIndex = 1, C_QuestLogGetNumQuestLogEntries() do
@@ -208,16 +225,16 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 			MSG_PREFIX
 				.. 'Status: '
 				.. msg_activation_status() .. '\124r'
-				.. (a.gdb.ignoreInstances and '; ignoring instance quests' or '')
-				.. '. \nAvailable commands are: "e" or "on" (enable), "d" or "off" (disable), "td" or "toff" (temporarily disable), "in" or "instances" (toggle ignore instance quests), "q" or "quests" (quest list), "lm" or "loadingmessage" (toggle loading message), "db" or "debug" (toggle debug mode).\n The Enable/Disable commands are per char, the rest is global.'
+				.. (a.gdb.ignoreInstances and ' Ignoring instance quests.' or '')
+				.. '\nAvailable commands are: "e" or "on" (enable), "d" or "off" (disable), "td" or "toff" (temporarily disable), "in" or "instances" (toggle ignore instance quests), "q" or "quests" (quest list), "lm" or "loadingmessage" (toggle loading message), "db" or "debug" (toggle debug mode).\n The Enable/Disable commands are per char, the rest is global.'
 		)
 	end
 end
 
 
-f:SetScript('OnEvent', onEvent)
-
--- API
+--[[===========================================================================
+API
+===========================================================================]]--
 
 function _G.addon_aqt_enable(v)
 	if type(v) ~= 'boolean' then

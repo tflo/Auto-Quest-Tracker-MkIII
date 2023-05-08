@@ -1,6 +1,8 @@
 ## Interface: 100100
 ## Title: Auto Quest Tracker Mk III
-## Version: 2.2.2
+## Version: 2.2.3-dev
+## IconTexture: Interface\AddOns\AutoQuestTracker_MkIII\icon.blp
+## X-Flavor: Mainline
 ## Author: ErrondGamer (original version); gamer-angel05 (SL fork 2021); Mot (this fork)
 ## Notes: Automatically updates the quest tracker to track the quests in your current zone, and any other quests that you may have manually tracked.
 ## DefaultState: enabled
