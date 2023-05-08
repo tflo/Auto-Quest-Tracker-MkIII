@@ -16,11 +16,14 @@ local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_Quest
 
 local debug, debug_more = false, true
 local area_mode = false
+local update_pending -- Serves as ignore flag during the DELAY_ZONE_CHANGE time
 local MSG_PREFIX = '\124cff2196f3Auto Quest Tracker\124r: '
 local MSG_GOOD_COLOR = '\124cnDIM_GREEN_FONT_COLOR:'
 local MSG_HALFBAD_COLOR = '\124cnDARKYELLOW_FONT_COLOR:'
 local MSG_BAD_COLOR = '\124cnWARNING_FONT_COLOR:'
 local TYPE_DUNGEON, TYPE_RAID = 81, 62
+-- Serves as delay for update after zone change events and as throttle (new zone events are ignored during the time)
+local DELAY_ZONE_CHANGE = 3 -- Testwise 3; we used to use 2
 
 local function printLoadMsg(msg)
 	if a.gdb.loadMsg then C_TimerAfter(8, function() print(MSG_PREFIX .. msg) end) end
@@ -141,8 +144,13 @@ local function onEvent(self, event, ...)
 			end
 			a.cdb.re_enable = nil
 		end
-	else
-		C_TimerAfter(2, updateQuestsForZone)
+	else -- The ZONE events
+		if update_pending then return end
+		update_pending = true
+		C_TimerAfter(DELAY_ZONE_CHANGE, function()
+			updateQuestsForZone()
+			update_pending = nil
+		end)
 	end
 end
 
