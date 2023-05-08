@@ -25,8 +25,28 @@ local TYPE_DUNGEON, TYPE_RAID = 81, 62
 -- Serves as delay for update after zone change events and as throttle (new zone events are ignored during the time)
 local DELAY_ZONE_CHANGE = 3 -- Testwise 3; we used to use 2
 
-local function printLoadMsg(msg)
-	if a.gdb.loadMsg then C_TimerAfter(8, function() print(MSG_PREFIX .. msg) end) end
+local function print_debug(msg)
+	if debug or debug_more then print(MSG_PREFIX .. msg) end
+end
+
+local function print_debug_more(msg)
+	if debug_more then print(MSG_PREFIX .. 'Debug: ' .. msg) end
+end
+
+local function print_load_msg(msg,delay)
+	if a.gdb.loadMsg then C_TimerAfter(delay, function() print(MSG_PREFIX .. msg) end) end
+end
+
+local function print_confirmation_msg(msg)
+	print(MSG_PREFIX .. msg)
+end
+
+local function print_info_msg(msg, delay)
+	if delay then
+		C_TimerAfter(delay, function() print(MSG_PREFIX .. msg) end)
+	else
+		print(MSG_PREFIX .. msg)
+	end
 end
 
 local f = CreateFrame 'Frame'
@@ -129,21 +149,39 @@ end
 
 local function onEvent(self, event, ...)
 	if event == 'ADDON_LOADED' then
-		if addon == addonName then
+		if ... == addonName then
 			f:UnregisterEvent 'ADDON_LOADED'
 			a.gdb, a.cdb = AQT_GlobalDB, AQT_CharDB
-			a.cdb.enabled = (a.cdb.enabled == nil or a.cdb.re_enable) and true or a.cdb.enabled
+			a.cdb.enabled = a.cdb.enabled == nil and true or a.cdb.enabled
 			a.gdb.loadMsg = a.gdb.loadMsg == nil and true or a.gdb.loadMsg
 			a.gdb.ignoreInstances = a.gdb.ignoreInstances or false
 			if a.cdb.enabled then
-				registerAllEvents()
-				printLoadMsg(MSG_GOOD_COLOR .. (a.cdb.re_enable and 'Re-enabled' or 'Enabled'))
-				if a.cdb.re_enable then C_TimerAfter(8, updateQuestsForZone) end
+				register_zone_events()
+				print_load_msg(MSG_GOOD_COLOR .. 'Enabled.', 8)
 			else
-				printLoadMsg(MSG_BAD_COLOR .. 'Disabled')
+				if not a.cdb.enable_nextsession and not a.cdb.enable_nextinstance then
+					print_load_msg(MSG_BAD_COLOR .. 'Disabled.', 8)
+				else
+					f:RegisterEvent 'PLAYER_ENTERING_WORLD'
+				end
 			end
-			a.cdb.re_enable = nil
 		end
+	elseif event == 'PLAYER_ENTERING_WORLD' then
+		local is_login, is_reload = ...
+		if is_login and not is_reload and a.cdb.enable_nextsession then
+			register_zone_events()
+			a.cdb.enabled = true
+			a.cdb.enable_nextsession = nil
+			print_load_msg(MSG_GOOD_COLOR .. 'Re-enabled because of new session.', 6)
+		elseif not is_login and not is_reload and a.cdb.enable_nextinstance then
+			register_zone_events()
+			a.cdb.enabled = true
+			a.cdb.enable_nextinstance = nil
+			print_load_msg(MSG_GOOD_COLOR .. 'Re-enabled because of new instance.', 6)
+		else
+			print_load_msg(MSG_HALFBAD_COLOR .. 'Disabled for this ' .. (a.cdb.enable_nextsession and 'session.' or 'instance.'), 6)
+		end
+		if not a.cdb.enable_nextinstance then f:UnregisterEvent 'PLAYER_ENTERING_WORLD' end
 	else -- The ZONE events
 		if update_pending then return end
 		update_pending = true
@@ -160,21 +198,24 @@ f:SetScript('OnEvent', onEvent)
 --[[===========================================================================
   UI
 ===========================================================================]]--
+
 local function msg_activation_status()
-	return a.cdb.enabled and MSG_GOOD_COLOR .. 'Enabled' or a.cdb.re_enable and MSG_HALFBAD_COLOR .. 'Disabled until reload/login' or MSG_BAD_COLOR .. 'Disabled'
+	return a.cdb.enabled and MSG_GOOD_COLOR .. 'Enabled.' or a.cdb.enable_nextsession and MSG_HALFBAD_COLOR .. 'Disabled for this session.' or a.cdb.enable_nextinstance and MSG_HALFBAD_COLOR .. 'Disabled for this instance.' or MSG_BAD_COLOR .. 'Disabled.'
 end
 
-local function aqt_enable(on, tmp)
+local function aqt_enable(on, disablemode)
 	if on then
 		updateQuestsForZone()
-		registerAllEvents()
-		a.cdb.re_enable = nil
+		register_zone_events()
+		a.cdb.enable_nextsession, a.cdb.enable_nextinstance = nil, nil
 	else
-		unregisterAllEvents()
-		a.cdb.re_enable = tmp or nil
+		unregister_zone_events()
+		a.cdb.enable_nextsession = not disablemode or disablemode == 1
+		a.cdb.enable_nextinstance = disablemode == 2
 	end
 	a.cdb.enabled = on
-	print(MSG_PREFIX .. msg_activation_status())
+	if a.cdb.enable_nextinstance then f:RegisterEvent 'PLAYER_ENTERING_WORLD' end
+	print_confirmation_msg(msg_activation_status())
 end
 
 
@@ -183,12 +224,16 @@ SLASH_AUTOQUESTTRACKER2 = '/aqt'
 SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 	if msg == 'e' or msg == 'on' then
 		aqt_enable(true)
+	-- Disable for current session (default)
 	elseif msg == 'd' or msg == 'off' then
-		aqt_enable(false)
-	-- Temporarily disable (until reload/login)
-	elseif msg == 'td' or msg == 'toff' then
-		aqt_enable(false, true)
-	-- Experimental
+		aqt_enable(false, nil)
+	-- Permanently disable
+	elseif msg == 'pd' or msg == 'poff' then
+		aqt_enable(false, 0)
+	-- Disable for current instance
+	elseif msg == 'id' or msg == 'ioff' then
+		aqt_enable(false, 2)
+	-- Experimental: update only at area change (resets at reload)
 	elseif msg == 'am' or msg == 'areamode' then
 		area_mode = not area_mode; reregister_zone_events()
 		print_confirmation_msg('Area mode' .. (area_mode and 'enabled.' or 'disabled.'))
