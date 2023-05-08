@@ -15,7 +15,6 @@ local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_Quest
 	C_QuestLog.GetQuestWatchType
 
 local debug, debug_more = false, true
-local area_mode = false
 local update_pending -- Serves as ignore flag during the DELAY_ZONE_CHANGE time
 local MSG_PREFIX = '\124cff2196f3Auto Quest Tracker\124r: '
 local MSG_GOOD_COLOR = '\124cnDIM_GREEN_FONT_COLOR:'
@@ -55,18 +54,13 @@ local f = CreateFrame 'Frame'
 f:RegisterEvent 'ADDON_LOADED'
 
 local function register_zone_events()
-	if not area_mode then f:RegisterEvent 'ZONE_CHANGED' end
+	f:RegisterEvent 'ZONE_CHANGED'
 	f:RegisterEvent 'ZONE_CHANGED_NEW_AREA'
 end
 
 local function unregister_zone_events()
 	f:UnregisterEvent 'ZONE_CHANGED'
 	f:UnregisterEvent 'ZONE_CHANGED_NEW_AREA'
-end
-
-local function reregister_zone_events()
-	unregister_zone_events()
-	register_zone_events()
 end
 
 -- Since the addition of dungeon quest exclusions, these two functions are nearly identical
@@ -255,10 +249,6 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 	-- Disable for current instance
 	elseif msg == 'id' or msg == 'ioff' then
 		aqt_enable(false, 2)
-	-- Experimental: update only at area change (resets at reload)
-	elseif msg == 'am' or msg == 'areamode' then
-		area_mode = not area_mode; reregister_zone_events()
-		msg_confirm('Area mode ' .. (area_mode and 'enabled.' or 'disabled.'))
 	elseif msg == 'lm' or msg == 'loadingmessage' then
 		a.gdb.loadMsg = not a.gdb.loadMsg
 		msg_confirm(MSG_PREFIX .. 'Loading message ' .. (a.gdb.loadMsg and 'enabled' or 'disabled') .. ' for all chars.')
