@@ -1,3 +1,25 @@
+#### 3.0 (2023-05-08)
+- New: Disabling AQT (`/aqt off` or `/aqt d`) now disables it for the duration of your session, instead of permanently.
+- There are now 3 modes of disabling AQT:
+  - Disable AQT for the duration of the current session: `/aqt off` or `/aqt d`
+    - This is the new default since v3.0. The point of this is to make it (almost) impossible to disable AQT and then forget to re-enable it in the next session. (There's nothing worse than missing half of your quest log just because the zone-related quests weren't auto-tracked!)
+    - AQT is smart enough not to confuse a /reload or a disconnect with the start of a new session. A new session will start if you are logged out for 6 minutes or more. AQT will then re-enable itself the next time you log in.
+  - Disable AQT permanently: `/aqt offp` or `/aqt dp`
+    - This was the default before v3.0.
+    - AQT will stay disabled on the char until you manually enable it again (`/aqt e`).
+  - Disable AQT for the current map instance: `/aqt offi` or `/aqt di`
+    - A map instance usually is everything that is separated by a loading screen. So, for example, an instance change happens when you use a portal or when you enter/leave a dungeon instance, etc.
+    - AQT will re-enable itself automatically as soon as you have left the map instance.
+- Better help and status messages.
+- Increased the tracker update delay after a zone change from 2 to 3 seconds.
+  - In addition, further updates are throttled during this time. This should greatly reduce CPU usage in cases where multiple zone changes occur quickly in a row.
+- Added addon icon for the addon manager and for the minimap addon compartment.
+- Added button to the addon compartment, with these functions:
+  - Click the button to display the status info in the chat. 
+  - Command-click (Mac) or Control-click (Windows) the button to toggle AQT.
+  - Shift-click the button to display the complete list of slash commands.
+
+
 #### 2.2.2 (2023-05-02)
 - Readme/description: 
   - Added note on compatibility with Classic Quest Log

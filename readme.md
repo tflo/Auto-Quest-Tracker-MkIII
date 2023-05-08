@@ -11,20 +11,34 @@ I have updated Auto Quest Tracker, because – in my experience – it works bet
 _Quester + Auto Quest Tracker_ is my preferred combo.
 
 
-## New in version 2.0 ("Mk III")
+## New features of "Mk III"
 
-### Some minor new features
+### General
 
 - Loading message (at login/reload) that shows the current state (enabled/disabled) of AQT. This can be disabled/enabled with `/aqt loadingmessage` (account-wide setting).
-- The `/aqt` slash command now shows the current state of AQT (enabled/disabled). As before, it also shows all available slash commands.
+- The `/aqt` slash command now shows the current state of AQT (enabled/disabled and other settings if applicable).  
+- For a complete list of slash commands, type `/aqt help` or `/aqt h`.
+- Automatic throttling of the tracker update for 3 seconds in case of multiple zone changes in a row.
 
 ### Enable/Disable AQT
 
-- You can now disable/enable AQT with the slash commands `/aqt off` / `/aqt on` (or shorter `/aqt d` / `/aqt e`) This is a per-char setting.
+- You can now disable/enable AQT with the slash commands `/aqt off` or `/aqt on` (or shorter `/aqt d` or `/aqt e`) This is a per-char setting.
 
 Temporarily disabling AQT can be useful for example if you have a bunch of quests that you want to keep focused as you move back and forth between adjacent zones. You could also just re-track the quests manually (AQT allows this and keeps them tracked), but this can get tedious. 
 It can also be useful if you simply have too many quests that technically belong to your zone, but you're not interested in at the moment.
 What happens when you disable AQT is that the two main events become unregistered, i.e. this is close to unloading the addon, but without the need to reload.
+
+New since version 3.0, there are now 3 modes of disabling AQT:
+
+- Disable AQT for the duration of the current session: `/aqt off` or `/aqt d`
+  - This is the new default since v3.0. The point of this is to make it (almost) impossible to disable AQT and then forget to re-enable it in the next session. (There's nothing worse than missing half of your quest log just because the zone-related quests weren't auto-tracked!)
+  - AQT is smart enough not to confuse a /reload or a disconnect with the start of a new session. A new session will start if you are logged out for 6 minutes or more. AQT will then re-enable itself the next time you log in.
+- Disable AQT permanently: `/aqt offp` or `/aqt dp`
+  - This was the default before v3.0.
+  - AQT will stay disabled on the char until you manually enable it again (`/aqt e`).
+- Disable AQT for the current map instance: `/aqt offi` or `/aqt di`
+  - A map instance usually is everything that is separated by a loading screen. So, for example, an instance change happens when you use a portal or when you enter/leave a dungeon instance, etc.
+  - AQT will re-enable itself automatically as soon as you have left the map instance.
 
 ### Option to ignore instance (dungeon and raid) quests (new in v2.2)
 
@@ -33,7 +47,6 @@ What happens when you disable AQT is that the two main events become unregistere
 - "Ignore" means that instance quests will not be removed from your tracker when you enable this option, but if you remove them, they won't come back when you zone into the quest's map. (And if you put them in the tracker, they will stay there wherever you are).
 - This is a new feature and may still need some fine-tuning.
 
-For more slash commands (quest list, debug mode), enter `/aqt` in the chat.
 
 ### Mini API
 
@@ -50,6 +63,14 @@ On wago.io you will find an (exemplary) [companion WeakAura](https://wago.io/3sH
 - Right click: toggle Quest Log
 
 More info on the Aura download page.
+
+
+### Addon Compartment Button
+
+- Click the button to display the status info in the chat. 
+- Command-click (Mac) or Control-click (Windows) the button to toggle AQT.
+- Shift-click the button to display the complete list of slash commands.
+
 
 ### Compatibility with Classic Quest Log
 

@@ -14,7 +14,7 @@ local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_Quest
 	_G.C_QuestLog.GetNumQuestLogEntries,
 	_G.C_QuestLog.GetQuestWatchType
 
-local debug_mode, debug_mode_extra = false, true
+local debug_mode, debug_mode_extra = false, false
 local update_pending -- Serves as ignore flag during the DELAY_ZONE_CHANGE time
 -- Colors and msgs
 local C_AQT = '\124cff2196f3'
