@@ -210,6 +210,22 @@ local function msg_activation_status()
 	return a.cdb.enabled and C_GOOD .. 'Enabled.' or a.cdb.enable_nextsession and C_HALFBAD .. 'Disabled for this session.' or a.cdb.enable_nextinstance and C_HALFBAD .. 'Disabled for this instance.' or C_BAD .. 'Disabled.'
 end
 
+local function msg_help()
+	print(MSG_PREFIX .. 'Help: \n'.. C_AQT .. '/autoquesttracker ' .. '\124ror ' .. C_AQT .. '/aqt ' .. '\124runderstands these commands: ')
+	print(C_AQT .. 'on ' .. '\124ror ' .. C_AQT .. 'e' .. '\124r: Enable AQT.')
+	print(C_AQT .. 'off ' .. '\124ror ' .. C_AQT .. 'd' .. '\124r: Disable AQT for the current session.')
+	print(C_AQT .. 'offi ' .. '\124ror ' .. C_AQT .. 'di' .. '\124r: Disable AQT for the current (map) instance.')
+	print(C_AQT .. 'offp ' .. '\124ror ' .. C_AQT .. 'dp' .. '\124r: Disable AQT permanently.')
+	print(C_AQT .. 'instances ' .. '\124ror ' .. C_AQT .. 'in' .. '\124r: Toggle auto-tracking of dungeon/raid quests.')
+	print(C_AQT .. 'loadingmessage' .. '\124r: Toggle status message in chat after reload/login.')
+	print(C_AQT .. 'quests ' .. '\124ror ' .. C_AQT .. 'q' .. '\124r: Show complete quest list.')
+	print(C_AQT .. 'debug' .. '\124r: Toggle debug mode (resets at reload).')
+	print(C_AQT .. 'help ' .. '\124ror ' .. C_AQT .. 'h' .. '\124r: Display this help text.')
+	print(C_AQT .. '/aqt ' .. '\124rwithout additional commands: Display status info.')
+	print('Enable/disable is per char, other settings are global.')
+end
+
+
 --[[---------------------------------------------------------------------------
   Main switch
 ---------------------------------------------------------------------------]]--
@@ -293,16 +309,7 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 			end
 		end
 	elseif msg == 'h' or msg == 'help' then
-		print(MSG_PREFIX .. 'Help: \n'.. C_AQT .. '/autoquesttracker ' .. '\124ror ' .. C_AQT .. '/aqt ' .. '\124runderstands these commands: ')
-		print(C_AQT .. 'on ' .. '\124ror ' .. C_AQT .. 'e' .. '\124r: Enable AQT.')
-		print(C_AQT .. 'off ' .. '\124ror ' .. C_AQT .. 'd' .. '\124r: Disable AQT for the current session.')
-		print(C_AQT .. 'offi ' .. '\124ror ' .. C_AQT .. 'di' .. '\124r: Disable AQT for the current (map) instance.')
-		print(C_AQT .. 'offp ' .. '\124ror ' .. C_AQT .. 'dp' .. '\124r: Disable AQT permanently.')
-		print(C_AQT .. 'instances ' .. '\124ror ' .. C_AQT .. 'in' .. '\124r: Toggle auto-tracking of dungeon/raid quests.')
-		print(C_AQT .. 'loadingmessage' .. '\124r: Toggle status message in chat after reload/login.')
-		print(C_AQT .. 'quests ' .. '\124ror ' .. C_AQT .. 'q' .. '\124r: Show complete quest list.')
-		print(C_AQT .. 'debug' .. '\124r: Toggle debug mode.')
-		print('Enable/disable/debug is per char, other settings are global.')
+		msg_help()
 	else
 		print(MSG_PREFIX
 			.. 'Status: '
