@@ -15,6 +15,7 @@ local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_Quest
 	C_QuestLog.GetQuestWatchType
 
 local debug, debug_more = false, true
+local area_mode = false
 local MSG_PREFIX = '\124cff2196f3Auto Quest Tracker\124r: '
 local MSG_GOOD_COLOR = '\124cnDIM_GREEN_FONT_COLOR:'
 local MSG_HALFBAD_COLOR = '\124cnDARKYELLOW_FONT_COLOR:'
@@ -28,8 +29,8 @@ end
 local f = CreateFrame 'Frame'
 f:RegisterEvent 'ADDON_LOADED'
 
-	f:RegisterEvent 'ZONE_CHANGED'
 local function register_zone_events()
+	if not area_mode then f:RegisterEvent 'ZONE_CHANGED' end
 	f:RegisterEvent 'ZONE_CHANGED_NEW_AREA'
 end
 
@@ -179,6 +180,10 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 	-- Temporarily disable (until reload/login)
 	elseif msg == 'td' or msg == 'toff' then
 		aqt_enable(false, true)
+	-- Experimental
+	elseif msg == 'am' or msg == 'areamode' then
+		area_mode = not area_mode; reregister_zone_events()
+		print_confirmation_msg('Area mode' .. (area_mode and 'enabled.' or 'disabled.'))
 	elseif msg == 'lm' or msg == 'loadingmessage' then
 		a.gdb.loadMsg = not a.gdb.loadMsg
 		print_confirmation_msg(MSG_PREFIX .. 'Loading message ' .. (a.gdb.loadMsg and 'enabled' or 'disabled') .. ' for all chars.')
