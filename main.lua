@@ -173,20 +173,19 @@ local function onEvent(self, event, ...)
 					register_zone_events()
 					a.cdb.enabled = true
 					a.cdb.enable_nextsession = nil
-					msg_load(MSG_GOOD_COLOR .. 'Re-enabled because of new session.', 6)
-				else
-					f:RegisterEvent 'PLAYER_LOGOUT'
+					msg_load(C_GOOD .. 'Re-enabled because of new session.', 6)
 				end
 			elseif a.cdb.enable_nextinstance then
 				register_zone_events()
 				a.cdb.enabled = true
 				a.cdb.enable_nextinstance = nil
-				f:UnregisterEvent 'PLAYER_ENTERING_WORLD'
-				msg_load(MSG_GOOD_COLOR .. 'Re-enabled because of new instance.', 6)
+				msg_load(C_GOOD .. 'Re-enabled because of new (map) instance.', 6)
 			end
 		end
 		if a.cdb.enable_nextsession or a.cdb.enable_nextinstance then
-			msg_load(MSG_HALFBAD_COLOR .. 'Disabled for this ' .. (a.cdb.enable_nextsession and 'session.' or 'instance.'), 6)
+			msg_load(C_HALFBAD .. 'Disabled for this ' .. (a.cdb.enable_nextsession and 'session.' or 'instance.'), 6)
+			if a.cdb.enable_nextsession then f:RegisterEvent 'PLAYER_LOGOUT' end
+			if not a.cdb.enable_nextinstance then f:UnregisterEvent 'PLAYER_ENTERING_WORLD' end
 		end
 	elseif event == 'PLAYER_LOGOUT' then
 		a.cdb.time_logout = time()
