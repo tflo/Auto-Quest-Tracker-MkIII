@@ -25,19 +25,19 @@ local TYPE_DUNGEON, TYPE_RAID = 81, 62
 -- Serves as delay for update after zone change events and as throttle (new zone events are ignored during the time)
 local DELAY_ZONE_CHANGE = 3 -- Testwise 3; we used to use 2
 
-local function print_debug(msg)
+local function msg_debug(msg)
 	if debug or debug_more then print(MSG_PREFIX .. msg) end
 end
 
-local function print_debug_more(msg)
+local function msg_debug_more(msg)
 	if debug_more then print(MSG_PREFIX .. 'Debug: ' .. msg) end
 end
 
-local function print_load_msg(msg,delay)
+local function msg_load(msg,delay)
 	if a.gdb.loadMsg then C_TimerAfter(delay, function() print(MSG_PREFIX .. msg) end) end
 end
 
-local function print_confirmation_msg(msg)
+local function msg_confirm(msg)
 	print(MSG_PREFIX .. msg)
 end
 
@@ -69,7 +69,7 @@ end
 
 -- Since the addition of dungeon quest exclusions, these two functions are nearly identical
 -- Merge them if you don't add additional parameters for the listing
-local function getQuestInfo(index)
+local function get_questinfo(index)
 	local quest = C_QuestLogGetInfo(index)
 	return quest.title,
 		quest.isHeader,
@@ -81,7 +81,7 @@ local function getQuestInfo(index)
 		quest.hasLocalPOI
 end
 
-local function getQuestInfoForListing(index)
+local function get_questinfo_for_listing(index)
 	local quest = C_QuestLogGetInfo(index)
 	return quest.title,
 		quest.isHeader,
@@ -94,15 +94,15 @@ local function getQuestInfoForListing(index)
 		quest.hasLocalPOI
 end
 
-local function showOrHideQuest(questIndex, questId, show)
+local function show_or_hide_quest(questIndex, questId, show)
 	-- Checks that the quest is still in the quest log, and that we are not in combat lockdown to avoid tainting
-	local questTitle, _, id = getQuestInfo(questIndex)
+	local questTitle, _, id = get_questinfo(questIndex)
 	if not InCombatLockdown() and id == questId then
 		if show then
-			print_debug(string.format('Tracking: %s (%s)', questTitle, questId))
+			msg_debug(string.format('Tracking: %s (%s)', questTitle, questId))
 			C_QuestLogAddQuestWatch(questId)
 		else
-			print_debug(string.format('Removing: %s (%s)', questTitle, questId))
+			msg_debug(string.format('Removing: %s (%s)', questTitle, questId))
 			C_QuestLogRemoveQuestWatch(questId)
 		end
 	end
@@ -113,29 +113,29 @@ end
   Core function
 ---------------------------------------------------------------------------]]--
 
-local function updateQuestsForZone()
+local function update_quests_for_zone()
 	local currentZone = GetRealZoneText()
 	local minimapZone = GetMinimapZoneText()
 	if currentZone == nil and minimapZone == nil then return end
 
-	print_debug('Updating quests for: ' .. currentZone .. ' or ' .. minimapZone)
+	msg_debug('Updating quests for: ' .. currentZone .. ' or ' .. minimapZone)
 
 	local questZone = nil
 
 	for questIndex = 1, C_QuestLogGetNumQuestLogEntries() do
 		local questTitle, isHeader, questId, isWorldQuest, isHidden, questType, isOnMap, hasLocalPOI =
-			getQuestInfo(questIndex)
+			get_questinfo(questIndex)
 		if not isWorldQuest and not isHidden and not (a.gdb.ignoreInstances and (questType == TYPE_DUNGEON or questType == TYPE_RAID)) then
 			if isHeader then
 				questZone = questTitle
 			else
 				if questZone == currentZone or questZone == minimapZone or isOnMap or hasLocalPOI then
 					if C_QuestLogGetQuestWatchType(questId) == nil then
-						showOrHideQuest(questIndex, questId, true)
-						print_debug(format('Reason: %s %s %s %s', questZone == currentZone and 'currZone' or '', questZone == minimapZone and 'mmZone' or '', isOnMap and 'onMap' or '', hasLocalPOI and 'hasPOI' or ''))
+						show_or_hide_quest(questIndex, questId, true)
+						msg_debug(format('Reason: %s %s %s %s', questZone == currentZone and 'currZone' or '', questZone == minimapZone and 'mmZone' or '', isOnMap and 'onMap' or '', hasLocalPOI and 'hasPOI' or ''))
 					end
 				elseif C_QuestLogGetQuestWatchType(questId) == 0 then
-					showOrHideQuest(questIndex, questId, false)
+					show_or_hide_quest(questIndex, questId, false)
 				end
 			end
 		end
@@ -157,10 +157,10 @@ local function onEvent(self, event, ...)
 			a.gdb.ignoreInstances = a.gdb.ignoreInstances or false
 			if a.cdb.enabled then
 				register_zone_events()
-				print_load_msg(MSG_GOOD_COLOR .. 'Enabled.', 8)
+				msg_load(MSG_GOOD_COLOR .. 'Enabled.', 8)
 			else
 				if not a.cdb.enable_nextsession and not a.cdb.enable_nextinstance then
-					print_load_msg(MSG_BAD_COLOR .. 'Disabled.', 8)
+					msg_load(MSG_BAD_COLOR .. 'Disabled.', 8)
 				else
 					f:RegisterEvent 'PLAYER_ENTERING_WORLD'
 				end
@@ -172,21 +172,21 @@ local function onEvent(self, event, ...)
 			register_zone_events()
 			a.cdb.enabled = true
 			a.cdb.enable_nextsession = nil
-			print_load_msg(MSG_GOOD_COLOR .. 'Re-enabled because of new session.', 6)
+			msg_load(MSG_GOOD_COLOR .. 'Re-enabled because of new session.', 6)
 		elseif not is_login and not is_reload and a.cdb.enable_nextinstance then
 			register_zone_events()
 			a.cdb.enabled = true
 			a.cdb.enable_nextinstance = nil
-			print_load_msg(MSG_GOOD_COLOR .. 'Re-enabled because of new instance.', 6)
+			msg_load(MSG_GOOD_COLOR .. 'Re-enabled because of new instance.', 6)
 		else
-			print_load_msg(MSG_HALFBAD_COLOR .. 'Disabled for this ' .. (a.cdb.enable_nextsession and 'session.' or 'instance.'), 6)
+			msg_load(MSG_HALFBAD_COLOR .. 'Disabled for this ' .. (a.cdb.enable_nextsession and 'session.' or 'instance.'), 6)
 		end
 		if not a.cdb.enable_nextinstance then f:UnregisterEvent 'PLAYER_ENTERING_WORLD' end
 	else -- The ZONE events
 		if update_pending then return end
 		update_pending = true
 		C_TimerAfter(DELAY_ZONE_CHANGE, function()
-			updateQuestsForZone()
+			update_quests_for_zone()
 			update_pending = nil
 		end)
 	end
@@ -205,7 +205,7 @@ end
 
 local function aqt_enable(on, disablemode)
 	if on then
-		updateQuestsForZone()
+		update_quests_for_zone()
 		register_zone_events()
 		a.cdb.enable_nextsession, a.cdb.enable_nextinstance = nil, nil
 	else
@@ -215,7 +215,7 @@ local function aqt_enable(on, disablemode)
 	end
 	a.cdb.enabled = on
 	if a.cdb.enable_nextinstance then f:RegisterEvent 'PLAYER_ENTERING_WORLD' end
-	print_confirmation_msg(msg_activation_status())
+	msg_confirm(msg_activation_status())
 end
 
 
@@ -236,14 +236,14 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 	-- Experimental: update only at area change (resets at reload)
 	elseif msg == 'am' or msg == 'areamode' then
 		area_mode = not area_mode; reregister_zone_events()
-		print_confirmation_msg('Area mode' .. (area_mode and 'enabled.' or 'disabled.'))
+		msg_confirm('Area mode' .. (area_mode and 'enabled.' or 'disabled.'))
 	elseif msg == 'lm' or msg == 'loadingmessage' then
 		a.gdb.loadMsg = not a.gdb.loadMsg
-		print_confirmation_msg(MSG_PREFIX .. 'Loading message ' .. (a.gdb.loadMsg and 'enabled' or 'disabled') .. ' for all chars.')
+		msg_confirm(MSG_PREFIX .. 'Loading message ' .. (a.gdb.loadMsg and 'enabled' or 'disabled') .. ' for all chars.')
 	elseif msg == 'in' or msg == 'instances' then
 		a.gdb.ignoreInstances = not a.gdb.ignoreInstances
-		if a.cdb.enabled then updateQuestsForZone() end
-		print_confirmation_msg(
+		if a.cdb.enabled then update_quests_for_zone() end
+		msg_confirm(
 			MSG_PREFIX
 				.. 'Instance quests are '
 				.. (a.gdb.ignoreInstances and 'ignored' or 'treated normally')
@@ -251,12 +251,12 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		)
 	elseif msg == 'db' or msg == 'debug' then
 		debug = not debug
-		print_confirmation_msg(MSG_PREFIX .. 'Debug mode ' .. (debug and 'enabled.' or 'disabled.'))
+		msg_confirm(MSG_PREFIX .. 'Debug mode ' .. (debug and 'enabled.' or 'disabled.'))
 	elseif msg == 'q' or msg == 'quests' then
 		print 'Quests currently in quest log:'
 		for questIndex = 1, C_QuestLogGetNumQuestLogEntries() do
 			local questTitle, isHeader, questId, isWorldQuest, isHidden, isCalling, questType, isOnMap, hasLocalPOI =
-				getQuestInfoForListing(questIndex)
+				get_questinfo_for_listing(questIndex)
 			if isHeader then
 				print(format('%02d| [Header] %s', questIndex, questTitle))
 			else
