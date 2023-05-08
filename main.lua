@@ -24,6 +24,8 @@ local MSG_BAD_COLOR = '\124cnWARNING_FONT_COLOR:'
 local TYPE_DUNGEON, TYPE_RAID = 81, 62
 -- Serves as delay for update after zone change events and as throttle (new zone events are ignored during the time)
 local DELAY_ZONE_CHANGE = 3 -- Testwise 3; we used to use 2
+-- Time between logout and login needed to consider it a new session
+local SESSION_GRACE_TIME = 600
 
 local function msg_debug(msg)
 	if debug or debug_more then print(MSG_PREFIX .. msg) end
@@ -168,20 +170,29 @@ local function onEvent(self, event, ...)
 		end
 	elseif event == 'PLAYER_ENTERING_WORLD' then
 		local is_login, is_reload = ...
-		if is_login and not is_reload and a.cdb.enable_nextsession then
-			register_zone_events()
-			a.cdb.enabled = true
-			a.cdb.enable_nextsession = nil
-			msg_load(MSG_GOOD_COLOR .. 'Re-enabled because of new session.', 6)
-		elseif not is_login and not is_reload and a.cdb.enable_nextinstance then
-			register_zone_events()
-			a.cdb.enabled = true
-			a.cdb.enable_nextinstance = nil
-			msg_load(MSG_GOOD_COLOR .. 'Re-enabled because of new instance.', 6)
-		else
+		if not is_reload then
+			if is_login then
+				if a.cdb.enable_nextsession and time() - a.cdb.time_logout > SESSION_GRACE_TIME then
+					register_zone_events()
+					a.cdb.enabled = true
+					a.cdb.enable_nextsession = nil
+					msg_load(MSG_GOOD_COLOR .. 'Re-enabled because of new session.', 6)
+				else
+					f:RegisterEvent 'PLAYER_LOGOUT'
+				end
+			elseif a.cdb.enable_nextinstance then
+				register_zone_events()
+				a.cdb.enabled = true
+				a.cdb.enable_nextinstance = nil
+				f:UnregisterEvent 'PLAYER_ENTERING_WORLD'
+				msg_load(MSG_GOOD_COLOR .. 'Re-enabled because of new instance.', 6)
+			end
+		end
+		if a.cdb.enable_nextsession or a.cdb.enable_nextinstance then
 			msg_load(MSG_HALFBAD_COLOR .. 'Disabled for this ' .. (a.cdb.enable_nextsession and 'session.' or 'instance.'), 6)
 		end
-		if not a.cdb.enable_nextinstance then f:UnregisterEvent 'PLAYER_ENTERING_WORLD' end
+	elseif event == 'PLAYER_LOGOUT' then
+		a.cdb.time_logout = time()
 	else -- The ZONE events
 		if update_pending then return end
 		update_pending = true
@@ -203,21 +214,32 @@ local function msg_activation_status()
 	return a.cdb.enabled and MSG_GOOD_COLOR .. 'Enabled.' or a.cdb.enable_nextsession and MSG_HALFBAD_COLOR .. 'Disabled for this session.' or a.cdb.enable_nextinstance and MSG_HALFBAD_COLOR .. 'Disabled for this instance.' or MSG_BAD_COLOR .. 'Disabled.'
 end
 
+--[[---------------------------------------------------------------------------
+  Main switch
+---------------------------------------------------------------------------]]--
+
 local function aqt_enable(on, disablemode)
+	f:UnregisterAllEvents()
+	a.cdb.enable_nextsession, a.cdb.enable_nextinstance = nil, nil
 	if on then
 		update_quests_for_zone()
 		register_zone_events()
-		a.cdb.enable_nextsession, a.cdb.enable_nextinstance = nil, nil
 	else
-		unregister_zone_events()
-		a.cdb.enable_nextsession = not disablemode or disablemode == 1
-		a.cdb.enable_nextinstance = disablemode == 2
+		if not disablemode or disablemode == 1 then
+			a.cdb.enable_nextsession = true
+			f:RegisterEvent 'PLAYER_LOGOUT'
+		elseif disablemode == 2 then
+			a.cdb.enable_nextinstance = true
+			f:RegisterEvent 'PLAYER_ENTERING_WORLD'
+		end
 	end
 	a.cdb.enabled = on
-	if a.cdb.enable_nextinstance then f:RegisterEvent 'PLAYER_ENTERING_WORLD' end
 	msg_confirm(msg_activation_status())
 end
 
+--[[---------------------------------------------------------------------------
+  Slash commands
+---------------------------------------------------------------------------]]--
 
 SLASH_AUTOQUESTTRACKER1 = '/autoquesttracker'
 SLASH_AUTOQUESTTRACKER2 = '/aqt'
@@ -236,7 +258,7 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 	-- Experimental: update only at area change (resets at reload)
 	elseif msg == 'am' or msg == 'areamode' then
 		area_mode = not area_mode; reregister_zone_events()
-		msg_confirm('Area mode' .. (area_mode and 'enabled.' or 'disabled.'))
+		msg_confirm('Area mode ' .. (area_mode and 'enabled.' or 'disabled.'))
 	elseif msg == 'lm' or msg == 'loadingmessage' then
 		a.gdb.loadMsg = not a.gdb.loadMsg
 		msg_confirm(MSG_PREFIX .. 'Loading message ' .. (a.gdb.loadMsg and 'enabled' or 'disabled') .. ' for all chars.')
