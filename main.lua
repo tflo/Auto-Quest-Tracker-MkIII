@@ -1,20 +1,20 @@
-local addonName, a = ...
+local addon_name, a = ...
 
 AQT_GlobalDB = AQT_GlobalDB or {}
 AQT_CharDB = AQT_CharDB or {}
 
-local C_TimerAfter = C_Timer.After
-local InCombatLockdown, GetRealZoneText, GetMinimapZoneText = InCombatLockdown, GetRealZoneText, GetMinimapZoneText
+local C_TimerAfter = _G.C_Timer.After
+local InCombatLockdown, GetRealZoneText, GetMinimapZoneText = _G.InCombatLockdown, _G.GetRealZoneText, _G.GetMinimapZoneText
 local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_QuestLogAddQuestWatch, C_QuestLogRemoveQuestWatch, C_QuestLogGetNumQuestLogEntries, C_QuestLogGetQuestWatchType =
-	C_QuestLog.GetInfo,
-	C_QuestLog.IsWorldQuest,
-	C_QuestLog.GetQuestType,
-	C_QuestLog.AddQuestWatch,
-	C_QuestLog.RemoveQuestWatch,
-	C_QuestLog.GetNumQuestLogEntries,
-	C_QuestLog.GetQuestWatchType
+	_G.C_QuestLog.GetInfo,
+	_G.C_QuestLog.IsWorldQuest,
+	_G.C_QuestLog.GetQuestType,
+	_G.C_QuestLog.AddQuestWatch,
+	_G.C_QuestLog.RemoveQuestWatch,
+	_G.C_QuestLog.GetNumQuestLogEntries,
+	_G.C_QuestLog.GetQuestWatchType
 
-local debug, debug_more = false, true
+local debug_mode, debug_mode_extra = false, true
 local update_pending -- Serves as ignore flag during the DELAY_ZONE_CHANGE time
 -- Colors and msgs
 local C_AQT = '\124cff2196f3'
@@ -27,14 +27,14 @@ local TYPE_DUNGEON, TYPE_RAID = 81, 62
 -- Serves as delay for update after zone change events and as throttle (new zone events are ignored during the time)
 local DELAY_ZONE_CHANGE = 3 -- Testwise 3; we used to use 2
 -- Time between logout and login needed to consider it a new session
-local SESSION_GRACE_TIME = 600
+local SESSION_GRACE_TIME = 360
 
 local function msg_debug(msg)
-	if debug or debug_more then print(MSG_PREFIX .. msg) end
+	if debug_mode or debug_mode_extra then print(MSG_PREFIX .. msg) end
 end
 
-local function msg_debug_more(msg)
-	if debug_more then print(MSG_PREFIX .. 'Debug: ' .. msg) end
+local function msg_debug_extra(msg)
+	if debug_mode_extra then print(MSG_PREFIX .. 'Debug: ' .. msg) end
 end
 
 local function msg_load(msg,delay)
@@ -148,7 +148,7 @@ end
 
 local function onEvent(self, event, ...)
 	if event == 'ADDON_LOADED' then
-		if ... == addonName then
+		if ... == addon_name then
 			f:UnregisterEvent 'ADDON_LOADED'
 			a.gdb, a.cdb = AQT_GlobalDB, AQT_CharDB
 			a.cdb.enabled = a.cdb.enabled == nil and true or a.cdb.enabled
@@ -263,9 +263,9 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 				.. (a.gdb.ignoreInstances and 'ignored' or 'treated normally')
 				.. ' for all chars.'
 		)
-	elseif msg == 'db' or msg == 'debug' then
-		debug = not debug
-		msg_confirm(MSG_PREFIX .. 'Debug mode ' .. (debug and 'enabled.' or 'disabled.'))
+	elseif msg == 'debug' then
+		debug_mode = not debug_mode
+		msg_confirm(MSG_PREFIX .. 'Debug mode ' .. (debug_mode and 'enabled.' or 'disabled.'))
 	elseif msg == 'q' or msg == 'quests' then
 		print 'Quests currently in quest log:'
 		for questIndex = 1, C_QuestLogGetNumQuestLogEntries() do
