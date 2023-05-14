@@ -2,7 +2,9 @@
 
 Auto Quest Tracker Mk III is the continuation of a [continuation](https://github.com/gamer-angel05/AutoQuestTracker) (last version: Jan 2021) of the [original Auto Quest Tracker](https://www.curseforge.com/wow/addons/auto-quest-tracker) addon (last version: Jan 2018).
 
-If you're not familiar with the original Auto Quest Tracker: What it does is basically move the quests that belong to your current zone into the quest tracker, and move them out when you leave the zone.
+_If you're not familiar with the original Auto Quest Tracker:_  
+
+What it does is basically move the quests that belong to your current zone into the quest tracker, and move them out when you leave the zone. If you manually add a quest to the tracker (Shift-click in the quest log), AQT will respect that and leave the quest in the tracker.  
 
 The addon works with most known quest trackers, like [Quester](https://www.curseforge.com/wow/addons/quester), [Kaliel's Tracker](https://www.curseforge.com/wow/addons/kaliels-tracker) and of course Blizz's built-in quest tracker. If using with Kaliel's Tracker, make sure to have Kaliel's Auto Zone feature disabled.
 
@@ -74,7 +76,7 @@ More info on the Aura download page.
 
 ### Compatibility with Classic Quest Log
 
-If you are using [Classic Quest Log](https://www.curseforge.com/wow/addons/classic-quest-log), you will need to patch it to set the correct quest watch type (1) when you shift-click on a quest to add it to the tracker. Otherwise, AQT will not be able to recognize the quest as "manually added".
+If you are using [Classic Quest Log](https://www.curseforge.com/wow/addons/classic-quest-log), you will need to patch it to set the correct quest watch type (1) when you Shift-click on a quest to add it to the tracker. Otherwise, AQT will not be able to recognize the quest as "manually added" and will untrack it when you zone out, which is usually not what you want when you add a quest manually.
 
 You can download a plugin-style addon that will do this for you [in this GitHub thread](https://github.com/tflo/Auto-Quest-Tracker-MkIII/issues/2).  
 
