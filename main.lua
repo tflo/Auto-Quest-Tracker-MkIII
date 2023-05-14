@@ -157,6 +157,7 @@ local function onEvent(self, event, ...)
 			a.cdb.enabled = a.cdb.enabled == nil and true or a.cdb.enabled
 			a.gdb.loadMsg = a.gdb.loadMsg == nil and true or a.gdb.loadMsg
 			a.gdb.ignoreInstances = a.gdb.ignoreInstances or false
+			a.cdb.time_logout = a.cdb.time_logout or 0
 			if a.cdb.enabled then
 				register_zone_events()
 				msg_load(C_GOOD .. 'Enabled.', 8)
@@ -349,7 +350,7 @@ end
 
 --[[ License ===================================================================
 
-	Portions: Copyright © 2022 Thomas Floeren for the added code of "Mk III" (v2.0)
+	Portions: Copyright © 2022–2023 Thomas Floeren for the added code of "Mk III" (v2.0)
 
 	This file is part of Auto Quest Tracker Mk III.
 

@@ -1,6 +1,6 @@
 ## Interface: 100100
 ## Title: Auto Quest Tracker Mk III
-## Version: 3.0
+## Version: 3.0.2
 ## IconTexture: Interface/Minimap/Tracking/QuestBlob
 ## AddonCompartmentFunc: addon_aqt_on_addoncompartment_click
 ## Author: ErrondGamer (original version); gamer-angel05 (SL fork 2021); Mot (this fork)
@@ -37,7 +37,7 @@ main.lua
 
 # License ======================================================================
 
-# Portions: Copyright © 2022 Thomas Floeren for the added/changed code of "Mk III" (v2.0)
+# Portions: Copyright © 2022–2023 Thomas Floeren for the added/changed code of "Mk III" (v2.0)
 #
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

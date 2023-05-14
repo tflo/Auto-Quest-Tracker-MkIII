@@ -1,6 +1,9 @@
+#### 3.0.2 (2023-05-14)
+- Safeguard against an error that could happen in this scenario: AQT disabled by user--> UI reload --> Client crash or force-quit --> Login
+
 #### 3.0.1 (2023-05-08)
 - No changes, trying to get the wrong client version listing on CurseForge fixed.
-- For the big 3.0 changes, see change notes 3.0 below.
+- PS: This version was later retired from CF, as the listing of v3.0 could get fixed.
 
 #### 3.0 (2023-05-08)
 - New: Disabling AQT (`/aqt off` or `/aqt d`) now disables it for the duration of your session, instead of permanently.
