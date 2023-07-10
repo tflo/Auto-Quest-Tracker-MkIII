@@ -34,7 +34,7 @@ New since version 3.0, there are now 3 modes of disabling AQT:
 
 - Disable AQT for the duration of the current session: `/aqt off` or `/aqt d`
   - This is the new default since v3.0. The point of this is to make it (almost) impossible to disable AQT and then forget to re-enable it in the next session. (There's nothing worse than missing half of your quest log just because the zone-related quests weren't auto-tracked!)
-  - AQT is smart enough not to confuse a /reload or a disconnect with the start of a new session. A new session will start if you are logged out for 6 minutes or more. AQT will then re-enable itself the next time you log in.
+  - AQT is smart enough not to confuse a /reload or a disconnect with the start of a new session. A new session will start if you are logged out for 20 minutes or more. AQT will then re-enable itself the next time you log in.
 - Disable AQT permanently: `/aqt offp` or `/aqt dp`
   - This was the default before v3.0.
   - AQT will stay disabled on the char until you manually enable it again (`/aqt e`).

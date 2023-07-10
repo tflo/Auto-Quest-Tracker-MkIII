@@ -27,7 +27,7 @@ local TYPE_DUNGEON, TYPE_RAID = 81, 62
 -- Serves as delay for update after zone change events and as throttle (new zone events are ignored during the time)
 local DELAY_ZONE_CHANGE = 3 -- Testwise 3; we used to use 2
 -- Time between logout and login needed to consider it a new session
-local SESSION_GRACE_TIME = 360
+local SESSION_GRACE_TIME = 1200 -- 20 min
 
 -- For the modifier click on the compartment button
 local is_mac = IsMacClient()
