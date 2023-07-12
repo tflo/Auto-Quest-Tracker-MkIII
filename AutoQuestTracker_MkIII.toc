@@ -1,6 +1,6 @@
-## Interface: 100100
+## Interface: 100105
 ## Title: Auto Quest Tracker Mk III
-## Version: 3.0.2
+## Version: 3.0.3
 ## IconTexture: Interface/Minimap/Tracking/QuestBlob
 ## AddonCompartmentFunc: addon_aqt_on_addoncompartment_click
 ## Author: ErrondGamer (original version); gamer-angel05 (SL fork 2021); Mot (this fork)
