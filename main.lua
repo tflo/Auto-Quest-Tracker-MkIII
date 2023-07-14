@@ -73,7 +73,8 @@ end
 -- Merge them if you don't add additional parameters for the listing
 local function get_questinfo(index)
 	local quest = C_QuestLogGetInfo(index)
-	return quest.title,
+	if quest then return
+		quest.title,
 		quest.isHeader,
 		quest.questID,
 		C_QuestLogIsWorldQuest(quest.questID),
@@ -81,11 +82,13 @@ local function get_questinfo(index)
 		C_QuestLogGetQuestType(quest.questID),
 		quest.isOnMap,
 		quest.hasLocalPOI
+	end
 end
 
 local function get_questinfo_for_listing(index)
 	local quest = C_QuestLogGetInfo(index)
-	return quest.title,
+	if quest then return
+		quest.title,
 		quest.isHeader,
 		quest.questID,
 		C_QuestLogIsWorldQuest(quest.questID),
@@ -94,6 +97,7 @@ local function get_questinfo_for_listing(index)
 		C_QuestLogGetQuestType(quest.questID),
 		quest.isOnMap,
 		quest.hasLocalPOI
+	end
 end
 
 local function show_or_hide_quest(questIndex, questId, show)
