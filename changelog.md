@@ -1,3 +1,7 @@
+#### 3.0.4 (2023-07-23)
+
+- Minor code and readme fixes.
+
 #### 3.0.3 (2023-07-12)
 
 - Session grace time increased to 20 minutes (was 6 minutes). (This is the amount of time you can be logged out of a toon without having a disabled AQT automatically re-enabled the next time you log in).
