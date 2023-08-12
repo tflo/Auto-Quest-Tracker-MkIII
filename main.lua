@@ -21,6 +21,9 @@ local C_AQT = '\124cff2196f3'
 local C_GOOD = '\124cnDIM_GREEN_FONT_COLOR:'
 local C_HALFBAD = '\124cnORANGE_FONT_COLOR:'
 local C_BAD = '\124cnDIM_RED_FONT_COLOR:'
+local C_TT = '\124cnWHITE_FONT_COLOR:' -- Base color for tooltip non-header text
+local C_CLICK = '\124cnORANGE_FONT_COLOR:'
+local C_ACTION = '\124cnYELLOW_FONT_COLOR:'
 local MSG_PREFIX = C_AQT .. 'Auto Quest Tracker\124r: '
 -- Misc
 local TYPE_DUNGEON, TYPE_RAID = 81, 62
@@ -31,6 +34,7 @@ local SESSION_GRACE_TIME = 1200 -- 20 min
 
 -- For the modifier click on the compartment button
 local is_mac = IsMacClient()
+local text_cmd_key = is_mac and 'Command' or 'Control'
 
 local function msg_debug(msg)
 	if debug_mode or debug_mode_extra then print(MSG_PREFIX .. msg) end
@@ -214,8 +218,16 @@ f:SetScript('OnEvent', onEvent)
   UI
 ===========================================================================]]--
 
-local function msg_activation_status()
-	return a.cdb.enabled and C_GOOD .. 'Enabled.' or a.cdb.enable_nextsession and C_HALFBAD .. 'Disabled for this session.' or a.cdb.enable_nextinstance and C_HALFBAD .. 'Disabled for this instance.' or C_BAD .. 'Disabled.'
+local function text_activation_status()
+	return a.cdb.enabled and C_GOOD .. 'Enabled' or a.cdb.enable_nextsession and C_HALFBAD .. 'Disabled for this session' or a.cdb.enable_nextinstance and C_HALFBAD .. 'Disabled for this instance.' or C_BAD .. 'Disabled'
+end
+
+local function msg_status()
+	print(MSG_PREFIX
+		.. 'Status: '
+		.. text_activation_status() .. '\124r.'
+		.. (a.gdb.ignoreInstances and ' Ignoring instance quests.' or '')
+		.. '\nType ' .. C_AQT .. '/aqt h\124r for a list of commands.')
 end
 
 local function msg_help()
@@ -231,6 +243,7 @@ local function msg_help()
 	print(C_AQT .. 'help ' .. '\124ror ' .. C_AQT .. 'h' .. '\124r: Display this help text.')
 	print(C_AQT .. '/aqt ' .. '\124rwithout additional commands: Display status info.')
 	print('Enable/disable is per char, other settings are global.')
+	print('Some commands are also available via the addon compartment button. See the addon compartment button tooltip.')
 end
 
 
@@ -254,7 +267,7 @@ local function aqt_enable(on, disablemode)
 		end
 	end
 	a.cdb.enabled = on
-	msg_confirm(msg_activation_status())
+	msg_confirm(text_activation_status() .. '.')
 end
 
 --[[---------------------------------------------------------------------------
@@ -319,11 +332,7 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 	elseif msg == 'h' or msg == 'help' then
 		msg_help()
 	else
-		print(MSG_PREFIX
-			.. 'Status: '
-			.. msg_activation_status() .. '\124r'
-			.. (a.gdb.ignoreInstances and ' Ignoring instance quests.' or '')
-			.. '\nType ' .. C_AQT .. '/aqt help ' .. '\124ror ' .. C_AQT .. '/aqt h ' .. '\124rfor a list of commands.')
+		msg_status()
 	end
 end
 
@@ -340,15 +349,28 @@ function _G.addon_aqt_enable(v)
 	end
 end
 
-function _G.addon_aqt_on_addoncompartment_click()
-	if is_mac and IsMetaKeyDown() or not is_mac and IsControlKeyDown() then
+function _G.addon_aqt_on_addoncompartment_click(_, btn)
+	if btn == 'LeftButton' then
+		if is_mac and IsMetaKeyDown() or not is_mac and IsControlKeyDown() then
+			msg_help()
+		else
+			msg_status()
+		end
+	elseif btn == 'RightButton' then
 		aqt_enable(not AQT_CharDB.enabled)
-	elseif IsShiftKeyDown() then
-		msg_help()
-	else
-		print(MSG_PREFIX .. 'Status: ' .. msg_activation_status() .. '\124r' .. (a.gdb.ignoreInstances and ' Ignoring instance quests.' or '') .. '\n\124cnYELLOW_FONT_COLOR:' .. (is_mac and 'Command-' or 'Control-') .. '\124rclick the button to toggle ' .. C_AQT .. 'AQT' .. '\124r, \124cnYELLOW_FONT_COLOR:Shift-\124rclick for a list of available slash commands.')
 	end
+end
+function _G.addon_aqt_on_addoncompartment_enter()
+	GameTooltip:SetOwner(AddonCompartmentFrame)
+	GameTooltip:AddDoubleLine('Auto Quest Tracker', text_activation_status())
+	GameTooltip:AddLine(C_CLICK .. 'Left-click ' .. C_TT .. 'to print ' .. C_ACTION .. 'status\124r.')
+	GameTooltip:AddLine(C_CLICK .. text_cmd_key .. '-left-click ' .. C_TT .. 'to print ' .. C_ACTION .. 'help\124r text.')
+	GameTooltip:AddLine(C_CLICK .. 'Right-click ' .. C_TT .. 'to ' .. C_ACTION .. 'toggle\124r AQT for this session.')
+	GameTooltip:Show()
+end
 
+function _G.addon_aqt_on_addoncompartment_leave()
+	GameTooltip:Hide()
 end
 
 
