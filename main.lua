@@ -3,6 +3,7 @@ local addon_name, a = ...
 AQT_GlobalDB = AQT_GlobalDB or {}
 AQT_CharDB = AQT_CharDB or {}
 
+local _
 local C_TimerAfter = _G.C_Timer.After
 local InCombatLockdown, GetRealZoneText, GetMinimapZoneText = _G.InCombatLockdown, _G.GetRealZoneText, _G.GetMinimapZoneText
 local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_QuestLogAddQuestWatch, C_QuestLogRemoveQuestWatch, C_QuestLogGetNumQuestLogEntries, C_QuestLogGetQuestWatchType =

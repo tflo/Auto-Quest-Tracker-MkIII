@@ -1,12 +1,12 @@
 ## Interface: 100105
 ## Title: Auto Quest Tracker Mk III
-## Version: 3.0.4
+## Version: 3.0.5
 ## IconTexture: Interface/Minimap/Tracking/QuestBlob
 ## AddonCompartmentFunc: addon_aqt_on_addoncompartment_click
 ## AddonCompartmentFuncOnEnter: addon_aqt_on_addoncompartment_enter
 ## AddonCompartmentFuncOnLeave: addon_aqt_on_addoncompartment_leave
 ## Author: ErrondGamer (original version); gamer-angel05 (SL fork 2021); Mot (this fork)
-## Notes: Automatically updates the quest tracker to track the quests in your current zone, and any other quests that you may have manually tracked.
+## Notes: Automatically updates the quest tracker to track only the quests in your current zone, while still retaining your manually tracked quests.
 ## DefaultState: enabled
 ## Author: Mot
 ## X-Wago-ID: q96dg1NO
