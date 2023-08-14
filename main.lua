@@ -6,14 +6,15 @@ AQT_CharDB = AQT_CharDB or {}
 local _
 local C_TimerAfter = _G.C_Timer.After
 local InCombatLockdown, GetRealZoneText, GetMinimapZoneText = _G.InCombatLockdown, _G.GetRealZoneText, _G.GetMinimapZoneText
-local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_QuestLogAddQuestWatch, C_QuestLogRemoveQuestWatch, C_QuestLogGetNumQuestLogEntries, C_QuestLogGetQuestWatchType =
+local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_QuestLogAddQuestWatch, C_QuestLogRemoveQuestWatch, C_QuestLogGetNumQuestLogEntries, C_QuestLogGetQuestWatchType, C_QuestLogGetQuestInfo =
 	_G.C_QuestLog.GetInfo,
 	_G.C_QuestLog.IsWorldQuest,
 	_G.C_QuestLog.GetQuestType,
 	_G.C_QuestLog.AddQuestWatch,
 	_G.C_QuestLog.RemoveQuestWatch,
 	_G.C_QuestLog.GetNumQuestLogEntries,
-	_G.C_QuestLog.GetQuestWatchType
+	_G.C_QuestLog.GetQuestWatchType,
+	_G.C_QuestLog.GetQuestInfo
 
 local debug_mode, debug_mode_extra = false, false
 local update_pending -- Serves as ignore flag during the DELAY_ZONE_CHANGE time
@@ -120,6 +121,23 @@ local function show_or_hide_quest(questIndex, questId, show)
 end
 
 
+local function on_untrackquest(dropDownButton, questID)
+	print 'AQT: Blizz\'s UntrackQuest function was called.'
+	if IsAltKeyDown() then
+		print('Adding', questID, 'to quests_ignored!')
+		a.gdb.quests_ignored[questID] = true
+	end
+end
+
+hooksecurefunc('QuestObjectiveTracker_UntrackQuest', on_untrackquest)
+
+local function is_ignored(id, ty)
+	if a.gdb.ignoreInstances and (ty == TYPE_DUNGEON or ty == TYPE_RAID)
+		or a.gdb.quests_ignored[id]
+	then
+		return true
+	end
+end
 --[[---------------------------------------------------------------------------
   Core function
 ---------------------------------------------------------------------------]]--
@@ -136,7 +154,7 @@ local function update_quests_for_zone()
 	for questIndex = 1, C_QuestLogGetNumQuestLogEntries() do
 		local questTitle, isHeader, questId, isWorldQuest, isHidden, questType, isOnMap, hasLocalPOI =
 			get_questinfo(questIndex)
-		if not isWorldQuest and not isHidden and not (a.gdb.ignoreInstances and (questType == TYPE_DUNGEON or questType == TYPE_RAID)) then
+		if not isWorldQuest and not isHidden and not is_ignored(questId, questType) then
 			if isHeader then
 				questZone = questTitle
 			else
@@ -167,6 +185,7 @@ local function onEvent(self, event, ...)
 			a.gdb.loadMsg = a.gdb.loadMsg == nil and true or a.gdb.loadMsg
 			a.gdb.ignoreInstances = a.gdb.ignoreInstances or false
 			a.cdb.time_logout = a.cdb.time_logout or 0
+			a.gdb.quests_ignored = a.gdb.quests_ignored or {}
 			if a.cdb.enabled then
 				register_zone_events()
 				msg_load(C_GOOD .. 'Enabled.', 8)
@@ -230,6 +249,16 @@ local function msg_status()
 		.. (a.gdb.ignoreInstances and ' Ignoring instance quests.' or '')
 		.. '\nType ' .. C_AQT .. '/aqt h\124r for a list of commands.')
 end
+
+local function msg_list_ignored()
+	print(MSG_PREFIX .. 'List of ignored quests:')
+	for id, _ in pairs(a.gdb.quests_ignored) do
+		local title = C_QuestLogGetQuestInfo(id)
+		print(title .. ' (' .. id ..')')
+	end
+	print('Dungeaon/raid quests ignored via ' .. C_AQT .. '/aqt instances\124r are not included here.')
+end
+
 
 -- TODO: Add version info to help
 local function msg_help()
@@ -331,6 +360,10 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 				)
 			end
 		end
+	elseif msg == 'ign' or msg == 'ignored' then
+		msg_list_ignored()
+	elseif msg == 'ignclear' or msg == 'ignoredclear' then
+		wipe(a.gdb.quests_ignored)
 	elseif msg == 'h' or msg == 'help' then
 		msg_help()
 	else
