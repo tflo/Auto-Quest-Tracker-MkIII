@@ -4,7 +4,7 @@
   - Activation status.
   - List of available click actions:
     - Left-click: Print status text; same as `/aqt`.
-    - Command-left-click: Print help tex (use Control-left-click on Windows); same as `/aqt h` or `/aqt help`.
+    - Command-left-click: Print help text (use Control-left-click on Windows); same as `/aqt h` or `/aqt help`.
     - Right-click: Toggle AQT for the current session; same as `/aqt d` / `/aqt e` or `/aqt off` / `/aqt on`.
 
 #### 3.0.4 (2023-07-23)

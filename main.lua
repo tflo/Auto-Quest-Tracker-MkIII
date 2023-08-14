@@ -231,6 +231,7 @@ local function msg_status()
 		.. '\nType ' .. C_AQT .. '/aqt h\124r for a list of commands.')
 end
 
+-- TODO: Add version info to help
 local function msg_help()
 	print(MSG_PREFIX .. 'Help: \n'.. C_AQT .. '/autoquesttracker ' .. '\124ror ' .. C_AQT .. '/aqt ' .. '\124runderstands these commands: ')
 	print(C_AQT .. 'on ' .. '\124ror ' .. C_AQT .. 'e' .. '\124r: Enable AQT.')
