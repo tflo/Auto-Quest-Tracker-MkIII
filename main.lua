@@ -6,7 +6,7 @@ AQT_CharDB = AQT_CharDB or {}
 local _
 local C_TimerAfter = _G.C_Timer.After
 local InCombatLockdown, GetRealZoneText, GetMinimapZoneText = _G.InCombatLockdown, _G.GetRealZoneText, _G.GetMinimapZoneText
-local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_QuestLogAddQuestWatch, C_QuestLogRemoveQuestWatch, C_QuestLogGetNumQuestLogEntries, C_QuestLogGetQuestWatchType, C_QuestLogGetQuestInfo =
+local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_QuestLogAddQuestWatch, C_QuestLogRemoveQuestWatch, C_QuestLogGetNumQuestLogEntries, C_QuestLogGetQuestWatchType, C_QuestLogGetTitleForQuestID =
 	_G.C_QuestLog.GetInfo,
 	_G.C_QuestLog.IsWorldQuest,
 	_G.C_QuestLog.GetQuestType,
@@ -14,7 +14,9 @@ local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_Quest
 	_G.C_QuestLog.RemoveQuestWatch,
 	_G.C_QuestLog.GetNumQuestLogEntries,
 	_G.C_QuestLog.GetQuestWatchType,
-	_G.C_QuestLog.GetQuestInfo
+	_G.C_QuestLog.GetTitleForQuestID
+local EnumQuestWatchTypeManual = _G.Enum.QuestWatchType.Manual
+local EnumQuestWatchTypeAutomatic = _G.Enum.QuestWatchType.Automatic
 
 local debug_mode, debug_mode_extra = false, false
 local update_pending -- Serves as ignore flag during the DELAY_ZONE_CHANGE time
@@ -35,7 +37,7 @@ local TYPE_PROF = 267
 local TYPE_PET = 102
 local TYPE_PVP = 255 -- TODO: verify
 
-local types = {
+local quest_types = {
 	TYPE_DUNG = {
 		['descr'] = 'Dungeon quests',
 		['key'] = 'dung'
@@ -61,6 +63,12 @@ local types = {
 
 -- TODO: can we also add exclusions via quest header?
 
+local exception_types = {
+	[0] = 'Ignored',
+	[1] = 'Always tracked',
+	[-1] = 'Never tracked',
+}
+
 -- Misc
 -- Serves as delay for update after zone change events and as throttle (new zone events are ignored during the time)
 local DELAY_ZONE_CHANGE = 3 -- Testwise 3; we used to use 2
@@ -70,6 +78,10 @@ local SESSION_GRACE_TIME = 1200 -- 20 min
 -- For the modifier click on the compartment button
 local is_mac = IsMacClient()
 local text_cmd_key = is_mac and 'Command' or 'Control'
+
+local function table_is_empty(t)
+	return next(t) == nil
+end
 
 local function msg_debug(msg)
 	if debug_mode or debug_mode_extra then print(MSG_PREFIX .. msg) end
@@ -135,17 +147,18 @@ local function get_questinfo_for_listing(index)
 		C_QuestLog.IsQuestCalling(quest.questID),
 		C_QuestLogGetQuestType(quest.questID),
 		quest.isOnMap,
-		quest.hasLocalPOI
+		quest.hasLocalPOI,
+		C_QuestLogGetQuestWatchType(quest.questID)
 	end
 end
 
-local function show_or_hide_quest(questIndex, questId, show)
-	-- Checks that the quest is still in the quest log, and that we are not in combat lockdown to avoid tainting
+local function auto_show_or_hide_quest(questIndex, questId, show)
+	-- Check if quest is still in the log, and if we are not in combat (tainting)
 	local questTitle, _, id = get_questinfo(questIndex)
 	if not InCombatLockdown() and id == questId then
 		if show then
 			msg_debug(string.format('Tracking: %s (%s)', questTitle, questId))
-			C_QuestLogAddQuestWatch(questId)
+			C_QuestLogAddQuestWatch(questId, EnumQuestWatchTypeAutomatic)
 		else
 			msg_debug(string.format('Removing: %s (%s)', questTitle, questId))
 			C_QuestLogRemoveQuestWatch(questId)
@@ -154,23 +167,89 @@ local function show_or_hide_quest(questIndex, questId, show)
 end
 
 
-local function on_untrackquest(dropDownButton, questID)
-	print 'AQT: Blizz\'s UntrackQuest function was called.'
-	if IsAltKeyDown() then
-		print('Adding', questID, 'to quests_ignored!')
-		a.gdb.quests_ignored[questID] = true
+--[[---------------------------------------------------------------------------
+	§ Exclusions
+---------------------------------------------------------------------------]]--
+
+local last_hook_call = 0
+
+local function add_quest_to_exclusions(par1, par2)
+	local id = par2 or par1
+	local is_watched = QuestUtils_IsQuestWatched(id)
+	print('AQT: Hook was called. Quest watched:', is_watched) -- Debug
+	-- This is to avoid calling our hook 2 times; see below.
+	-- if par2 or not is_watched then
+	local now = GetTime()
+	if now - last_hook_call > 0.5 then
+		last_hook_call = now
+		-- TODO: Find a way to do this on Windows (eg cycling thru 0 and -1 with ALt-Ctrl)
+		-- Never
+		if IsMetaKeyDown() and IsAltKeyDown() then
+			if a.gdb.exceptions_id[id] ~= -1 then
+				print(MSG_PREFIX .. 'Quest', id, 'is now NEVER tracked on all toons.')
+				a.gdb.exceptions_id[id] = -1
+				C_QuestLogRemoveQuestWatch(id)
+			else
+				print(MSG_PREFIX .. 'Quest', id, 'is already NEVER tracked.')
+			end
+		-- Ignore
+		elseif is_mac and IsAltKeyDown() or IsAltKeyDown() and IsControlKeyDown() then
+			if a.gdb.exceptions_id[id] ~= 0 then
+				print(MSG_PREFIX .. 'Quest', id, 'is now IGNORED on all toons.')
+				a.gdb.exceptions_id[id] = 0
+			else
+				print(MSG_PREFIX .. 'Quest', id, 'is already IGNORED.')
+			end
+		-- Always
+		elseif IsMetaKeyDown() or IsAltKeyDown() then
+			if a.gdb.exceptions_id[id] ~= 1 then
+				print(MSG_PREFIX .. 'Quest', id, 'is now ALWAYS tracked on all toons.')
+				a.gdb.exceptions_id[id] = 1
+				C_QuestLogAddQuestWatch(id, EnumQuestWatchTypeAutomatic)
+			else
+				print(MSG_PREFIX .. 'Quest', id, 'is already ALWAYS tracked.')
+			end
+		-- Remove from exceptions
+		elseif IsControlKeyDown() then
+			if a.gdb.exceptions_id[id] then
+				print(MSG_PREFIX .. 'Removed quest', id, 'from exceptions.')
+				a.gdb.exceptions_id[id] = nil
+				if C_QuestLogGetQuestWatchType(id) == EnumQuestWatchTypeManual then
+					C_QuestLogAddQuestWatch(id, EnumQuestWatchTypeAutomatic)
+				end
+			else
+				print(MSG_PREFIX .. 'Quest', id, 'is not on the exceptions list.')
+			end
+		end
 	end
 end
 
-hooksecurefunc('QuestObjectiveTracker_UntrackQuest', on_untrackquest)
+hooksecurefunc('QuestObjectiveTracker_UntrackQuest', add_quest_to_exclusions)
+hooksecurefunc('QuestMapQuestOptions_TrackQuest', add_quest_to_exclusions)
+-- NOTE on `QuestMapQuestOptions_TrackQuest`: If the quest is already tracked, it calls `QuestObjectiveTracker_UntrackQuest`
 
 local function is_ignored(id, ty)
-	if a.gdb.ignoreInstances and (ty == TYPE_DUNGEON or ty == TYPE_RAID)
-		or a.gdb.quests_ignored[id]
+	if a.gdb.ignoreInstances and (ty == TYPE_DUNG or ty == TYPE_RAID)
+		or a.gdb.exceptions_id[id] == 0
 	then
 		return true
 	end
 end
+
+local function is_always(id)
+	if a.gdb.exceptions_id[id] == 1
+	then
+		return true
+	end
+end
+
+local function is_never(id)
+	if a.gdb.exceptions_id[id] == -1
+	then
+		return true
+	end
+end
+
 --[[---------------------------------------------------------------------------
 	§ Core function
 ---------------------------------------------------------------------------]]--
@@ -187,17 +266,19 @@ local function update_quests_for_zone()
 	for questIndex = 1, C_QuestLogGetNumQuestLogEntries() do
 		local questTitle, isHeader, questId, isWorldQuest, isHidden, questType, isOnMap, hasLocalPOI =
 			get_questinfo(questIndex)
-		if not isWorldQuest and not isHidden and not is_ignored(questId, questType) then
+		if not isWorldQuest and not isHidden then
 			if isHeader then
 				questZone = questTitle
+			elseif is_ignored(questId, questType) then
+				-- Nop
 			else
-				if questZone == currentZone or questZone == minimapZone or isOnMap or hasLocalPOI then
+				if is_always(questId) or questZone == currentZone or questZone == minimapZone or isOnMap or hasLocalPOI then
 					if C_QuestLogGetQuestWatchType(questId) == nil then
-						show_or_hide_quest(questIndex, questId, true)
+						auto_show_or_hide_quest(questIndex, questId, true)
 						msg_debug(format('Reason: %s %s %s %s', questZone == currentZone and 'currZone' or '', questZone == minimapZone and 'mmZone' or '', isOnMap and 'onMap' or '', hasLocalPOI and 'hasPOI' or ''))
 					end
-				elseif C_QuestLogGetQuestWatchType(questId) == 0 then
-					show_or_hide_quest(questIndex, questId, false)
+				elseif is_never(questId) or C_QuestLogGetQuestWatchType(questId) == 0 then
+					auto_show_or_hide_quest(questIndex, questId, false)
 				end
 			end
 		end
@@ -218,7 +299,8 @@ local function onEvent(self, event, ...)
 			a.gdb.loadMsg = a.gdb.loadMsg == nil and true or a.gdb.loadMsg
 			a.gdb.ignoreInstances = a.gdb.ignoreInstances or false
 			a.cdb.time_logout = a.cdb.time_logout or 0
-			a.gdb.quests_ignored = a.gdb.quests_ignored or {}
+			a.gdb.exceptions_id = a.gdb.exceptions_id or {}
+			a.gdb.exceptions_type = a.gdb.exceptions_type or {}
 			if a.cdb.enabled then
 				register_zone_events()
 				msg_load(C_GOOD .. 'Enabled.', 8)
@@ -312,17 +394,26 @@ local function msg_list_quests()
 	end
 end
 
-local function msg_list_ignored()
-	if table_is_empty(a.gdb.quests_ignored) then
-		print(MSG_PREFIX .. 'You have no ignored quests.')
+local function msg_list_exceptions()
+	if table_is_empty(a.gdb.exceptions_id) then
+		print(MSG_PREFIX .. 'You have no quest exceptions.')
 	else
-		print(MSG_PREFIX .. 'List of ignored quests:')
-		for id, _ in pairs(a.gdb.quests_ignored) do
+		print(MSG_PREFIX .. 'List of quest exceptions:')
+		for id, ex in pairs(a.gdb.exceptions_id) do
 			local title = C_QuestLogGetTitleForQuestID(id)
-			print(title .. ' (' .. id .. ')')
+			local descr = exception_types[ex]
+			print(title .. ' (' .. id .. '): ' .. descr)
 		end
 	end
-	print('Dungeon/raid quests ignored via ' .. C_AQT .. '/aqt instances\124r are not listed here.')
+	if table_is_empty(a.gdb.exceptions_type) then
+		print(MSG_PREFIX .. 'You have no quest type exceptions.')
+	else
+		print(MSG_PREFIX .. 'List of quest type exceptions:')
+		for id, _ in pairs(a.gdb.exceptions_type) do
+			local type = quest_types[id]['descr']
+			print(type)
+		end
+	end
 end
 
 -- TODO: Add version info to help
@@ -402,9 +493,11 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 	elseif msg == 'q' or msg == 'quests' then
 		msg_list_quests()
 	elseif msg == 'ign' or msg == 'ignored' then
-		msg_list_ignored()
+		msg_list_exceptions()
 	elseif msg == 'ignclear' or msg == 'ignoredclear' then
 		wipe(a.gdb.quests_ignored)
+		if a.cdb.enabled then update_quests_for_zone() end
+		msg_confirm(MSG_PREFIX .. 'List of ignored quests cleared.')
 	elseif msg == 'h' or msg == 'help' then
 		msg_help()
 	else
