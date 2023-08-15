@@ -404,7 +404,7 @@ local function msg_list_exceptions()
 	else
 		print(MSG_PREFIX .. 'List of quest exceptions:')
 		for id, ex in pairs(a.gdb.exceptions_id) do
-			local title = C_QuestLogGetTitleForQuestID(id)
+			local title = C_QuestLogGetTitleForQuestID(id) or '[Quest title not yet available from server]'
 			local descr = exception_types[ex]
 			print(title .. ' (' .. id .. '): ' .. descr)
 		end
