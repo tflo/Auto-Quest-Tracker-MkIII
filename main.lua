@@ -188,7 +188,9 @@ local function add_quest_to_exclusions(par1, par2)
 			if a.gdb.exceptions_id[id] ~= -1 then
 				print(MSG_PREFIX .. 'Quest', id, 'is now NEVER tracked on all toons.')
 				a.gdb.exceptions_id[id] = -1
-				C_QuestLogRemoveQuestWatch(id)
+				if a.cdb.enabled then
+					C_QuestLogRemoveQuestWatch(id)
+				end
 			else
 				print(MSG_PREFIX .. 'Quest', id, 'is already NEVER tracked.')
 			end
@@ -205,7 +207,9 @@ local function add_quest_to_exclusions(par1, par2)
 			if a.gdb.exceptions_id[id] ~= 1 then
 				print(MSG_PREFIX .. 'Quest', id, 'is now ALWAYS tracked on all toons.')
 				a.gdb.exceptions_id[id] = 1
-				C_QuestLogAddQuestWatch(id, EnumQuestWatchTypeAutomatic)
+				if a.cdb.enabled then
+					C_QuestLogAddQuestWatch(id, EnumQuestWatchTypeAutomatic)
+				end
 			else
 				print(MSG_PREFIX .. 'Quest', id, 'is already ALWAYS tracked.')
 			end
@@ -214,7 +218,7 @@ local function add_quest_to_exclusions(par1, par2)
 			if a.gdb.exceptions_id[id] then
 				print(MSG_PREFIX .. 'Removed quest', id, 'from exceptions.')
 				a.gdb.exceptions_id[id] = nil
-				if C_QuestLogGetQuestWatchType(id) == EnumQuestWatchTypeManual then
+				if a.cdb.enabled and C_QuestLogGetQuestWatchType(id) == EnumQuestWatchTypeManual then
 					C_QuestLogAddQuestWatch(id, EnumQuestWatchTypeAutomatic)
 				end
 			else
