@@ -12,7 +12,25 @@ I have updated Auto Quest Tracker, because – in my experience – it works bet
 
 _Quester + Auto Quest Tracker_ is my preferred combo.
 
-__Wiki: As AQT has become more sophisticated in terms of settings and commands, I have started to build a Wiki. So, if you're new to AQT, or want to get better structured and more complete information, head over to the [AQT Wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki)! (Currently WiP, but already usable.)__
+## Breaking news (2023-08-15)
+
+First __beta of AQT version 4__ is available from the beta channel!
+
+Main feature of v4 is the new __Exceptions__ system:
+
+- You can now assign the following account-wide Exceptions to quests:
+  - Ignore (as if AQT was disabled for a specific quest)
+  - Track always and everywhere
+  - Never track
+- Exceptions can be assigned via modifier keys while tracking/untracking a quest in the quest log or quest tracker.
+- See the brand new [AQT wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki), namely the [Exceptions section](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions), for how to do. It's too much new stuff to list here.
+- Print Exceptions report with `/aqt x`
+- Slash commands to clear Exceptions (see Wiki!)
+- Much more new stuff to come. Stay tuned!
+
+__Wiki: As AQT has become more sophisticated in terms of settings and commands, I have started to build a Wiki. So, if you're new to AQT, or want to get better structured and more complete information, head over to the brand new [AQT Wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki)! (Currently WiP, but already usable.)__
+
+__If you are using the new AQT v4-beta, the Wiki is a must, as you find the documentation of all the new stuff only there!__
 
 ## New features of "Mk III"
 
@@ -72,7 +90,6 @@ More info on the Aura download page.
   - Left-click: Print status text; same as `/aqt`.
   - Command-left-click: Print help text (use Control-left-click on Windows); same as `/aqt h` or `/aqt help`.
   - Right-click: Toggle AQT for the current session; same as `/aqt d` / `/aqt e` or `/aqt off` / `/aqt on`.
-
 
 ### Compatibility with Classic Quest Log
 

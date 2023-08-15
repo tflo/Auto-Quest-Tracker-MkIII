@@ -1,3 +1,16 @@
+#### 4.0-beta-1 (2023-08-15)
+
+- First implementation of the new Exceptions system
+- You can now assign the following account-wide Exceptions to quests:
+  - Ignore (as if AQT was disabled for a specific quest)
+  - Track always and everywhere
+  - Never track
+- Exceptions can be assigned via modifier keys while tracking/untracking a quest in the quest log or quest tracker.
+- See the brand new [AQT wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki), namely the [Exceptions section](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions), for how to do. It's too much new stuff to list here.
+- Print Exceptions report with `/aqt x`
+- Slash commands to clear Exceptions (see Wiki!)
+- More to come. Stay tuned!
+
 #### 3.0.5 (2023-08-12)
 
 - Added addon compartment button tooltip, providing these infos:
