@@ -139,7 +139,7 @@ local function is_ignored(id, ty)
 	end
 end
 --[[---------------------------------------------------------------------------
-  Core function
+	§ Core function
 ---------------------------------------------------------------------------]]--
 
 local function update_quests_for_zone()
@@ -173,7 +173,7 @@ end
 
 
 --[[---------------------------------------------------------------------------
-  Doing stuff at events
+	§ Doing stuff at events
 ---------------------------------------------------------------------------]]--
 
 local function onEvent(self, event, ...)
@@ -235,7 +235,7 @@ f:SetScript('OnEvent', onEvent)
 
 
 --[[===========================================================================
-  UI
+	§ UI
 ===========================================================================]]--
 
 local function text_activation_status()
@@ -250,15 +250,47 @@ local function msg_status()
 		.. '\nType ' .. C_AQT .. '/aqt h\124r for a list of commands.')
 end
 
-local function msg_list_ignored()
-	print(MSG_PREFIX .. 'List of ignored quests:')
-	for id, _ in pairs(a.gdb.quests_ignored) do
-		local title = C_QuestLogGetQuestInfo(id)
-		print(title .. ' (' .. id ..')')
+local function msg_list_quests()
+	print 'Quests currently in quest log:'
+	for questIndex = 1, C_QuestLogGetNumQuestLogEntries() do
+		local questTitle, isHeader, questId, isWorldQuest, isHidden, isCalling, questType, isOnMap, hasLocalPOI, watchType =
+			get_questinfo_for_listing(questIndex)
+		if isHeader then
+			print(format('%02d| [Header] %s', questIndex, questTitle))
+		else
+			print(
+				format(
+					'%s%02d| %s%s (%s) - Type %s%s%s%s',
+					isHidden and '|cnGRAY_FONT_COLOR:'
+						or isWorldQuest and '|cnBLUE_FONT_COLOR:'
+						or isCalling and '|cnDIM_GREEN_FONT_COLOR:'
+						or '|cnORANGE_FONT_COLOR:',
+					questIndex,
+					isHidden and '[Hidden] ' or isWorldQuest and '[WQ] ' or isCalling and '[Calling] ' or '',
+					questTitle,
+					tostring(questId),
+					tostring(questType),
+					isOnMap and ', on map ' or '',
+					hasLocalPOI and ', local POI' or '',
+					watchType and ', WT ' .. tostring(watchType) or ''
+				)
+			)
+		end
 	end
-	print('Dungeaon/raid quests ignored via ' .. C_AQT .. '/aqt instances\124r are not included here.')
 end
 
+local function msg_list_ignored()
+	if table_is_empty(a.gdb.quests_ignored) then
+		print(MSG_PREFIX .. 'You have no ignored quests.')
+	else
+		print(MSG_PREFIX .. 'List of ignored quests:')
+		for id, _ in pairs(a.gdb.quests_ignored) do
+			local title = C_QuestLogGetTitleForQuestID(id)
+			print(title .. ' (' .. id .. ')')
+		end
+	end
+	print('Dungeon/raid quests ignored via ' .. C_AQT .. '/aqt instances\124r are not listed here.')
+end
 
 -- TODO: Add version info to help
 local function msg_help()
@@ -279,7 +311,7 @@ end
 
 
 --[[---------------------------------------------------------------------------
-  Main switch
+	§ Main switch
 ---------------------------------------------------------------------------]]--
 
 local function aqt_enable(on, disablemode)
@@ -302,7 +334,7 @@ local function aqt_enable(on, disablemode)
 end
 
 --[[---------------------------------------------------------------------------
-  Slash commands
+	§ Slash commands
 ---------------------------------------------------------------------------]]--
 
 SLASH_AUTOQUESTTRACKER1 = '/autoquesttracker'
@@ -335,31 +367,7 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		debug_mode = not debug_mode
 		msg_confirm(MSG_PREFIX .. 'Debug mode ' .. (debug_mode and 'enabled.' or 'disabled.'))
 	elseif msg == 'q' or msg == 'quests' then
-		print 'Quests currently in quest log:'
-		for questIndex = 1, C_QuestLogGetNumQuestLogEntries() do
-			local questTitle, isHeader, questId, isWorldQuest, isHidden, isCalling, questType, isOnMap, hasLocalPOI =
-				get_questinfo_for_listing(questIndex)
-			if isHeader then
-				print(format('%02d| [Header] %s', questIndex, questTitle))
-			else
-				print(
-					format(
-						'%s%02d| %s%s (%s) - Type %s%s%s',
-						isHidden and '|cnGRAY_FONT_COLOR:'
-							or isWorldQuest and '|cnBLUE_FONT_COLOR:'
-							or isCalling and '|cnDIM_GREEN_FONT_COLOR:'
-							or '|cnORANGE_FONT_COLOR:',
-						questIndex,
-						isHidden and '[Hidden] ' or isWorldQuest and '[WQ] ' or isCalling and '[Calling] ' or '',
-						questTitle,
-						tostring(questId),
-						tostring(questType),
-						isOnMap and ', on map ' or '',
-						hasLocalPOI and ', local POI' or ''
-					)
-				)
-			end
-		end
+		msg_list_quests()
 	elseif msg == 'ign' or msg == 'ignored' then
 		msg_list_ignored()
 	elseif msg == 'ignclear' or msg == 'ignoredclear' then
@@ -373,7 +381,7 @@ end
 
 
 --[[===========================================================================
-API
+	§ API
 ===========================================================================]]--
 
 function _G.addon_aqt_enable(v)
