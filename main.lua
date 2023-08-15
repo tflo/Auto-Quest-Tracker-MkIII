@@ -496,12 +496,21 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		msg_confirm(MSG_PREFIX .. 'Debug mode ' .. (debug_mode and 'enabled.' or 'disabled.'))
 	elseif msg == 'q' or msg == 'quests' then
 		msg_list_quests()
-	elseif msg == 'ign' or msg == 'ignored' then
+	elseif msg == 'x' or msg == 'exceptions' then
 		msg_list_exceptions()
-	elseif msg == 'ignclear' or msg == 'ignoredclear' then
-		wipe(a.gdb.quests_ignored)
+	elseif msg == 'xcleari' or msg == 'exceptionsclearid' then
+		wipe(a.gdb.exceptions_id)
 		if a.cdb.enabled then update_quests_for_zone() end
-		msg_confirm(MSG_PREFIX .. 'List of ignored quests cleared.')
+		msg_confirm(MSG_PREFIX .. 'All quest ID exceptions cleared.')
+	elseif msg == 'xcleart' or msg == 'exceptionscleartype' then
+		wipe(a.gdb.exceptions_type)
+		if a.cdb.enabled then update_quests_for_zone() end
+		msg_confirm(MSG_PREFIX .. 'All quest type exceptions cleared.')
+	elseif msg == 'xclearall' or msg == 'exceptionsclearall' then
+		wipe(a.gdb.exceptions_id)
+		wipe(a.gdb.exceptions_type)
+		if a.cdb.enabled then update_quests_for_zone() end
+		msg_confirm(MSG_PREFIX .. 'All quest exceptions (ID & type) cleared.')
 	elseif msg == 'h' or msg == 'help' then
 		msg_help()
 	else
