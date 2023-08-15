@@ -12,6 +12,8 @@ I have updated Auto Quest Tracker, because – in my experience – it works bet
 
 _Quester + Auto Quest Tracker_ is my preferred combo.
 
+__Wiki: As AQT has become more sophisticated in terms of settings and commands, I have started to build a Wiki. So, if you're new to AQT, or want to get better structured and more complete information, head over to the [AQT Wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki)! (Currently WiP, but already usable.)__
+
 ## New features of "Mk III"
 
 ### General
@@ -46,7 +48,6 @@ New since version 3.0, there are now 3 modes of disabling AQT:
 - To toggle, enter `/aqt in` or `/aqt instances`. This is an account-wide setting.
 - Enable this to keep the quest tracker free of dungeon quest spam. (Technically, instance quests are on a specific map and have map POIs like any other quest. However, from a player's point of view, these quests aren't tied to a specific zone in the same way as normal quests, as in most cases you enter dungeons via LFG, which is location-neutral.)
 - "Ignore" means that instance quests will not be removed from your tracker when you enable this option, but if you remove them, they won't come back when you zone into the quest's map. (And if you put them in the tracker, they will stay there wherever you are).
-- This is a new feature and may still need some fine-tuning.
 
 ### Mini API
 
@@ -66,9 +67,12 @@ More info on the Aura download page.
 
 ### Addon Compartment Button
 
-- Click the button to display the status info in the chat.
-- Command-click (Mac) or Control-click (Windows) the button to toggle AQT.
-- Shift-click the button to display the complete list of slash commands.
+- Shows the activation status.
+- Available click actions:
+  - Left-click: Print status text; same as `/aqt`.
+  - Command-left-click: Print help text (use Control-left-click on Windows); same as `/aqt h` or `/aqt help`.
+  - Right-click: Toggle AQT for the current session; same as `/aqt d` / `/aqt e` or `/aqt off` / `/aqt on`.
+
 
 ### Compatibility with Classic Quest Log
 
