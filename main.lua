@@ -27,8 +27,41 @@ local C_TT = '\124cnWHITE_FONT_COLOR:' -- Base color for tooltip non-header text
 local C_CLICK = '\124cnORANGE_FONT_COLOR:'
 local C_ACTION = '\124cnYELLOW_FONT_COLOR:'
 local MSG_PREFIX = C_AQT .. 'Auto Quest Tracker\124r: '
+
+-- § Quest types
+local TYPE_DUNG = 81
+local TYPE_RAID = 62
+local TYPE_PROF = 267
+local TYPE_PET = 102
+local TYPE_PVP = 255 -- TODO: verify
+
+local types = {
+	TYPE_DUNG = {
+		['descr'] = 'Dungeon quests',
+		['key'] = 'dung'
+	},
+	TYPE_RAID = {
+		['descr'] = 'Raid quests',
+		['key'] = 'raid'
+	},
+	TYPE_PROF = {
+		['descr'] = 'Profession and Barter quests',
+		['key'] = 'prof'
+	},
+	TYPE_PET = {
+		['descr'] = 'Battle Pet quests',
+		['key'] = 'pet'
+	},
+	TYPE_PVP = {
+		['descr'] = 'PvP quests',
+		['key'] = 'pvp'
+	},
+
+}
+
+-- TODO: can we also add exclusions via quest header?
+
 -- Misc
-local TYPE_DUNGEON, TYPE_RAID = 81, 62
 -- Serves as delay for update after zone change events and as throttle (new zone events are ignored during the time)
 local DELAY_ZONE_CHANGE = 3 -- Testwise 3; we used to use 2
 -- Time between logout and login needed to consider it a new session
