@@ -144,11 +144,25 @@ local function get_questinfo_for_listing(index)
 		quest.questID,
 		C_QuestLogIsWorldQuest(quest.questID),
 		quest.isHidden,
-		C_QuestLog.IsQuestCalling(quest.questID),
+		C_QuestLogIsQuestCalling(quest.questID),
 		C_QuestLogGetQuestType(quest.questID),
 		quest.isOnMap,
 		quest.hasLocalPOI,
-		C_QuestLogGetQuestWatchType(quest.questID)
+		C_QuestLogGetQuestWatchType(quest.questID),
+		quest.frequency,
+		quest.level,
+		quest.isTask,
+		quest.isBounty,
+		quest.isStory,
+		quest.startEvent,
+		C_QuestLog.IsImportantQuest(quest.questID),
+		C_QuestLog.IsAccountQuest(quest.questID),
+		C_QuestLog.IsComplete(quest.questID),
+		C_QuestLog.IsQuestReplayable(quest.questID),
+		C_QuestLog.IsQuestReplayedRecently(quest.questID),
+		C_QuestLog.IsRepeatableQuest(quest.questID),
+		C_QuestLog.IsQuestTrivial(quest.questID),
+		C_QuestLog.ReadyForTurnIn(quest.questID)
 	end
 end
 
@@ -366,28 +380,42 @@ local function msg_status()
 end
 
 local function msg_list_quests()
-	print 'Quests currently in quest log:'
+	print(MSG_PREFIX, 'Quests currently in quest log:\n[T = type; W = watch type]')
 	for questIndex = 1, C_QuestLogGetNumQuestLogEntries() do
-		local questTitle, isHeader, questId, isWorldQuest, isHidden, isCalling, questType, isOnMap, hasLocalPOI, watchType =
+		local questTitle, isHeader, questId, isWorldQuest, isHidden, isCalling, questType, isOnMap, hasLocalPOI, watchType, frequency, level, isTask, isBounty, isStory, startEvent, isImportant, accountQuest, isComplete, isQuestReplayable, isQuestReplayedRecently, isRepeatableQuest, isQuestTrivial, readyForTurnIn =
 			get_questinfo_for_listing(questIndex)
 		if isHeader then
-			print(format('%02d| [Header] %s', questIndex, questTitle))
+			print(format('%02d | [Header] %s', questIndex, questTitle))
 		else
 			print(
 				format(
-					'%s%02d| %s%s (%s) - Type %s%s%s%s',
-					isHidden and '|cnGRAY_FONT_COLOR:'
-						or isWorldQuest and '|cnBLUE_FONT_COLOR:'
-						or isCalling and '|cnDIM_GREEN_FONT_COLOR:'
-						or '|cnORANGE_FONT_COLOR:',
+					'%s%02d | %s%s (%s) | %s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s',
+					isHidden and '\124cnGRAY_FONT_COLOR:'
+						or isWorldQuest and '\124cnBLUE_FONT_COLOR:'
+						or isCalling and '\124cnDIM_GREEN_FONT_COLOR:'
+						or '\124cnORANGE_FONT_COLOR:',
 					questIndex,
 					isHidden and '[Hidden] ' or isWorldQuest and '[WQ] ' or isCalling and '[Calling] ' or '',
 					questTitle,
-					tostring(questId),
-					tostring(questType),
-					isOnMap and ', on map ' or '',
-					hasLocalPOI and ', local POI' or '',
-					watchType and ', WT ' .. tostring(watchType) or ''
+					questId,
+					level,
+					questType ~= 0 and ', T' .. questType or '',
+					isOnMap and ', OnMap ' or '',
+					hasLocalPOI and ', LocalPOI' or '',
+					frequency ~= 0 and ', ' .. (frequency == EnumQuestFrequency.Daily and 'Daily' or 'Weekly') or '',
+					watchType and ', W' .. watchType or '',
+					isTask and ', Task' or '',
+					isBounty and ', Bounty' or '',
+					isStory and ', Story' or '',
+					startEvent and ', StartEvent' or '',
+					isImportant and ', Imp!' or '',
+					isQuestReplayable and ', Replayable' or '',
+					isQuestReplayedRecently and ', ReplayedRecently' or '',
+					isRepeatableQuest and ', Repeatable' or '',
+					isQuestTrivial and ', Trivial' or '',
+					isComplete and ', Compl' or '',
+					readyForTurnIn and ', Ready' or '',
+					accountQuest and ', Acc' or ''
 				)
 			)
 		end
