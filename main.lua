@@ -502,19 +502,14 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		aqt_enable(false, 2)
 	elseif msg == 'loadingmessage' then
 		a.gdb.loadMsg = not a.gdb.loadMsg
-		msg_confirm(MSG_PREFIX .. 'Loading message ' .. (a.gdb.loadMsg and 'enabled' or 'disabled') .. ' for all chars.')
+		msg_confirm('Loading message ' .. (a.gdb.loadMsg and 'enabled' or 'disabled') .. ' for all chars.')
 	elseif msg == 'in' or msg == 'instances' then
 		a.gdb.ignoreInstances = not a.gdb.ignoreInstances
 		if a.cdb.enabled then update_quests_for_zone() end
-		msg_confirm(
-			MSG_PREFIX
-				.. 'Instance quests are '
-				.. (a.gdb.ignoreInstances and 'ignored' or 'treated normally')
-				.. ' for all chars.'
-		)
+		msg_confirm('Instance quests are ' .. (a.gdb.ignoreInstances and 'ignored' or 'treated normally') .. ' for all chars.')
 	elseif msg == 'debug' then
 		a.gdb.debug_mode = not a.gdb.debug_mode
-		msg_confirm(MSG_PREFIX .. 'Debug mode ' .. (a.gdb.debug_mode and 'enabled.' or 'disabled.'))
+		msg_confirm('Debug mode ' .. (a.gdb.debug_mode and 'enabled.' or 'disabled.'))
 	elseif msg == 'q' or msg == 'quests' then
 		msg_list_quests()
 	elseif msg == 'x' or msg == 'exceptions' then
@@ -522,16 +517,16 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 	elseif msg == 'xcleari' or msg == 'exceptionsclearid' then
 		wipe(a.gdb.exceptions_id)
 		if a.cdb.enabled then update_quests_for_zone() end
-		msg_confirm(MSG_PREFIX .. 'All quest ID exceptions cleared.')
+		msg_confirm('All quest ID exceptions cleared.')
 	elseif msg == 'xcleart' or msg == 'exceptionscleartype' then
 		wipe(a.gdb.exceptions_type)
 		if a.cdb.enabled then update_quests_for_zone() end
-		msg_confirm(MSG_PREFIX .. 'All quest type exceptions cleared.')
+		msg_confirm('All quest type exceptions cleared.')
 	elseif msg == 'xclearall' or msg == 'exceptionsclearall' then
 		wipe(a.gdb.exceptions_id)
 		wipe(a.gdb.exceptions_type)
 		if a.cdb.enabled then update_quests_for_zone() end
-		msg_confirm(MSG_PREFIX .. 'All quest exceptions (ID & type) cleared.')
+		msg_confirm('All quest exceptions (ID & type) cleared.')
 	elseif msg == 'h' or msg == 'help' then
 		msg_help()
 	else
