@@ -1,3 +1,8 @@
+#### 4.0-beta-3 (2023-08-16)
+
+- Removed some double message prefixes.
+- Debug system cleaned up.
+  
 #### 4.0-beta-2 (2023-08-16)
 
 - Removed some debug code.

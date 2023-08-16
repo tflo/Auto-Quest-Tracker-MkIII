@@ -234,8 +234,8 @@ local function add_quest_to_exclusions(par1, par2)
 	end
 end
 
-hooksecurefunc('QuestObjectiveTracker_UntrackQuest', add_quest_to_exclusions)
-hooksecurefunc('QuestMapQuestOptions_TrackQuest', add_quest_to_exclusions)
+hooksecurefunc('QuestObjectiveTracker_UntrackQuest', add_quest_to_exclusions) -- 2 parameters
+hooksecurefunc('QuestMapQuestOptions_TrackQuest', add_quest_to_exclusions) -- 1 parameter
 -- NOTE on `QuestMapQuestOptions_TrackQuest`: If the quest is already tracked, it calls `QuestObjectiveTracker_UntrackQuest`. See bear://x-callback-url/open-note?id=63F42C3E-5174-4487-A05C-96F761408B1F
 
 local function is_ignored(id, ty)
@@ -559,6 +559,7 @@ function _G.addon_aqt_on_addoncompartment_click(_, btn)
 	end
 end
 function _G.addon_aqt_on_addoncompartment_enter()
+---@diagnostic disable-next-line: missing-parameter
 	GameTooltip:SetOwner(AddonCompartmentFrame)
 	GameTooltip:AddDoubleLine('Auto Quest Tracker', text_activation_status())
 	GameTooltip:AddLine(C_CLICK .. 'Left-click ' .. C_TT .. 'to print ' .. C_ACTION .. 'status\124r.')
