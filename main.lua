@@ -19,7 +19,7 @@ local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_Quest
 local EnumQuestWatchType = _G.Enum.QuestWatchType
 local EnumQuestFrequency = _G.Enum.QuestFrequency
 
-local debug_mode, debug_mode_extra = false, false
+local debug_mode = false
 local update_pending -- Serves as ignore flag during the DELAY_ZONE_CHANGE time
 -- Colors for msgs
 local C_AQT = '\124cff2196f3'
@@ -85,12 +85,8 @@ local function table_is_empty(t)
 	return next(t) == nil
 end
 
-local function msg_debug(msg)
-	if debug_mode or debug_mode_extra then print(MSG_PREFIX .. msg) end
-end
-
-local function msg_debug_extra(msg)
-	if debug_mode_extra then print(MSG_PREFIX .. 'Debug: ' .. msg) end
+local function debugprint(...)
+	if a.gdb.debug_mode then print(MSG_PREFIX, 'Debug:', ...) end
 end
 
 local function msg_load(msg,delay)
@@ -171,10 +167,10 @@ local function auto_show_or_hide_quest(questIndex, questId, show)
 	local questTitle, _, id = get_questinfo(questIndex)
 	if not InCombatLockdown() and id == questId then
 		if show then
-			msg_debug(string.format('Tracking: %s (%s)', questTitle, questId))
+			debugprint(string.format('Tracking: %s (%s)', questTitle, questId))
 			C_QuestLogAddQuestWatch(questId, EnumQuestWatchType.Automatic)
 		else
-			msg_debug(string.format('Removing: %s (%s)', questTitle, questId))
+			debugprint(string.format('Removing: %s (%s)', questTitle, questId))
 			C_QuestLogRemoveQuestWatch(questId)
 		end
 	end
@@ -190,7 +186,7 @@ local last_hook_call = 0
 local function add_quest_to_exclusions(par1, par2)
 	local id = par2 or par1
 	-- local is_watched = QuestUtils_IsQuestWatched(id)
-	msg_debug('AQT: Hook was called.')
+	debugprint('AQT: Hook was called with', par2 and 'QuestObjectiveTracker_UntrackQuest' or 'QuestMapQuestOptions_TrackQuest')
 	-- This is to avoid calling our hook 2 times; see below.
 	-- if par2 or not is_watched then
 	local now = GetTime()
@@ -273,7 +269,7 @@ local function update_quests_for_zone()
 	local minimapZone = GetMinimapZoneText()
 	if currentZone == nil and minimapZone == nil then return end
 
-	msg_debug('Updating quests for: ' .. currentZone .. ' or ' .. minimapZone)
+	debugprint('Updating quests for: ' .. currentZone .. ' or ' .. minimapZone)
 
 	local questZone = nil
 
@@ -289,7 +285,7 @@ local function update_quests_for_zone()
 				if is_always(questId) or questZone == currentZone or questZone == minimapZone or isOnMap or hasLocalPOI then
 					if C_QuestLogGetQuestWatchType(questId) == nil then
 						auto_show_or_hide_quest(questIndex, questId, true)
-						msg_debug(format('Reason: %s %s %s %s', questZone == currentZone and 'currZone' or '', questZone == minimapZone and 'mmZone' or '', isOnMap and 'onMap' or '', hasLocalPOI and 'hasPOI' or ''))
+						debugprint(format('Reason: %s %s %s %s', questZone == currentZone and 'currZone' or '', questZone == minimapZone and 'mmZone' or '', isOnMap and 'onMap' or '', hasLocalPOI and 'hasPOI' or ''))
 					end
 				elseif is_never(questId) or C_QuestLogGetQuestWatchType(questId) == 0 then
 					auto_show_or_hide_quest(questIndex, questId, false)
@@ -312,6 +308,7 @@ local function onEvent(self, event, ...)
 			a.cdb.enabled = a.cdb.enabled == nil and true or a.cdb.enabled
 			a.gdb.loadMsg = a.gdb.loadMsg == nil and true or a.gdb.loadMsg
 			a.gdb.ignoreInstances = a.gdb.ignoreInstances or false
+			a.gdb.debug_mode = a.gdb.debug_mode or false
 			a.cdb.time_logout = a.cdb.time_logout or 0
 			a.gdb.exceptions_id = a.gdb.exceptions_id or {}
 			a.gdb.exceptions_type = a.gdb.exceptions_type or {}
@@ -454,7 +451,7 @@ local function msg_help()
 	print(C_AQT .. 'instances ' .. '\124ror ' .. C_AQT .. 'in' .. '\124r: Toggle auto-tracking of dungeon/raid quests.')
 	print(C_AQT .. 'loadingmessage' .. '\124r: Toggle status message in chat after reload/login.')
 	print(C_AQT .. 'quests ' .. '\124ror ' .. C_AQT .. 'q' .. '\124r: Show complete quest list.')
-	print(C_AQT .. 'debug' .. '\124r: Toggle debug mode (resets at reload).')
+	print(C_AQT .. 'debug' .. '\124r: Toggle debug mode.')
 	print(C_AQT .. 'help ' .. '\124ror ' .. C_AQT .. 'h' .. '\124r: Display this help text.')
 	print(C_AQT .. '/aqt ' .. '\124rwithout additional commands: Display status info.')
 	print('Enable/disable is per char, other settings are global.')
@@ -516,8 +513,8 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 				.. ' for all chars.'
 		)
 	elseif msg == 'debug' then
-		debug_mode = not debug_mode
-		msg_confirm(MSG_PREFIX .. 'Debug mode ' .. (debug_mode and 'enabled.' or 'disabled.'))
+		a.gdb.debug_mode = not a.gdb.debug_mode
+		msg_confirm(MSG_PREFIX .. 'Debug mode ' .. (a.gdb.debug_mode and 'enabled.' or 'disabled.'))
 	elseif msg == 'q' or msg == 'quests' then
 		msg_list_quests()
 	elseif msg == 'x' or msg == 'exceptions' then
