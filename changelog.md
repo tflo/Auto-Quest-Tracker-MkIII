@@ -1,3 +1,10 @@
+#### 4.0-beta-2 (2023-08-16)
+
+- Removed some debug code.
+- Ad-hoc updates on Exception status change via modifier will now be performed even if the status has not actually changed.
+- Much more info in quest list now (see also [Wiki: Quest List](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Quest-List))
+- **If you haven't already:** For the new stuff in AQT v4 check out the changelog entry for version *4.0-beta-1 (2023-08-15)* and the [AQT wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki), especially the [Exceptions section](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions).
+
 #### 4.0-beta-1 (2023-08-15)
 
 - First implementation of the new Exceptions system

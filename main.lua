@@ -6,7 +6,7 @@ AQT_CharDB = AQT_CharDB or {}
 local _
 local C_TimerAfter = _G.C_Timer.After
 local InCombatLockdown, GetRealZoneText, GetMinimapZoneText = _G.InCombatLockdown, _G.GetRealZoneText, _G.GetMinimapZoneText
-local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_QuestLogAddQuestWatch, C_QuestLogRemoveQuestWatch, C_QuestLogGetNumQuestLogEntries, C_QuestLogGetQuestWatchType, C_QuestLogGetTitleForQuestID =
+local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_QuestLogAddQuestWatch, C_QuestLogRemoveQuestWatch, C_QuestLogGetNumQuestLogEntries, C_QuestLogGetQuestWatchType, C_QuestLogGetTitleForQuestID, C_QuestLogIsQuestCalling =
 	_G.C_QuestLog.GetInfo,
 	_G.C_QuestLog.IsWorldQuest,
 	_G.C_QuestLog.GetQuestType,
@@ -14,17 +14,19 @@ local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_Quest
 	_G.C_QuestLog.RemoveQuestWatch,
 	_G.C_QuestLog.GetNumQuestLogEntries,
 	_G.C_QuestLog.GetQuestWatchType,
-	_G.C_QuestLog.GetTitleForQuestID
-local EnumQuestWatchTypeManual = _G.Enum.QuestWatchType.Manual
-local EnumQuestWatchTypeAutomatic = _G.Enum.QuestWatchType.Automatic
+	_G.C_QuestLog.GetTitleForQuestID,
+	_G.C_QuestLog.IsQuestCalling
+local EnumQuestWatchType = _G.Enum.QuestWatchType
+local EnumQuestFrequency = _G.Enum.QuestFrequency
 
 local debug_mode, debug_mode_extra = false, false
 local update_pending -- Serves as ignore flag during the DELAY_ZONE_CHANGE time
--- Colors and msgs
+-- Colors for msgs
 local C_AQT = '\124cff2196f3'
 local C_GOOD = '\124cnDIM_GREEN_FONT_COLOR:'
 local C_HALFBAD = '\124cnORANGE_FONT_COLOR:'
 local C_BAD = '\124cnDIM_RED_FONT_COLOR:'
+-- for addon compartment tooltip
 local C_TT = '\124cnWHITE_FONT_COLOR:' -- Base color for tooltip non-header text
 local C_CLICK = '\124cnORANGE_FONT_COLOR:'
 local C_ACTION = '\124cnYELLOW_FONT_COLOR:'
@@ -120,8 +122,6 @@ local function unregister_zone_events()
 	f:UnregisterEvent 'ZONE_CHANGED_NEW_AREA'
 end
 
--- Since the addition of dungeon quest exclusions, these two functions are nearly identical
--- Merge them if you don't add additional parameters for the listing
 local function get_questinfo(index)
 	local quest = C_QuestLogGetInfo(index)
 	if quest then return
@@ -172,7 +172,7 @@ local function auto_show_or_hide_quest(questIndex, questId, show)
 	if not InCombatLockdown() and id == questId then
 		if show then
 			msg_debug(string.format('Tracking: %s (%s)', questTitle, questId))
-			C_QuestLogAddQuestWatch(questId, EnumQuestWatchTypeAutomatic)
+			C_QuestLogAddQuestWatch(questId, EnumQuestWatchType.Automatic)
 		else
 			msg_debug(string.format('Removing: %s (%s)', questTitle, questId))
 			C_QuestLogRemoveQuestWatch(questId)
@@ -240,7 +240,7 @@ end
 
 hooksecurefunc('QuestObjectiveTracker_UntrackQuest', add_quest_to_exclusions)
 hooksecurefunc('QuestMapQuestOptions_TrackQuest', add_quest_to_exclusions)
--- NOTE on `QuestMapQuestOptions_TrackQuest`: If the quest is already tracked, it calls `QuestObjectiveTracker_UntrackQuest`
+-- NOTE on `QuestMapQuestOptions_TrackQuest`: If the quest is already tracked, it calls `QuestObjectiveTracker_UntrackQuest`. See bear://x-callback-url/open-note?id=63F42C3E-5174-4487-A05C-96F761408B1F
 
 local function is_ignored(id, ty)
 	if a.gdb.ignoreInstances and (ty == TYPE_DUNG or ty == TYPE_RAID)
