@@ -175,8 +175,8 @@ local last_hook_call = 0
 
 local function add_quest_to_exclusions(par1, par2)
 	local id = par2 or par1
-	local is_watched = QuestUtils_IsQuestWatched(id)
-	print('AQT: Hook was called. Quest watched:', is_watched) -- Debug
+	-- local is_watched = QuestUtils_IsQuestWatched(id)
+	msg_debug('AQT: Hook was called.')
 	-- This is to avoid calling our hook 2 times; see below.
 	-- if par2 or not is_watched then
 	local now = GetTime()
