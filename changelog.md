@@ -1,3 +1,7 @@
+#### 4.0-beta-4 (2023-08-18)
+
+- Small but impactful: Greatly reduced the lockout time between clicks, when changing Exceptions.
+
 #### 4.0-beta-3 (2023-08-16)
 
 - Removed some double message prefixes.

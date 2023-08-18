@@ -190,7 +190,7 @@ local function add_quest_to_exclusions(par1, par2)
 	-- This is to avoid calling our hook 2 times; see below.
 	-- if par2 or not is_watched then
 	local now = GetTime()
-	if now - last_hook_call > 0.5 then
+	if now - last_hook_call > 0.15 then
 		last_hook_call = now
 		-- TODO: Find a way to do this on Windows (eg cycling thru 0 and -1 with ALt-Ctrl)
 		-- Never
