@@ -1,3 +1,26 @@
+#### 4.0- (2023-08-18)
+
+- OK folks: I'm taking the beta into release, just because there are almost zero downloads on the beta channel.
+- The current beta is pretty stable, so there shouldn't be any (major) issues.
+- I need feedback. Especially on the config system. Should I switch to AceGUI? (instead of pure CLI, aka Slash input) Let me know!
+- The important part comes now. AQT v4 has quite a bunch of changes and new features. You do not have to know them. For the moment, you can continue using AQT as you are used to.
+- But: You should know them, because they are great improvements.
+- Now the notes for the folks that have missed out on v4-beta-1:
+- You can now assign the following account-wide Exceptions to quests:
+  - Ignore (as if AQT was disabled for a specific quest)
+  - Track always and everywhere
+  - Never track
+- Exceptions can be assigned via modifier keys while tracking/untracking a quest in the quest log or quest tracker.
+- See the brand new [AQT wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki), namely the [Exceptions section](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions), for how to do. It's too much new stuff to list here.
+- Print Exceptions report with `/aqt x`
+- Slash commands to clear Exceptions (see Wiki!)
+- More to come. Stay tuned!
+- AGAIN: Check the wiki for news and docs regularly! At least during this pseudo-beta time, until 4.1 is out. Thank you.
+
+#### 4.0-beta-4 (2023-08-18)
+
+- Small but impactful: Greatly reduced the lockout time between clicks, when changing Exceptions.
+
 #### 4.0-beta-3 (2023-08-16)
 
 - Removed some double message prefixes.
