@@ -489,46 +489,59 @@ end
 SLASH_AUTOQUESTTRACKER1 = '/autoquesttracker'
 SLASH_AUTOQUESTTRACKER2 = '/aqt'
 SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
-	if msg == 'e' or msg == 'on' then
-		aqt_enable(true)
-	-- Disable for current session (default)
-	elseif msg == 'd' or msg == 'off' then
-		aqt_enable(false, nil)
-	-- Permanently disable
-	elseif msg == 'dp' or msg == 'offp' then
-		aqt_enable(false, 0)
-	-- Disable for current instance
-	elseif msg == 'di' or msg == 'offi' then
-		aqt_enable(false, 2)
-	elseif msg == 'loadingmessage' then
-		a.gdb.loadMsg = not a.gdb.loadMsg
-		msg_confirm('Loading message ' .. (a.gdb.loadMsg and 'enabled' or 'disabled') .. ' for all chars.')
-	elseif msg == 'in' or msg == 'instances' then
-		a.gdb.ignoreInstances = not a.gdb.ignoreInstances
-		if a.cdb.enabled then update_quests_for_zone() end
-		msg_confirm('Instance quests are ' .. (a.gdb.ignoreInstances and 'ignored' or 'treated normally') .. ' for all chars.')
-	elseif msg == 'debug' then
-		a.gdb.debug_mode = not a.gdb.debug_mode
-		msg_confirm('Debug mode ' .. (a.gdb.debug_mode and 'enabled.' or 'disabled.'))
-	elseif msg == 'q' or msg == 'quests' then
-		msg_list_quests()
-	elseif msg == 'x' or msg == 'exceptions' then
-		msg_list_exceptions()
-	elseif msg == 'xcleari' or msg == 'exceptionsclearid' then
-		wipe(a.gdb.exceptions_id)
-		if a.cdb.enabled then update_quests_for_zone() end
-		msg_confirm('All quest ID exceptions cleared.')
-	elseif msg == 'xcleart' or msg == 'exceptionscleartype' then
-		wipe(a.gdb.exceptions_type)
-		if a.cdb.enabled then update_quests_for_zone() end
-		msg_confirm('All quest type exceptions cleared.')
-	elseif msg == 'xclearall' or msg == 'exceptionsclearall' then
-		wipe(a.gdb.exceptions_id)
-		wipe(a.gdb.exceptions_type)
-		if a.cdb.enabled then update_quests_for_zone() end
-		msg_confirm('All quest exceptions (ID & type) cleared.')
-	elseif msg == 'h' or msg == 'help' then
-		msg_help()
+	local mt = {}
+	for v in msg:gmatch '[^ ]+' do
+		tinsert(mt, v)
+	end
+	if #mt == 1 then
+		if msg == 'e' or msg == 'on' then
+			aqt_enable(true)
+			-- Disable for current session (default)
+		elseif msg == 'd' or msg == 'off' then
+			aqt_enable(false, nil)
+			-- Permanently disable
+		elseif msg == 'dp' or msg == 'offp' then
+			aqt_enable(false, 0)
+			-- Disable for current instance
+		elseif msg == 'di' or msg == 'offi' then
+			aqt_enable(false, 2)
+		elseif msg == 'loadingmessage' then
+			a.gdb.loadMsg = not a.gdb.loadMsg
+			msg_confirm('Loading message ' .. (a.gdb.loadMsg and 'enabled' or 'disabled') .. ' for all chars.')
+		elseif msg == 'in' or msg == 'instances' then
+			a.gdb.ignoreInstances = not a.gdb.ignoreInstances
+			if a.cdb.enabled then update_quests_for_zone() end
+			msg_confirm('Instance quests are ' ..
+			(a.gdb.ignoreInstances and 'ignored' or 'treated normally') .. ' for all chars.')
+		elseif msg == 'debug' then
+			a.gdb.debug_mode = not a.gdb.debug_mode
+			msg_confirm('Debug mode ' .. (a.gdb.debug_mode and 'enabled.' or 'disabled.'))
+		elseif msg == 'q' or msg == 'quests' then
+			msg_list_quests()
+		elseif msg == 'x' or msg == 'exceptions' then
+			msg_list_exceptions()
+		elseif msg == 'xcleari' or msg == 'exceptionsclearid' then
+			wipe(a.gdb.exceptions_id)
+			if a.cdb.enabled then update_quests_for_zone() end
+			msg_confirm('All quest ID exceptions cleared.')
+		elseif msg == 'xcleart' or msg == 'exceptionscleartype' then
+			wipe(a.gdb.exceptions_type)
+			if a.cdb.enabled then update_quests_for_zone() end
+			msg_confirm('All quest type exceptions cleared.')
+		elseif msg == 'xclearall' or msg == 'exceptionsclearall' then
+			wipe(a.gdb.exceptions_id)
+			wipe(a.gdb.exceptions_type)
+			if a.cdb.enabled then update_quests_for_zone() end
+			msg_confirm('All quest exceptions (ID & type) cleared.')
+		elseif msg == 'h' or msg == 'help' then
+			msg_help()
+		end
+	elseif #mt == 2 then
+		if mt[1] == 'a' then
+
+		end
+	elseif #mt == 3 then
+		-- do dtuff
 	else
 		msg_status()
 	end
