@@ -26,11 +26,11 @@ local C_AQT = '\124cff2196f3'
 local C_GOOD = '\124cnDIM_GREEN_FONT_COLOR:'
 local C_HALFBAD = '\124cnORANGE_FONT_COLOR:'
 local C_BAD = '\124cnDIM_RED_FONT_COLOR:'
--- for addon compartment tooltip
+local MSG_PREFIX = C_AQT .. 'Auto Quest Tracker\124r: '
+-- For addon compartment tooltip
 local C_TT = '\124cnWHITE_FONT_COLOR:' -- Base color for tooltip non-header text
 local C_CLICK = '\124cnORANGE_FONT_COLOR:'
 local C_ACTION = '\124cnYELLOW_FONT_COLOR:'
-local MSG_PREFIX = C_AQT .. 'Auto Quest Tracker\124r: '
 
 -- § Quest types
 local TYPE_DUNG = 81
@@ -41,23 +41,23 @@ local TYPE_PVP = 255 -- TODO: verify if this covers most of PvP or just some
 
 local quest_types = {
 	['dung'] = {
-		['full'] = 'Dungeon quests',
+		['full'] = 'Dungeon Quests',
 		['type'] = TYPE_DUNG
 	},
 	['raid'] = {
-		['full'] = 'Raid quests',
+		['full'] = 'Raid Quests',
 		['type'] = TYPE_RAID
 	},
 	['prof'] = {
-		['full'] = 'Profession and Barter quests',
+		['full'] = 'Profession Quests',
 		['type'] = TYPE_PROF
 	},
 	['pet'] = {
-		['full'] = 'Battle Pet quests',
+		['full'] = 'Battle Pet Quests',
 		['type'] = TYPE_PET
 	},
 	['pvp'] = {
-		['full'] = 'PvP quests',
+		['full'] = 'PvP Quests',
 		['type'] = TYPE_PVP
 	},
 }
@@ -100,11 +100,11 @@ local quest_groups = {
 local exception_types = {
 	['a'] = {
 		['value'] = 1,
-		['full'] = 'Always tracked',
+		['full'] = 'Always Tracked',
 	},
 	['n'] = {
 		['value'] = -1,
-		['full'] = 'Never tracked',
+		['full'] = 'Never Tracked',
 	},
 	['i'] = {
 		['value'] = 0,
@@ -613,7 +613,6 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		msg_status()
 	end
 end
-
 
 --[[===========================================================================
 	§ API

@@ -1,3 +1,15 @@
+#### 4.1.0 (2023-08-24)
+
+- New: Assign Exceptions to quest ID groups or quest types via slash command
+  - Examples:
+    - `/aqt a ata` assigns the _Always Track_ Exception (`a`) to the "Aiding the Accord" quest group (`ata`).
+    - `/aqt n dung` assigns the _Never Track_ Exception (`n`) to all quests of type 62 "Dungeon" (`dung`).
+  - For the complete documentation and lists of available commands, groupes and types, see the [Exceptions section](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions) of the [AQT wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki). In-game help will be added later (v4.2 or 4.3).
+- Fixed non-working Never Track Exceptions.
+- Exceptions report (`/aqt x`) should now work for all types of Exceptions. (Formatting of the report still needs some work.)
+- Greatly improved the wiki, all new 4.1 stuff should be properly documented. Let me know if you find that info is missing, or if something is poorly explained!
+- If you are new to version 4, please have look at the previous version 4.x.x changelogs, and, most important, check out the [AQT wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki).
+  
 #### 4.0.1 (2023-08-18)
 
 - CF messed up th push (again, sigh)
