@@ -311,7 +311,7 @@ local function update_quests_for_zone()
 			elseif is_ignored(questId, questType) then
 				-- Nop
 			else
-				if is_always(questId) or questZone == currentZone or questZone == minimapZone or isOnMap or hasLocalPOI then
+				if is_always(questId, questType) or (questZone == currentZone or questZone == minimapZone or isOnMap or hasLocalPOI) and not is_never(questId, questType) then
 					if C_QuestLogGetQuestWatchType(questId) == nil then
 						auto_show_or_hide_quest(questIndex, questId, true)
 						debugprint(format('Reason: %s %s %s %s', questZone == currentZone and 'currZone' or '', questZone == minimapZone and 'mmZone' or '', isOnMap and 'onMap' or '', hasLocalPOI and 'hasPOI' or ''))
