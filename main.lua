@@ -109,6 +109,10 @@ local exception_types = {
 	['i'] = {
 		['value'] = 0,
 		['full'] = 'Ignored',
+	},
+	['r'] = {
+		['value'] = nil,
+		['full'] = 'Removed from Exceptions',
 	}
 }
 
