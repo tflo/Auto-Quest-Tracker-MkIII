@@ -269,21 +269,21 @@ hooksecurefunc('QuestMapQuestOptions_TrackQuest', add_quest_to_exclusions) -- 1 
 
 local function is_ignored(id, ty)
 	if a.gdb.ignoreInstances and (ty == TYPE_DUNG or ty == TYPE_RAID)
-		or a.gdb.exceptions_id[id] == 0
+		or a.gdb.exceptions_id[id] == 0 or a.gdb.exceptions_type[ty] == 0
 	then
 		return true
 	end
 end
 
-local function is_always(id)
-	if a.gdb.exceptions_id[id] == 1
+local function is_always(id, ty)
+	if a.gdb.exceptions_id[id] == 1 or a.gdb.exceptions_type[ty] == 1
 	then
 		return true
 	end
 end
 
-local function is_never(id)
-	if a.gdb.exceptions_id[id] == -1
+local function is_never(id, ty)
+	if a.gdb.exceptions_id[id] == -1 or a.gdb.exceptions_type[ty] == -1
 	then
 		return true
 	end
@@ -316,7 +316,7 @@ local function update_quests_for_zone()
 						auto_show_or_hide_quest(questIndex, questId, true)
 						debugprint(format('Reason: %s %s %s %s', questZone == currentZone and 'currZone' or '', questZone == minimapZone and 'mmZone' or '', isOnMap and 'onMap' or '', hasLocalPOI and 'hasPOI' or ''))
 					end
-				elseif is_never(questId) or C_QuestLogGetQuestWatchType(questId) == 0 then
+				elseif is_never(questId, questType) or C_QuestLogGetQuestWatchType(questId) == 0 then
 					auto_show_or_hide_quest(questIndex, questId, false)
 				end
 			end
