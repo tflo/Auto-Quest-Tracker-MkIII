@@ -37,55 +37,67 @@ local TYPE_DUNG = 81
 local TYPE_RAID = 62
 local TYPE_PROF = 267
 local TYPE_PET = 102
-local TYPE_PVP = 255 -- TODO: verify
+local TYPE_PVP = 255 -- TODO: verify if this covers most of PvP or just some
 
 local quest_types = {
-	TYPE_DUNG = {
-		['descr'] = 'Dungeon quests',
-		['key'] = 'dung'
+	['dung'] = {
+		['full'] = 'Dungeon quests',
+		['type'] = TYPE_DUNG
 	},
-	TYPE_RAID = {
-		['descr'] = 'Raid quests',
-		['key'] = 'raid'
+	['raid'] = {
+		['full'] = 'Raid quests',
+		['type'] = TYPE_RAID
 	},
-	TYPE_PROF = {
-		['descr'] = 'Profession and Barter quests',
-		['key'] = 'prof'
+	['prof'] = {
+		['full'] = 'Profession and Barter quests',
+		['type'] = TYPE_PROF
 	},
-	TYPE_PET = {
-		['descr'] = 'Battle Pet quests',
-		['key'] = 'pet'
+	['pet'] = {
+		['full'] = 'Battle Pet quests',
+		['type'] = TYPE_PET
 	},
-	TYPE_PVP = {
-		['descr'] = 'PvP quests',
-		['key'] = 'pvp'
+	['pvp'] = {
+		['full'] = 'PvP quests',
+		['type'] = TYPE_PVP
 	},
-
 }
 
 -- § Quest groups
 
-local groups = {
-	['ata'] = {
+local quest_groups = {
+	['ata'] = { -- From SavedInstances
 		['full'] = 'Aiding the Accord',
 		['ids'] = {70750, 72068, 72373, 72374, 72375, 75259, 75859, 75860, 75861, 77254}
 	},
-	['car'] = {
+	['car'] = { -- From SavedInstances
 		['full'] = 'Catch and Release',
 		['ids'] = {70199, 70200, 70201, 70202, 70203, 70935}
 	},
-	['profw'] = {
-		['full'] = 'Professions Weeklies',
+	['weeklyprof'] = { -- From SavedInstances
+		['full'] = 'Profession Weeklies',
 		['ids'] = {66363, 66364, 66516, 66517, 66884, 66890, 66891, 66897, 66900, 66937, 66940, 66942, 66943, 66944, 66950, 66951, 66952, 70233, 70235, 70530, 70531, 70532, 70533, 70540, 70557, 70558, 70559, 70560, 70561, 70563, 70564, 70565, 70568, 70569, 70571, 70582, 70586, 70587, 70589, 70591, 70592, 70593, 70594, 70595, 70613, 70616, 70617, 70618, 70620, 72157, 72159, 72172, 72173, 72175, 72407, 72410, 72423, 72427, 72428, 66938, 70572, 66941, 66935, 70619, 70614, 72438, 70562, 66953, 70234, 66945, 72158, 72156, 66949, 70211, 70567, 70615, 70545, 72155}
+	},
+	['weeklyother'] = {-- this is a temprary collection
+		['full'] = 'custom',
+		['ids'] = {72727} -- A Burning Path Tru Time (TW weekly, 5 dungs)
 	}
 }
 
- -- TODO: can we also add exclusions via quest header?
+ -- TODO: can/should we also add exclusions via quest header?
 
 local exception_types = {
-	[0] = 'Ignored',
-	[1] = 'Always tracked',
-	[-1] = 'Never tracked',
+	['a'] = {
+		['value'] = 1,
+		['full'] = 'Always tracked',
+	},
+	['n'] = {
+		['value'] = -1,
+		['full'] = 'Never tracked',
+	},
+	['i'] = {
+		['value'] = 0,
+		['full'] = 'Ignored',
+	}
 }
 
 -- Misc
