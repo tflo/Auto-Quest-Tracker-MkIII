@@ -468,20 +468,30 @@ local function msg_list_exceptions()
 	if table_is_empty(a.gdb.exceptions_id) then
 		print(MSG_PREFIX .. 'You have no quest exceptions.')
 	else
-		print(MSG_PREFIX .. 'List of quest exceptions:')
+		print(MSG_PREFIX .. 'List of quest ID exceptions:')
 		for id, ex in pairs(a.gdb.exceptions_id) do
 			local title = C_QuestLogGetTitleForQuestID(id) or '[Quest title not yet available from server]'
-			local descr = exception_types[ex]
-			print(title .. ' (' .. id .. '): ' .. descr)
+			local xfull = ''
+			for k, v in pairs(exception_types) do
+				if v['value'] == ex then xfull = v['full'] break end
+			end
+			print(title .. ' (' .. id .. '): ' .. xfull)
 		end
 	end
 	if table_is_empty(a.gdb.exceptions_type) then
 		print(MSG_PREFIX .. 'You have no quest type exceptions.')
 	else
 		print(MSG_PREFIX .. 'List of quest type exceptions:')
-		for id, _ in pairs(a.gdb.exceptions_type) do
-			local type = quest_types[id]['descr']
-			print(type)
+		for ty, ex in pairs(a.gdb.exceptions_type) do
+			local xfull = ''
+			for k, v in pairs(exception_types) do
+				if v['value'] == ex then xfull = v['full'] break end
+			end
+			local tyfull = ''
+			for k, v in pairs(quest_types) do
+				if v['type'] == ty then tyfull = v['full'] break end
+			end
+			print(ty .. ' (' .. tyfull .. '): ' .. xfull)
 		end
 	end
 end
@@ -581,9 +591,21 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		elseif msg == 'h' or msg == 'help' then
 			msg_help()
 		end
-	elseif #mt == 2 then
-		if mt[1] == 'a' then
-
+	elseif #mt == 2 then -- assuming we have a cmd like a, i, n, or r, plus an arg
+		if quest_types[mt[2]] then
+			a.gdb.exceptions_type[quest_types[mt[2]]['type']] = exception_types[mt[1]]['value']
+			msg_confirm('Quest type "' ..
+			quest_types[mt[2]]['type'] ..
+			'" (' .. quest_types[mt[2]]['full'] .. ') is now ' .. exception_types[mt[1]]['full'] .. '.')
+			if a.cdb.enabled then update_quests_for_zone() end
+		elseif quest_groups[mt[2]] then
+			for _, id in ipairs(quest_groups[mt[2]]['ids']) do
+			a.gdb.exceptions_id[id] = exception_types[mt[1]]['value']
+			end
+			msg_confirm('Quest group "' ..
+				quest_groups[mt[2]]['full'] ..
+				'" (' .. #quest_groups[mt[2]]['ids'] .. ' quest IDs) is now ' .. exception_types[mt[1]]['full'] .. '.')
+				if a.cdb.enabled then update_quests_for_zone() end
 		end
 	elseif #mt == 3 then
 		-- do dtuff
