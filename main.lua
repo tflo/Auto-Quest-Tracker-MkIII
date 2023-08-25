@@ -316,21 +316,21 @@ local function update_quests_for_zone()
 
 	debugprint('Updating quests for: ' .. currentZone .. ' or ' .. minimapZone)
 
-	local questZone = nil
+	local header = nil
 
 	for questIndex = 1, C_QuestLogGetNumQuestLogEntries() do
 		local questTitle, isHeader, questId, isWorldQuest, isHidden, questType, isOnMap, hasLocalPOI =
 			get_questinfo(questIndex)
 		if not isWorldQuest and not isHidden then
 			if isHeader then
-				questZone = questTitle
+				header = questTitle
 			elseif is_ignored(questId, questType) then
 				-- Nop
 			else
-				if is_always(questId, questType) or (questZone == currentZone or questZone == minimapZone or isOnMap or hasLocalPOI) and not is_never(questId, questType) then
+				if is_always(questId, questType) or (header == currentZone or header == minimapZone or isOnMap or hasLocalPOI) and not is_never(questId, questType) then
 					if C_QuestLogGetQuestWatchType(questId) == nil then
 						auto_show_or_hide_quest(questIndex, questId, true)
-						debugprint(format('Reason: %s %s %s %s', questZone == currentZone and 'currZone' or '', questZone == minimapZone and 'mmZone' or '', isOnMap and 'onMap' or '', hasLocalPOI and 'hasPOI' or ''))
+						debugprint(format('Reason: %s %s %s %s', header == currentZone and 'currZone' or '', header == minimapZone and 'mmZone' or '', isOnMap and 'onMap' or '', hasLocalPOI and 'hasPOI' or ''))
 					end
 				elseif is_never(questId, questType) or C_QuestLogGetQuestWatchType(questId) == 0 then
 					auto_show_or_hide_quest(questIndex, questId, false)
