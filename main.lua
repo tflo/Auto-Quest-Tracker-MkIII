@@ -421,6 +421,12 @@ local function msg_status()
 		.. '\nType ' .. C_AQT .. '/aqt h\124r for a list of commands.')
 end
 
+local function msg_invalid_input()
+	print(MSG_PREFIX
+	.. 'This was not a valid input. Check for typos and spaces, or type '
+	.. C_AQT .. '/aqt h\124r for help.')
+end
+
 local function msg_list_quests()
 	print(MSG_PREFIX, 'Quests currently in quest log:\n[T = type; W = watch type]')
 	for questIndex = 1, C_QuestLogGetNumQuestLogEntries() do
@@ -590,6 +596,8 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 			msg_confirm('All quest exceptions (ID & type) cleared.')
 		elseif msg == 'h' or msg == 'help' then
 			msg_help()
+		else
+			msg_invalid_input()
 		end
 	elseif #mt == 2 then -- assuming we have a cmd like a, i, n, or r, plus an arg
 		if exception_types[mt[1]] then
@@ -609,6 +617,8 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 					#quest_groups[mt[2]]['ids'] .. ' quest IDs) is now ' .. exception_types[mt[1]]['full'] .. '.')
 				if a.cdb.enabled then update_quests_for_zone() end
 			end
+		else
+			msg_invalid_input()
 		end
 	elseif #mt == 3 then
 		-- do dtuff
