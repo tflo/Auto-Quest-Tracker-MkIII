@@ -594,16 +594,21 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		elseif msg == 'xcleari' or msg == 'exceptionsclearid' then
 			wipe(a.gdb.exceptions_id)
 			if a.cdb.enabled then update_quests_for_zone() end
-			msg_confirm('All quest ID exceptions cleared.')
+			msg_confirm('All exceptions by quest ID cleared.')
 		elseif msg == 'xcleart' or msg == 'exceptionscleartype' then
 			wipe(a.gdb.exceptions_type)
 			if a.cdb.enabled then update_quests_for_zone() end
-			msg_confirm('All quest type exceptions cleared.')
+			msg_confirm('All exceptions by quest type cleared.')
+		elseif msg == 'xclearh' or msg == 'exceptionsclearheader' then
+			wipe(a.gdb.exceptions_header)
+			if a.cdb.enabled then update_quests_for_zone() end
+			msg_confirm('All exceptions by quest header cleared.')
 		elseif msg == 'xclearall' or msg == 'exceptionsclearall' then
 			wipe(a.gdb.exceptions_id)
 			wipe(a.gdb.exceptions_type)
+			wipe(a.gdb.exceptions_header)
 			if a.cdb.enabled then update_quests_for_zone() end
-			msg_confirm('All quest exceptions (ID & type) cleared.')
+			msg_confirm('All quest exceptions (ID & type & header) cleared.')
 		elseif msg == 'h' or msg == 'help' then
 			msg_help()
 		else
