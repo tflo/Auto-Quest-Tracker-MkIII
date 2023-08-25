@@ -283,23 +283,23 @@ hooksecurefunc('QuestObjectiveTracker_UntrackQuest', add_quest_to_exclusions) --
 hooksecurefunc('QuestMapQuestOptions_TrackQuest', add_quest_to_exclusions) -- 1 parameter
 -- NOTE on `QuestMapQuestOptions_TrackQuest`: If the quest is already tracked, it calls `QuestObjectiveTracker_UntrackQuest`. See bear://x-callback-url/open-note?id=63F42C3E-5174-4487-A05C-96F761408B1F
 
-local function is_ignored(id, ty)
+local function is_ignored(id, ty, he)
 	if a.gdb.ignoreInstances and (ty == TYPE_DUNG or ty == TYPE_RAID)
-		or a.gdb.exceptions_id[id] == 0 or a.gdb.exceptions_type[ty] == 0
+		or a.gdb.exceptions_id[id] == 0 or a.gdb.exceptions_type[ty] == 0 or a.gdb.exceptions_header[he] == 0
 	then
 		return true
 	end
 end
 
-local function is_always(id, ty)
-	if a.gdb.exceptions_id[id] == 1 or a.gdb.exceptions_type[ty] == 1
+local function is_always(id, ty, he)
+	if a.gdb.exceptions_id[id] == 1 or a.gdb.exceptions_type[ty] == 1 or a.gdb.exceptions_header[he] == 1
 	then
 		return true
 	end
 end
 
-local function is_never(id, ty)
-	if a.gdb.exceptions_id[id] == -1 or a.gdb.exceptions_type[ty] == -1
+local function is_never(id, ty, he)
+	if a.gdb.exceptions_id[id] == -1 or a.gdb.exceptions_type[ty] == -1 or a.gdb.exceptions_header[he] == -1
 	then
 		return true
 	end
@@ -324,15 +324,15 @@ local function update_quests_for_zone()
 		if not isWorldQuest and not isHidden then
 			if isHeader then
 				header = questTitle
-			elseif is_ignored(questId, questType) then
+			elseif is_ignored(questId, questType, header) then
 				-- Nop
 			else
-				if is_always(questId, questType) or (header == currentZone or header == minimapZone or isOnMap or hasLocalPOI) and not is_never(questId, questType) then
+				if is_always(questId, questType, header) or (header == currentZone or header == minimapZone or isOnMap or hasLocalPOI) and not is_never(questId, questType) then
 					if C_QuestLogGetQuestWatchType(questId) == nil then
 						auto_show_or_hide_quest(questIndex, questId, true)
 						debugprint(format('Reason: %s %s %s %s', header == currentZone and 'currZone' or '', header == minimapZone and 'mmZone' or '', isOnMap and 'onMap' or '', hasLocalPOI and 'hasPOI' or ''))
 					end
-				elseif is_never(questId, questType) or C_QuestLogGetQuestWatchType(questId) == 0 then
+				elseif is_never(questId, questType, header) or C_QuestLogGetQuestWatchType(questId) == 0 then
 					auto_show_or_hide_quest(questIndex, questId, false)
 				end
 			end
@@ -357,6 +357,7 @@ local function onEvent(self, event, ...)
 			a.cdb.time_logout = a.cdb.time_logout or 0
 			a.gdb.exceptions_id = a.gdb.exceptions_id or {}
 			a.gdb.exceptions_type = a.gdb.exceptions_type or {}
+			a.gdb.exceptions_header = a.gdb.exceptions_header or {}
 			if a.cdb.enabled then
 				register_zone_events()
 				msg_load(C_GOOD .. 'Enabled.', 8)
