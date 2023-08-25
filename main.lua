@@ -501,6 +501,18 @@ local function msg_list_exceptions()
 			print(ty .. ' (' .. tyfull .. '): ' .. xfull)
 		end
 	end
+	if table_is_empty(a.gdb.exceptions_header) then
+		print(MSG_PREFIX .. 'You have no exceptions by quest header.')
+	else
+		print(MSG_PREFIX .. 'Active exceptions by quest header:')
+		for he, ex in pairs(a.gdb.exceptions_header) do
+			local xfull = ''
+			for k, v in pairs(exception_types) do
+				if v['value'] == ex then xfull = v['full'] break end
+			end
+			print('"' .. he .. '": ' .. xfull)
+		end
+	end
 end
 
 -- TODO: Add version info to help
