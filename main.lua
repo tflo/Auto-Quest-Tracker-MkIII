@@ -520,6 +520,13 @@ local function msg_help()
 	print('Some commands are also available via the addon compartment button. See the addon compartment button tooltip.')
 end
 
+local function get_questheader_from_input(t)
+	local headerarray = {}
+	for i = 3, #t do
+		tinsert(headerarray, t[i])
+	end
+	return table.concat(headerarray, ' ')
+end
 
 --[[---------------------------------------------------------------------------
 	§ Main switch
@@ -555,7 +562,9 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 	for v in msg:gmatch '[^ ]+' do
 		tinsert(mt, v)
 	end
-	if #mt == 1 then
+	if #mt == 0 then
+		msg_status()
+	elseif #mt == 1 then
 		if msg == 'e' or msg == 'on' then
 			aqt_enable(true)
 			-- Disable for current session (default)
@@ -617,14 +626,20 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 					'" (' ..
 					#quest_groups[mt[2]]['ids'] .. ' quest IDs) is now ' .. exception_types[mt[1]]['full'] .. '.')
 				if a.cdb.enabled then update_quests_for_zone() end
+			else
+				msg_invalid_input()
 			end
 		else
 			msg_invalid_input()
 		end
-	elseif #mt == 3 then
-		-- do dtuff
+	-- Header exceptions format: /aqt <exception cmd> h <quest header>
+	elseif mt[2] == 'h' and exception_types[mt[1]] then
+		local header = get_questheader_from_input(mt)
+		a.gdb.exceptions_header[header] = exception_types[mt[1]]['value']
+		msg_confirm('All quests with header "' .. header .. '" are now ' .. exception_types[mt[1]]['full'] .. '.')
+		if a.cdb.enabled then update_quests_for_zone() end
 	else
-		msg_status()
+		msg_invalid_input()
 	end
 end
 
