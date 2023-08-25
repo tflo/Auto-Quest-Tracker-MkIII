@@ -592,20 +592,23 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 			msg_help()
 		end
 	elseif #mt == 2 then -- assuming we have a cmd like a, i, n, or r, plus an arg
-		if quest_types[mt[2]] then
-			a.gdb.exceptions_type[quest_types[mt[2]]['type']] = exception_types[mt[1]]['value']
-			msg_confirm('Quest type "' ..
-			quest_types[mt[2]]['type'] ..
-			'" (' .. quest_types[mt[2]]['full'] .. ') is now ' .. exception_types[mt[1]]['full'] .. '.')
-			if a.cdb.enabled then update_quests_for_zone() end
-		elseif quest_groups[mt[2]] then
-			for _, id in ipairs(quest_groups[mt[2]]['ids']) do
-			a.gdb.exceptions_id[id] = exception_types[mt[1]]['value']
-			end
-			msg_confirm('Quest group "' ..
-				quest_groups[mt[2]]['full'] ..
-				'" (' .. #quest_groups[mt[2]]['ids'] .. ' quest IDs) is now ' .. exception_types[mt[1]]['full'] .. '.')
+		if exception_types[mt[1]] then
+			if quest_types[mt[2]] then
+				a.gdb.exceptions_type[quest_types[mt[2]]['type']] = exception_types[mt[1]]['value']
+				msg_confirm('Quest type "' ..
+					quest_types[mt[2]]['type'] ..
+					'" (' .. quest_types[mt[2]]['full'] .. ') is now ' .. exception_types[mt[1]]['full'] .. '.')
 				if a.cdb.enabled then update_quests_for_zone() end
+			elseif quest_groups[mt[2]] then
+				for _, id in ipairs(quest_groups[mt[2]]['ids']) do
+					a.gdb.exceptions_id[id] = exception_types[mt[1]]['value']
+				end
+				msg_confirm('Quest group "' ..
+					quest_groups[mt[2]]['full'] ..
+					'" (' ..
+					#quest_groups[mt[2]]['ids'] .. ' quest IDs) is now ' .. exception_types[mt[1]]['full'] .. '.')
+				if a.cdb.enabled then update_quests_for_zone() end
+			end
 		end
 	elseif #mt == 3 then
 		-- do dtuff
