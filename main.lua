@@ -473,11 +473,11 @@ end
 
 local function msg_list_exceptions()
 	if table_is_empty(a.gdb.exceptions_id) then
-		print(MSG_PREFIX .. 'You have no quest exceptions.')
+		print(MSG_PREFIX .. 'You have no exceptions by quest ID.')
 	else
-		print(MSG_PREFIX .. 'List of quest ID exceptions:')
+		print(MSG_PREFIX .. 'Active exceptions by quest ID:')
 		for id, ex in pairs(a.gdb.exceptions_id) do
-			local title = C_QuestLogGetTitleForQuestID(id) or '[Quest title not yet available from server]'
+			local title = C_QuestLogGetTitleForQuestID(id) or '[Quest title not (yet) available from server]'
 			local xfull = ''
 			for k, v in pairs(exception_types) do
 				if v['value'] == ex then xfull = v['full'] break end
@@ -486,9 +486,9 @@ local function msg_list_exceptions()
 		end
 	end
 	if table_is_empty(a.gdb.exceptions_type) then
-		print(MSG_PREFIX .. 'You have no quest type exceptions.')
+		print(MSG_PREFIX .. 'You have no exceptions by quest type.')
 	else
-		print(MSG_PREFIX .. 'List of quest type exceptions:')
+		print(MSG_PREFIX .. 'Active exceptions by quest type:')
 		for ty, ex in pairs(a.gdb.exceptions_type) do
 			local xfull = ''
 			for k, v in pairs(exception_types) do
@@ -626,7 +626,7 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		else
 			msg_invalid_input()
 		end
-	elseif #mt == 2 then -- assuming we have a cmd like a, i, n, or r, plus an arg
+	elseif #mt == 2 then
 		if exception_types[mt[1]] then
 			if quest_types[mt[2]] then
 				a.gdb.exceptions_type[quest_types[mt[2]]['type']] = exception_types[mt[1]]['value']
