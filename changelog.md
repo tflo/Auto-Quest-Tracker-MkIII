@@ -1,6 +1,16 @@
+#### 4.2.0 (2023-08-26)
+
+- Colorized the exceptions report (`x`) and confirmation messages.
+- Optimized many messages; minor code cleanup.
+- __New:__ Exceptions by quest header!
+  - Example: `/aqt a h Tournament` will apply the Always Track exception (`a`) to all quests listed (now or in the future) under the "Tournament" quest header.
+  - Fully documented in the [Exceptions section](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions) of the [AQT wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki).
+- Together with the previously implemented exceptions via modifier-click (v4.0) by ID group and by type (v4.1), the core of the new exception system is now complete. Expect some bugs to still run free ;)
+- In the next versions: In-game help system for all commands; possibility to add single quest IDs via slash command (you can already do that via modifier-click).
+
 #### 4.1.0 (2023-08-24)
 
-- New: Assign Exceptions to quest ID groups or quest types via slash command
+- __New:__ Assign Exceptions to quest ID groups or quest types via slash command
   - Examples:
     - `/aqt a ata` assigns the _Always Track_ Exception (`a`) to the "Aiding the Accord" quest group (`ata`).
     - `/aqt n dung` assigns the _Never Track_ Exception (`n`) to all quests of type 62 "Dungeon" (`dung`).
@@ -14,7 +24,6 @@
 
 - CF messed up th push (again, sigh)
 - So, once again the whole story:
-
 - OK folks: I'm taking the beta into release, just because there are almost zero downloads on the beta channel.
 - The current beta is pretty stable, so there shouldn't be any (major) issues.
 - I need feedback. Especially on the config system. Should I switch to AceGUI? (instead of pure CLI, aka Slash input) Let me know!
@@ -31,8 +40,6 @@
 - Slash commands to clear Exceptions (see Wiki!)
 - More to come. Stay tuned!
 - AGAIN: Check the wiki for news and docs regularly! At least during this pseudo-beta time, until 4.1 is out. Thank you.
-
-
 
 #### 4.0- (2023-08-18)
 
@@ -67,7 +74,7 @@
 - Removed some debug code.
 - Ad-hoc updates on Exception status change via modifier will now be performed even if the status has not actually changed.
 - Much more info in quest list now (see also [Wiki: Quest List](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Quest-List))
-- **If you haven't already:** For the new stuff in AQT v4 check out the changelog entry for version *4.0-beta-1 (2023-08-15)* and the [AQT wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki), especially the [Exceptions section](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions).
+- __If you haven't already:__ For the new stuff in AQT v4 check out the changelog entry for version _4.0-beta-1 (2023-08-15)_ and the [AQT wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki), especially the [Exceptions section](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions).
 
 #### 4.0-beta-1 (2023-08-15)
 
