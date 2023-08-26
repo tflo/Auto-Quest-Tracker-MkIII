@@ -18,8 +18,6 @@ local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_Quest
 	_G.C_QuestLog.IsQuestCalling
 local EnumQuestWatchType = _G.Enum.QuestWatchType
 local EnumQuestFrequency = _G.Enum.QuestFrequency
-
-local debug_mode = false
 local update_pending -- Serves as ignore flag during the DELAY_ZONE_CHANGE time
 -- Colors for msgs
 local C_AQT = '\124cff2196f3'
@@ -33,7 +31,7 @@ local C_ALW = C_GOOD
 local C_IGN = C_HALFBAD
 local C_NEV = C_BAD
 -- For addon compartment tooltip
-local C_TT = '\124cnWHITE_FONT_COLOR:' -- Base color for tooltip non-header text
+local C_TT = '\124cnWHITE_FONT_COLOR:' -- Base color for tooltip body text
 local C_CLICK = '\124cnORANGE_FONT_COLOR:'
 local C_ACTION = '\124cnYELLOW_FONT_COLOR:'
 
@@ -86,21 +84,19 @@ local quest_groups = {
 		['full'] = 'Catch and Release',
 		['ids'] = {70199, 70200, 70201, 70202, 70203, 70935}
 	},
-	['donotuse:weeklyprof'] = { -- From SavedInstances
-		['full'] = 'Profession Weeklies',
-		['ids'] = {66363, 66364, 66516, 66517, 66884, 66890, 66891, 66897, 66900, 66937, 66940, 66942, 66943, 66944, 66950, 66951, 66952, 70233, 70235, 70530, 70531, 70532, 70533, 70540, 70557, 70558, 70559, 70560, 70561, 70563, 70564, 70565, 70568, 70569, 70571, 70582, 70586, 70587, 70589, 70591, 70592, 70593, 70594, 70595, 70613, 70616, 70617, 70618, 70620, 72157, 72159, 72172, 72173, 72175, 72407, 72410, 72423, 72427, 72428, 66938, 70572, 66941, 66935, 70619, 70614, 72438, 70562, 66953, 70234, 66945, 72158, 72156, 66949, 70211, 70567, 70615, 70545, 72155}
-	},
-	['donotuse:weeklyother'] = {-- this is a temporary collection
-		['full'] = 'custom',
-		['ids'] = {72727} -- A Burning Path Tru Time (TW weekly, 5 dungs)
-	},
+	-- ['donotuse:weeklyprof'] = { -- From SavedInstances
+	-- 	['full'] = 'Profession Weeklies',
+	-- 	['ids'] = {66363, 66364, 66516, 66517, 66884, 66890, 66891, 66897, 66900, 66937, 66940, 66942, 66943, 66944, 66950, 66951, 66952, 70233, 70235, 70530, 70531, 70532, 70533, 70540, 70557, 70558, 70559, 70560, 70561, 70563, 70564, 70565, 70568, 70569, 70571, 70582, 70586, 70587, 70589, 70591, 70592, 70593, 70594, 70595, 70613, 70616, 70617, 70618, 70620, 72157, 72159, 72172, 72173, 72175, 72407, 72410, 72423, 72427, 72428, 66938, 70572, 66941, 66935, 70619, 70614, 72438, 70562, 66953, 70234, 66945, 72158, 72156, 66949, 70211, 70567, 70615, 70545, 72155}
+	-- },
+	-- ['donotuse:weeklyother'] = {-- this is a temporary collection
+	-- 	['full'] = 'custom',
+	-- 	['ids'] = {72727} -- A Burning Path Tru Time (TW weekly, 5 dungs)
+	-- },
 	['dr'] = { -- "The Waking Shores Tour" etc.; even numbers are the "advanced" variants
 		['full'] = 'Dragonriding Races',
 		['ids'] = {72481, 72482, 72483, 72484, 72485, 72486, 72487, 72488}
 	}
 }
-
- -- TODO: can/should we also add exclusions via quest header?
 
 local exception_types = {
 	['a'] = {
