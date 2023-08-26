@@ -464,12 +464,43 @@ local function msg_list_quests()
 	end
 end
 
+-- Ordered pairs
+-- From http://lua-users.org/wiki/SortedIteration
+local function gen_ordered_index(t)
+	local ordered_index = {}
+	for key in pairs(t) do
+		table.insert(ordered_index, key)
+	end
+	table.sort(ordered_index)
+	return ordered_index
+end
+
+local function ordered_next(t, state)
+	local key = nil
+	if state == nil then
+		t.ordered_index = gen_ordered_index(t)
+		key = t.ordered_index[1]
+	else
+		for i = 1, #t.ordered_index do
+			if t.ordered_index[i] == state then
+				key = t.ordered_index[i+1]
+			end
+		end
+	end
+	if key then return key, t[key] end
+	t.ordered_index = nil
+end
+
+local function ordered_pairs(t)
+	return ordered_next, t, nil
+end
+
 local function msg_list_exceptions()
 	if table_is_empty(a.gdb.exceptions_id) then
 		print(MSG_PREFIX .. 'You have no exceptions by quest ' .. C_AQT .. 'ID\124r.')
 	else
 		print(MSG_PREFIX .. 'Active exceptions by quest ' .. C_AQT .. 'ID\124r:')
-		for id, ex in pairs(a.gdb.exceptions_id) do
+		for id, ex in ordered_pairs(a.gdb.exceptions_id) do
 			local title = C_QuestLogGetTitleForQuestID(id) or '[Quest title not (yet) available from server]'
 			local xfull = ''
 			for k, v in pairs(exception_types) do
@@ -482,7 +513,7 @@ local function msg_list_exceptions()
 		print(MSG_PREFIX .. 'You have no exceptions by quest ' .. C_AQT .. 'TYPE\124r.')
 	else
 		print(MSG_PREFIX .. 'Active exceptions by quest ' .. C_AQT .. 'TYPE\124r:')
-		for ty, ex in pairs(a.gdb.exceptions_type) do
+		for ty, ex in ordered_pairs(a.gdb.exceptions_type) do
 			local xfull = ''
 			for k, v in pairs(exception_types) do
 				if v['value'] == ex then xfull = v['full'] break end
@@ -498,7 +529,7 @@ local function msg_list_exceptions()
 		print(MSG_PREFIX .. 'You have no exceptions by quest ' .. C_AQT .. 'HEADER\124r.')
 	else
 		print(MSG_PREFIX .. 'Active exceptions by quest ' .. C_AQT .. 'HEADER\124r:')
-		for he, ex in pairs(a.gdb.exceptions_header) do
+		for he, ex in ordered_pairs(a.gdb.exceptions_header) do
 			local xfull = ''
 			for k, v in pairs(exception_types) do
 				if v['value'] == ex then xfull = v['full'] break end
