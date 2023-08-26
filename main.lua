@@ -27,6 +27,11 @@ local C_GOOD = '\124cnDIM_GREEN_FONT_COLOR:'
 local C_HALFBAD = '\124cnORANGE_FONT_COLOR:'
 local C_BAD = '\124cnDIM_RED_FONT_COLOR:'
 local MSG_PREFIX = C_AQT .. 'Auto Quest Tracker\124r: '
+local MSG_PRE = C_AQT .. 'AQT\124r: '
+-- Colors for exception types
+local C_ALW = C_GOOD
+local C_IGN = C_HALFBAD
+local C_NEV = C_BAD
 -- For addon compartment tooltip
 local C_TT = '\124cnWHITE_FONT_COLOR:' -- Base color for tooltip non-header text
 local C_CLICK = '\124cnORANGE_FONT_COLOR:'
@@ -100,15 +105,15 @@ local quest_groups = {
 local exception_types = {
 	['a'] = {
 		['value'] = 1,
-		['full'] = 'Always Tracked',
+		['full'] = C_ALW .. 'Always Tracked\124r',
 	},
 	['n'] = {
 		['value'] = -1,
-		['full'] = 'Never Tracked',
+		['full'] = C_NEV .. 'Never Tracked\124r',
 	},
 	['i'] = {
 		['value'] = 0,
-		['full'] = 'Ignored',
+		['full'] = C_IGN .. 'Ignored\124r',
 	},
 	['r'] = {
 		['value'] = nil,
@@ -131,7 +136,7 @@ local function table_is_empty(t)
 end
 
 local function debugprint(...)
-	if a.gdb.debug_mode then print(MSG_PREFIX, 'Debug:', ...) end
+	if a.gdb.debug_mode then print(MSG_PRE, 'Debug:', ...) end
 end
 
 local function msg_load(msg,delay)
@@ -139,15 +144,7 @@ local function msg_load(msg,delay)
 end
 
 local function msg_confirm(msg)
-	print(MSG_PREFIX .. msg)
-end
-
-local function print_info_msg(msg, delay)
-	if delay then
-		C_TimerAfter(delay, function() print(MSG_PREFIX .. msg) end)
-	else
-		print(MSG_PREFIX .. msg)
-	end
+	print(MSG_PRE .. msg)
 end
 
 local f = CreateFrame 'Frame'
@@ -240,37 +237,37 @@ local function add_quest_to_exclusions(par1, par2)
 		-- TODO: Find a way to do this on Windows (eg cycling thru 0 and -1 with ALt-Ctrl)
 		-- Never
 		if IsMetaKeyDown() and IsAltKeyDown() then
-			if a.gdb.exceptions_id[id] ~= -1 then
-				print(MSG_PREFIX .. 'Quest', id, 'is now NEVER tracked on all toons.')
-				a.gdb.exceptions_id[id] = -1
+			if a.gdb.exceptions_id[id] ~= exception_types.n.value then
+				print(MSG_PRE .. 'Quest', id, 'is now ' ..  exception_types.n.full .. '.')
+				a.gdb.exceptions_id[id] = exception_types.n.value
 			else
-				print(MSG_PREFIX .. 'Quest', id, 'is already NEVER tracked.')
+				print(MSG_PRE .. 'Quest', id, 'is already ' ..  exception_types.n.full .. '.')
 			end
 			if a.cdb.enabled then C_QuestLogRemoveQuestWatch(id) end
 		-- Ignore
 		elseif is_mac and IsAltKeyDown() or IsAltKeyDown() and IsControlKeyDown() then
-			if a.gdb.exceptions_id[id] ~= 0 then
-				print(MSG_PREFIX .. 'Quest', id, 'is now IGNORED on all toons.')
-				a.gdb.exceptions_id[id] = 0
+			if a.gdb.exceptions_id[id] ~= exception_types.i.value then
+				print(MSG_PRE .. 'Quest', id, 'is now ' ..  exception_types.i.full .. '.')
+				a.gdb.exceptions_id[id] = exception_types.i.value
 			else
-				print(MSG_PREFIX .. 'Quest', id, 'is already IGNORED.')
+				print(MSG_PRE .. 'Quest', id, 'is already ' ..  exception_types.i.full .. '.')
 			end
 		-- Always
 		elseif IsMetaKeyDown() or IsAltKeyDown() then
-			if a.gdb.exceptions_id[id] ~= 1 then
-				print(MSG_PREFIX .. 'Quest', id, 'is now ALWAYS tracked on all toons.')
-				a.gdb.exceptions_id[id] = 1
+			if a.gdb.exceptions_id[id] ~= exception_types.a.value then
+				print(MSG_PRE .. 'Quest', id, 'is now ' ..  exception_types.a.full .. '.')
+				a.gdb.exceptions_id[id] = exception_types.a.value
 			else
-				print(MSG_PREFIX .. 'Quest', id, 'is already ALWAYS tracked.')
+				print(MSG_PRE .. 'Quest', id, 'is already ' ..  exception_types.a.full .. '.')
 			end
 			if a.cdb.enabled then C_QuestLogAddQuestWatch(id, EnumQuestWatchType.Automatic) end
 		-- Remove from exceptions
 		elseif IsControlKeyDown() then
 			if a.gdb.exceptions_id[id] then
-				print(MSG_PREFIX .. 'Removed quest', id, 'from exceptions.')
+				print(MSG_PRE .. 'Removed quest', id, 'from exceptions.')
 				a.gdb.exceptions_id[id] = nil
 			else
-				print(MSG_PREFIX .. 'Quest', id, 'is not on the exceptions list.')
+				print(MSG_PRE .. 'Quest', id, 'does not have an exception assigned.')
 			end
 			if a.cdb.enabled and C_QuestLogGetQuestWatchType(id) == EnumQuestWatchType.Manual then
 				C_QuestLogAddQuestWatch(id, EnumQuestWatchType.Automatic)
@@ -424,7 +421,7 @@ end
 
 local function msg_invalid_input()
 	print(MSG_PREFIX
-	.. 'This was not a valid input. Check for typos and spaces, or type '
+	.. C_BAD .. 'This was not a valid input.\124r Check for typos and missing spaces, or type '
 	.. C_AQT .. '/aqt h\124r for help.')
 end
 
@@ -473,9 +470,9 @@ end
 
 local function msg_list_exceptions()
 	if table_is_empty(a.gdb.exceptions_id) then
-		print(MSG_PREFIX .. 'You have no exceptions by quest ID.')
+		print(MSG_PREFIX .. 'You have no exceptions by quest ' .. C_AQT .. 'ID\124r.')
 	else
-		print(MSG_PREFIX .. 'Active exceptions by quest ID:')
+		print(MSG_PREFIX .. 'Active exceptions by quest ' .. C_AQT .. 'ID\124r:')
 		for id, ex in pairs(a.gdb.exceptions_id) do
 			local title = C_QuestLogGetTitleForQuestID(id) or '[Quest title not (yet) available from server]'
 			local xfull = ''
@@ -486,9 +483,9 @@ local function msg_list_exceptions()
 		end
 	end
 	if table_is_empty(a.gdb.exceptions_type) then
-		print(MSG_PREFIX .. 'You have no exceptions by quest type.')
+		print(MSG_PREFIX .. 'You have no exceptions by quest ' .. C_AQT .. 'TYPE\124r.')
 	else
-		print(MSG_PREFIX .. 'Active exceptions by quest type:')
+		print(MSG_PREFIX .. 'Active exceptions by quest ' .. C_AQT .. 'TYPE\124r:')
 		for ty, ex in pairs(a.gdb.exceptions_type) do
 			local xfull = ''
 			for k, v in pairs(exception_types) do
@@ -502,9 +499,9 @@ local function msg_list_exceptions()
 		end
 	end
 	if table_is_empty(a.gdb.exceptions_header) then
-		print(MSG_PREFIX .. 'You have no exceptions by quest header.')
+		print(MSG_PREFIX .. 'You have no exceptions by quest ' .. C_AQT .. 'HEADER\124r.')
 	else
-		print(MSG_PREFIX .. 'Active exceptions by quest header:')
+		print(MSG_PREFIX .. 'Active exceptions by quest ' .. C_AQT .. 'HEADER\124r:')
 		for he, ex in pairs(a.gdb.exceptions_header) do
 			local xfull = ''
 			for k, v in pairs(exception_types) do
