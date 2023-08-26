@@ -497,9 +497,9 @@ end
 
 local function msg_list_exceptions()
 	if table_is_empty(a.gdb.exceptions_id) then
-		print(MSG_PREFIX .. 'You have no exceptions by quest ' .. C_AQT .. 'ID\124r.')
+		print(MSG_PREFIX .. 'You have no exceptions per quest ' .. C_AQT .. 'ID\124r.')
 	else
-		print(MSG_PREFIX .. 'Active exceptions by quest ' .. C_AQT .. 'ID\124r:')
+		print(MSG_PREFIX .. 'Active exceptions per quest ' .. C_AQT .. 'ID\124r:')
 		for id, ex in ordered_pairs(a.gdb.exceptions_id) do
 			local title = C_QuestLogGetTitleForQuestID(id) or '[Quest title not (yet) available from server]'
 			local xfull = ''
@@ -510,9 +510,9 @@ local function msg_list_exceptions()
 		end
 	end
 	if table_is_empty(a.gdb.exceptions_type) then
-		print(MSG_PREFIX .. 'You have no exceptions by quest ' .. C_AQT .. 'TYPE\124r.')
+		print(MSG_PREFIX .. 'You have no exceptions per quest ' .. C_AQT .. 'TYPE\124r.')
 	else
-		print(MSG_PREFIX .. 'Active exceptions by quest ' .. C_AQT .. 'TYPE\124r:')
+		print(MSG_PREFIX .. 'Active exceptions per quest ' .. C_AQT .. 'TYPE\124r:')
 		for ty, ex in ordered_pairs(a.gdb.exceptions_type) do
 			local xfull = ''
 			for k, v in pairs(exception_types) do
@@ -526,9 +526,9 @@ local function msg_list_exceptions()
 		end
 	end
 	if table_is_empty(a.gdb.exceptions_header) then
-		print(MSG_PREFIX .. 'You have no exceptions by quest ' .. C_AQT .. 'HEADER\124r.')
+		print(MSG_PREFIX .. 'You have no exceptions per quest ' .. C_AQT .. 'HEADER\124r.')
 	else
-		print(MSG_PREFIX .. 'Active exceptions by quest ' .. C_AQT .. 'HEADER\124r:')
+		print(MSG_PREFIX .. 'Active exceptions per quest ' .. C_AQT .. 'HEADER\124r:')
 		for he, ex in ordered_pairs(a.gdb.exceptions_header) do
 			local xfull = ''
 			for k, v in pairs(exception_types) do
@@ -630,15 +630,15 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		elseif msg == 'xcleari' or msg == 'exceptionsclearid' then
 			wipe(a.gdb.exceptions_id)
 			if a.cdb.enabled then update_quests_for_zone() end
-			msg_confirm('All exceptions by quest ID cleared.')
+			msg_confirm('All exceptions per quest ID cleared.')
 		elseif msg == 'xcleart' or msg == 'exceptionscleartype' then
 			wipe(a.gdb.exceptions_type)
 			if a.cdb.enabled then update_quests_for_zone() end
-			msg_confirm('All exceptions by quest type cleared.')
+			msg_confirm('All exceptions per quest type cleared.')
 		elseif msg == 'xclearh' or msg == 'exceptionsclearheader' then
 			wipe(a.gdb.exceptions_header)
 			if a.cdb.enabled then update_quests_for_zone() end
-			msg_confirm('All exceptions by quest header cleared.')
+			msg_confirm('All exceptions per quest header cleared.')
 		elseif msg == 'xclearall' or msg == 'exceptionsclearall' then
 			wipe(a.gdb.exceptions_id)
 			wipe(a.gdb.exceptions_type)
