@@ -74,7 +74,7 @@ local quest_groups = {
 	},
 	['ata'] = { -- From SavedInstances
 		['full'] = 'Aiding the Accord',
-		['ids'] = {70750, 72068, 72373, 72374, 72375, 75259, 75859, 75860, 75861, 77254}
+		['ids'] = {70750, 72068, 72373, 72374, 72375, 75259, 75859, 75860, 75861, 77254, 77976}
 	},
 	['awa'] = {
 		['full'] = 'A Worthy Ally: Loamm Niffen',
