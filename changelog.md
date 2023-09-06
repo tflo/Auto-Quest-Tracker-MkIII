@@ -1,3 +1,8 @@
+#### 4.2.1 (2023-09-06)
+
+- Added quest ID of new Dreamsurge AidingTheAccord to the AtA exceptions group.
+- toc bump 100107.
+
 #### 4.2.0 (2023-08-26)
 
 - Colorized the exceptions report (`x`) and confirmation messages.
