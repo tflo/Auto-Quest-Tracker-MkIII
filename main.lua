@@ -72,9 +72,9 @@ local quest_groups = {
 		['full'] = 'Replenish the Reservoir (SL)',
 		['ids'] = {61981, 61982, 61983, 61984}
 	},
-	['ata'] = { -- From SavedInstances
+	['ata'] = { 
 		['full'] = 'Aiding the Accord',
-		['ids'] = {70750, 72068, 72373, 72374, 72375, 75259, 75859, 75860, 75861, 77254, 77976}
+		['ids'] = {70750, 72068, 72373, 72374, 72375, 75259, 75859, 75860, 75861, 77254, 77976, 78446}
 	},
 	['awa'] = {
 		['full'] = 'A Worthy Ally: Loamm Niffen',
