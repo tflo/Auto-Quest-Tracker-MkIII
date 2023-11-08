@@ -92,9 +92,9 @@ local quest_groups = {
 	-- 	['full'] = 'custom',
 	-- 	['ids'] = {72727} -- A Burning Path Tru Time (TW weekly, 5 dungs)
 	-- },
-	['dr'] = { -- "The Waking Shores Tour" etc.; even numbers are the "advanced" variants
+	['dr'] = { -- "The Waking Shores Tour" etc.; even numbers are the "advanced" variants; 78113 is Challenge Tour
 		['full'] = 'Dragonriding Races',
-		['ids'] = {72481, 72482, 72483, 72484, 72485, 72486, 72487, 72488}
+		['ids'] = {72481, 72482, 72483, 72484, 72485, 72486, 72487, 72488, 78113}
 	}
 }
 
