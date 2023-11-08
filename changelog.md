@@ -1,3 +1,9 @@
+#### 4.2.2 (2023-11-08)
+
+- Added Superbloom to the Aiding the Accord quest group.
+- Added Challenge Tour to the Dragonriding Races quest group. (If there is a new 10.2 tour, it will be added shortly.)
+- toc update to 100200.
+
 #### 4.2.1 (2023-09-06)
 
 - Added quest ID of new Dreamsurge AidingTheAccord to the AtA exceptions group.
