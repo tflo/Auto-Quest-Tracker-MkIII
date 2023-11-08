@@ -1,6 +1,8 @@
 #### 4.2.1 (2023-09-06)
 
 - Added quest ID of new Dreamsurge AidingTheAccord to the AtA exceptions group.
+- Output of the exceptions report is now sorted by quest ID.
+- Wording of chat feedback.
 - toc bump 100107.
 
 #### 4.2.0 (2023-08-26)
