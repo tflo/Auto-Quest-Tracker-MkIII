@@ -1,8 +1,14 @@
+#### 4.2.3.1 (2023-11-15)
+
+- Curseforge build failed, attempt no. 2.
+- Fixed typo in slash command example in 4.2.3 changes.
+- For the latest changes, see 4.2.3 below.
+
 #### 4.2.3 (2023-11-15)
 
 - Two new groups that you can add to your exceptions:
   - `awadw`: A Worthy Ally: Dream Wardens (single-quest group).
-  - `awa`: A Worthy Ally (Loamm Niffen & Dream Wardens). So, for example, `aqt a awa` will now set both Worthy Ally weeklies to 'always tracked'.
+  - `awa`: A Worthy Ally (Loamm Niffen & Dream Wardens). So, for example, `/aqt a awa` will now set both Worthy Ally weeklies to 'always tracked'.
 - Changed keyword for 'A Worthy Ally: Loamm Niffen' from `awa` to `awaln`.
 - Updated the [Wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions) accordingly.
 
