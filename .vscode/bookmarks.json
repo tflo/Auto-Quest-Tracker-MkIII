@@ -4,12 +4,12 @@
 			"path": "main.lua",
 			"bookmarks": [
 				{
-					"line": 304,
+					"line": 312,
 					"column": 39,
 					"label": "update_quests_for_zone"
 				},
 				{
-					"line": 497,
+					"line": 505,
 					"column": 36,
 					"label": "msg_list_exceptions"
 				}

@@ -1,3 +1,11 @@
+#### 4.2.3 (2023-11-15)
+
+- Two new groups that you can add to your exceptions:
+  - `awadw`: A Worthy Ally: Dream Wardens (single-quest group).
+  - `awa`: A Worthy Ally (Loamm Niffen & Dream Wardens). So, for example, `aqt a awa` will now set both Worthy Ally weeklies to 'always tracked'.
+- Changed keyword for 'A Worthy Ally: Loamm Niffen' from `awa` to `awaln`.
+- Updated the [Wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions) accordingly.
+
 #### 4.2.2 (2023-11-08)
 
 - Added Superbloom to the Aiding the Accord quest group.

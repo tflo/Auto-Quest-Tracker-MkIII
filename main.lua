@@ -72,13 +72,21 @@ local quest_groups = {
 		['full'] = 'Replenish the Reservoir (SL)',
 		['ids'] = {61981, 61982, 61983, 61984}
 	},
-	['ata'] = { 
+	['ata'] = {
 		['full'] = 'Aiding the Accord',
 		['ids'] = {70750, 72068, 72373, 72374, 72375, 75259, 75859, 75860, 75861, 77254, 77976, 78446}
 	},
-	['awa'] = {
+	['awaln'] = {
 		['full'] = 'A Worthy Ally: Loamm Niffen',
 		['ids'] = {75665}
+	},
+	['awadw'] = {
+		['full'] = 'A Worthy Ally: Dream Wardens',
+		['ids'] = {78444}
+	},
+	['awa'] = {
+		['full'] = 'A Worthy Ally (Loamm Niffen & Dream Wardens)',
+		['ids'] = {75665, 78444}
 	},
 	['car'] = { -- From SavedInstances
 		['full'] = 'Catch and Release',
