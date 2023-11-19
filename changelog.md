@@ -1,3 +1,7 @@
+#### 4.2.4 (2023-11-19)
+
+- Added 78447 'Aiding the Accord: Emerald Bounty' to the AtA group (to always track al AtA quests: `/aqt a ata`).
+
 #### 4.2.3.1 (2023-11-15)
 
 - Curseforge build failed, attempt no. 2.
