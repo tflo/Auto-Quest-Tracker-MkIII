@@ -1,6 +1,10 @@
+#### 4.2.5 (2023-11-30)
+
+- Added 'The Storm Race Tour' to the Dragonriding Races group (to always track all Dragonriding Race quests: `/aqt a dr`)
+
 #### 4.2.4 (2023-11-19)
 
-- Added 78447 'Aiding the Accord: Emerald Bounty' to the AtA group (to always track al AtA quests: `/aqt a ata`).
+- Added 78447 'Aiding the Accord: Emerald Bounty' to the AtA group (to always track all AtA quests: `/aqt a ata`).
 
 #### 4.2.3.1 (2023-11-15)
 
