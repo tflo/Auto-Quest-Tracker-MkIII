@@ -1,6 +1,8 @@
 # Auto Quest Tracker Mk III
 
-Auto Quest Tracker Mk III is the continuation of a [continuation](https://github.com/gamer-angel05/AutoQuestTracker) (last version: Jan 2021) of the [original Auto Quest Tracker](https://www.curseforge.com/wow/addons/auto-quest-tracker) addon (last version: Jan 2018).
+Auto Quest Tracker Mk III started out as the continuation of a [continuation](https://github.com/gamer-angel05/AutoQuestTracker) (last version: Jan 2021) of the [original Auto Quest Tracker](https://www.curseforge.com/wow/addons/auto-quest-tracker) addon (last version: Jan 2018).
+
+But in the meantime, and especially since version 4, it would be an understatement to call AQT Mk III a "continuation" of the original. It has gained so many new features and improvements, and not even the core function has remained unchanged.
 
 _If you're not familiar with the original Auto Quest Tracker:_  
 
@@ -11,26 +13,6 @@ The addon works with most known quest trackers, like [Quester](https://www.curse
 I have updated Auto Quest Tracker, because – in my experience – it works better than all other similarly featured addons I've tried over the last years. For example, it's the only one – again: in my experience – that properly handles Callings and account-wide pet quests. (When I'm in Shadowlands, I do _not_ want to see my Pandaria Beasts of Fable pet dailies popping up in the tracker, and when I'm pet battling in Pandaria I'm not interested in seeing my Maldraxxus Callings, …)
 
 _Quester + Auto Quest Tracker_ is my preferred combo.
-
-## Breaking news (2023-08-15)
-
-First __beta of AQT version 4__ is available from the beta channel!
-
-Main feature of v4 is the new __Exceptions__ system:
-
-- You can now assign the following account-wide Exceptions to quests:
-  - Ignore (as if AQT was disabled for a specific quest)
-  - Track always and everywhere
-  - Never track
-- Exceptions can be assigned via modifier keys while tracking/untracking a quest in the quest log or quest tracker.
-- See the brand new [AQT wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki), namely the [Exceptions section](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions), for how to do. It's too much new stuff to list here.
-- Print Exceptions report with `/aqt x`
-- Slash commands to clear Exceptions (see Wiki!)
-- Much more new stuff to come. Stay tuned!
-
-__Wiki: As AQT has become more sophisticated in terms of settings and commands, I have started to build a Wiki. So, if you're new to AQT, or want to get better structured and more complete information, head over to the brand new [AQT Wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki)! (Currently WiP, but already usable.)__
-
-__If you are using the new AQT v4-beta, the Wiki is a must, as you find the documentation of all the new stuff only there!__
 
 ## New features of "Mk III"
 
@@ -61,11 +43,27 @@ New since version 3.0, there are now 3 modes of disabling AQT:
   - A map instance usually is everything that is separated by a loading screen. So, for example, an instance change happens when you use a portal or when you enter/leave a dungeon instance, etc.
   - AQT will re-enable itself automatically as soon as you have left the map instance.
 
-### Option to ignore instance (dungeon and raid) quests (new in v2.2)
+### Exceptions
 
-- To toggle, enter `/aqt in` or `/aqt instances`. This is an account-wide setting.
-- Enable this to keep the quest tracker free of dungeon quest spam. (Technically, instance quests are on a specific map and have map POIs like any other quest. However, from a player's point of view, these quests aren't tied to a specific zone in the same way as normal quests, as in most cases you enter dungeons via LFG, which is location-neutral.)
-- "Ignore" means that instance quests will not be removed from your tracker when you enable this option, but if you remove them, they won't come back when you zone into the quest's map. (And if you put them in the tracker, they will stay there wherever you are).
+New in v4 is a sophisticated __Exceptions__ system:
+
+- You can now assign the following account-wide exceptions to quests:
+  - Ignore (as if AQT was disabled for a specific quest).
+  - Track always and everywhere.
+  - Never track (disable auto tracking and remove from quest tracker).
+- Exceptions can be assigned via modifier keys while tracking/untracking a quest in the quest log or quest tracker.
+- Exceptions can be assigned via slash commands.
+- See the brand new [AQT wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki), namely the [Exceptions section](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions), for how to do. It's too much new stuff to list here.
+- Print Exceptions report with `/aqt x`.
+- Slash commands to clear Exceptions (see Wiki!).
+
+This opens up endless possibilites, for example:
+
+- Set all (current and future) dungeon quests to Never Track: `/aqt n dung`.
+- Set all variations of 'Aiding the Accord' to Always Track: `/aqt a ata`.
+- Set all Dragonracing quests to Ignore: `/aqt i dr`.
+
+… and so on. Again, check the [Wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions) for detailed instructions and examples!
 
 ### Mini API
 
