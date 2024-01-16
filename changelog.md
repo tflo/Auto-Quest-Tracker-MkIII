@@ -1,3 +1,8 @@
+#### 4.2.6 (2024-01-16)
+
+- Updated readme.
+- toc bump for 10.2.5. Compatibility update will follow if needed.
+
 #### 4.2.5 (2023-11-30)
 
 - Added 'The Storm Race Tour' to the Dragonriding Races group (to always track all Dragonriding Race quests: `/aqt a dr`)

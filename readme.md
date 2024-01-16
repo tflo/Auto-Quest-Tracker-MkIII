@@ -61,7 +61,7 @@ This opens up endless possibilites, for example:
 
 - Set all (current and future) dungeon quests to Never Track: `/aqt n dung`.
 - Set all variations of 'Aiding the Accord' to Always Track: `/aqt a ata`.
-- Set all Dragonracing quests to Ignore: `/aqt i dr`.
+- Set all Dragonriding Race quests to Ignore: `/aqt i dr`.
 
 … and so on. Again, check the [Wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions) for detailed instructions and examples!
 
