@@ -1,3 +1,7 @@
+#### 4.2.7 (2024-03-19)
+
+- toc bump only. If necessary, the addon will be updated in the next days.
+
 #### 4.2.6 (2024-01-16)
 
 - Updated readme.
