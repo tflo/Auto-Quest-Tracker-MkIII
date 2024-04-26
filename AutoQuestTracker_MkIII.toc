@@ -1,6 +1,6 @@
 ## Interface: 100206
 ## Title: Auto Quest Tracker Mk III
-## Version: 4.2.7
+## Version: 4.2.8
 ## IconTexture: Interface/Minimap/Tracking/QuestBlob
 ## AddonCompartmentFunc: addon_aqt_on_addoncompartment_click
 ## AddonCompartmentFuncOnEnter: addon_aqt_on_addoncompartment_enter
@@ -11,7 +11,7 @@
 ## X-Wago-ID: q96dg1NO
 ## X-Curse-Project-ID: 775978
 ## X-Category: Quests, Miscellaneous
-## X-Date:
+## X-Date: 2024-04-26
 ## X-License: GPLv3
 ## X-Localizations: enUS
 ## SavedVariables: AQT_GlobalDB
@@ -38,7 +38,8 @@ main.lua
 
 # License ======================================================================
 
-# Portions: Copyright © 2022–2023 Thomas Floeren for the added/changed code of "Mk III" (v2.0)
+# Portions: Copyright © 2022–2024 Thomas Floeren for the added/changed code of "Mk III"
+# (version 2 and later)
 #
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software

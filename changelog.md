@@ -1,3 +1,8 @@
+#### 4.2.8 (2024-04-26)
+
+- Added “Last Hurrah” quest group (argument: `lh`; e.g. to always track all “Last Hurrah” quests: `/aqt a lh`).
+- Updated the [Wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions) accordingly.
+
 #### 4.2.7 (2024-03-19)
 
 - toc bump only. If necessary, the addon will be updated in the next days.

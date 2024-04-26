@@ -76,6 +76,10 @@ local quest_groups = {
 		['full'] = 'Aiding the Accord',
 		['ids'] = {70750, 72068, 72373, 72374, 72375, 75259, 75859, 75860, 75861, 77254, 77976, 78446, 78447}
 	},
+	['lh'] = {
+		['full'] = 'Last Hurrah',
+		['ids'] = {80385, 80386, 80388} -- Unspecified: 80389
+	},
 	['awaln'] = {
 		['full'] = 'A Worthy Ally: Loamm Niffen',
 		['ids'] = {75665}
@@ -239,7 +243,6 @@ local function add_quest_to_exclusions(par1, par2)
 	if now - last_hook_call > 0.15 then
 		last_hook_call = now
 		-- TODO: Find a way to do this on Windows (eg cycling thru 0 and -1 with ALt-Ctrl)
-		-- Never
 		if IsMetaKeyDown() and IsAltKeyDown() then
 			if a.gdb.exceptions_id[id] ~= exception_types.n.value then
 				print(MSG_PRE .. 'Quest', id, 'is now ' ..  exception_types.n.full .. '.')
