@@ -1,3 +1,7 @@
+#### 4.2.9 (2024-05-08)
+
+- toc bump only (100207). Addon update will follow as needed.
+
 #### 4.2.8 (2024-04-26)
 
 - Added “Last Hurrah” quest group (argument: `lh`; e.g. to always track all “Last Hurrah” quests: `/aqt a lh`).
