@@ -1,3 +1,11 @@
+#### 4.2.10-beta-1 (2024-07-24)
+
+- This is a *temporary* compatibility update for TWW 110000.
+- They removed a function I was hooking. Thus, removing a quest ID from "Always Tracked" via modified Shift-click on the quest in the quest log is currently disabled (adding a quest this way still works).
+- There is currently no way to remove individual quest IDs from "Always Tracked". (You can use `/aqt xcleari` to remove *all* exceptions assigned to quest IDs, or edit the SavedVariables data.)
+- I hope to get this fixed soon, sorry for the inconvenience.
+- toc updated for TWW 110000.
+
 #### 4.2.9 (2024-05-08)
 
 - toc bump only (100207). Addon update will follow as needed.

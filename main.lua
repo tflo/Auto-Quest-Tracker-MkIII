@@ -283,7 +283,10 @@ local function add_quest_to_exclusions(par1, par2)
 	end
 end
 
-hooksecurefunc('QuestObjectiveTracker_UntrackQuest', add_quest_to_exclusions) -- 2 parameters
+-- `QuestObjectiveTracker_UntrackQuest` was removed in TWW.
+-- FIXME: Modify the exception removal logic accordingly.
+-- TODO (someday): Make `/aqt r` and friends work with quest IDs.
+-- hooksecurefunc('QuestObjectiveTracker_UntrackQuest', add_quest_to_exclusions) -- 2 parameters
 hooksecurefunc('QuestMapQuestOptions_TrackQuest', add_quest_to_exclusions) -- 1 parameter
 -- NOTE on `QuestMapQuestOptions_TrackQuest`: If the quest is already tracked, it calls `QuestObjectiveTracker_UntrackQuest`. See bear://x-callback-url/open-note?id=63F42C3E-5174-4487-A05C-96F761408B1F
 
