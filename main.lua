@@ -231,64 +231,68 @@ end
 	§ Exclusions
 ---------------------------------------------------------------------------]]--
 
-local last_hook_call = 0
+local function confirm_msg(quest_id, predicate, action)
+	print(format('%sQuest %s %s%s.', MSG_PRE, quest_id, predicate, action))
+end
 
-local function add_quest_to_exclusions(par1, par2)
-	local id = par2 or par1
-	-- local is_watched = QuestUtils_IsQuestWatched(id)
-	debugprint('AQT: Hook was called with', par2 and 'QuestObjectiveTracker_UntrackQuest' or 'QuestMapQuestOptions_TrackQuest')
-	-- This is to avoid calling our hook 2 times; see below.
-	-- if par2 or not is_watched then
-	local now = GetTime()
-	if now - last_hook_call > 0.15 then
-		last_hook_call = now
-		-- TODO: Find a way to do this on Windows (eg cycling thru 0 and -1 with ALt-Ctrl)
-		if IsMetaKeyDown() and IsAltKeyDown() then
-			if a.gdb.exceptions_id[id] ~= exception_types.n.value then
-				print(MSG_PRE .. 'Quest', id, 'is now ' ..  exception_types.n.full .. '.')
-				a.gdb.exceptions_id[id] = exception_types.n.value
-			else
-				print(MSG_PRE .. 'Quest', id, 'is already ' ..  exception_types.n.full .. '.')
-			end
-			if a.cdb.enabled then C_QuestLogRemoveQuestWatch(id) end
-		-- Ignore
-		elseif is_mac and IsAltKeyDown() or IsAltKeyDown() and IsControlKeyDown() then
-			if a.gdb.exceptions_id[id] ~= exception_types.i.value then
-				print(MSG_PRE .. 'Quest', id, 'is now ' ..  exception_types.i.full .. '.')
-				a.gdb.exceptions_id[id] = exception_types.i.value
-			else
-				print(MSG_PRE .. 'Quest', id, 'is already ' ..  exception_types.i.full .. '.')
-			end
-		-- Always
-		elseif IsMetaKeyDown() or IsAltKeyDown() then
-			if a.gdb.exceptions_id[id] ~= exception_types.a.value then
-				print(MSG_PRE .. 'Quest', id, 'is now ' ..  exception_types.a.full .. '.')
-				a.gdb.exceptions_id[id] = exception_types.a.value
-			else
-				print(MSG_PRE .. 'Quest', id, 'is already ' ..  exception_types.a.full .. '.')
-			end
-			if a.cdb.enabled then C_QuestLogAddQuestWatch(id, EnumQuestWatchType.Automatic) end
-		-- Remove from exceptions
-		elseif IsControlKeyDown() then
-			if a.gdb.exceptions_id[id] then
-				print(MSG_PRE .. 'Removed quest', id, 'from exceptions.')
-				a.gdb.exceptions_id[id] = nil
-			else
-				print(MSG_PRE .. 'Quest', id, 'does not have an exception assigned.')
-			end
-			if a.cdb.enabled and C_QuestLogGetQuestWatchType(id) == EnumQuestWatchType.Manual then
-				C_QuestLogAddQuestWatch(id, EnumQuestWatchType.Automatic)
-			end
+local pred = {'is now ', 'is already '}
+
+local function add_quest_to_exceptions(par1)
+	local id, pr = par1, pred[1]
+	-- Never track quest: Cmd-Option
+	-- Currently Mac only, due to the lack of enough modifier keys on Windows
+	if IsMetaKeyDown() and IsAltKeyDown() then
+		if a.gdb.exceptions_id[id] ~= exception_types.n.value then
+			a.gdb.exceptions_id[id] = exception_types.n.value
+		else
+			pr = pred[2]
+		end
+		confirm_msg(id, pr, exception_types.n.full)
+		if a.cdb.enabled then C_QuestLogRemoveQuestWatch(id) end
+	-- Ignore quest: Option (Mac), Ctrl-Alt (Win)
+	elseif is_mac and IsAltKeyDown() or IsAltKeyDown() and IsControlKeyDown() then
+		if a.gdb.exceptions_id[id] ~= exception_types.i.value then
+			a.gdb.exceptions_id[id] = exception_types.i.value
+		else
+			pr = pred[2]
+		end
+		confirm_msg(id, pr, exception_types.i.full)
+	-- Always track quest: Cmd (Mac), Alt (Win)
+	elseif IsMetaKeyDown() or IsAltKeyDown() then
+		if a.gdb.exceptions_id[id] ~= exception_types.a.value then
+			a.gdb.exceptions_id[id] = exception_types.a.value
+		else
+			pr = pred[2]
+		end
+		confirm_msg(id, pr, exception_types.a.full)
+		if a.cdb.enabled then C_QuestLogAddQuestWatch(id, EnumQuestWatchType.Automatic) end
+	-- Remove quest from exceptions: Ctrl (Mac/Win)
+	elseif IsControlKeyDown() then
+		if a.gdb.exceptions_id[id] then
+			a.gdb.exceptions_id[id] = nil
+			pr = 'removed from exceptions'
+		else
+			pr = 'did not have any exception assigned'
+		end
+		confirm_msg(id, pr, '')
+		if a.cdb.enabled and C_QuestLogGetQuestWatchType(id) == EnumQuestWatchType.Manual then
+			C_QuestLogAddQuestWatch(id, EnumQuestWatchType.Automatic)
 		end
 	end
 end
 
--- `QuestObjectiveTracker_UntrackQuest` was removed in TWW.
--- FIXME: Modify the exception removal logic accordingly.
--- TODO (someday): Make `/aqt r` and friends work with quest IDs.
--- hooksecurefunc('QuestObjectiveTracker_UntrackQuest', add_quest_to_exclusions) -- 2 parameters
-hooksecurefunc('QuestMapQuestOptions_TrackQuest', add_quest_to_exclusions) -- 1 parameter
--- NOTE on `QuestMapQuestOptions_TrackQuest`: If the quest is already tracked, it calls `QuestObjectiveTracker_UntrackQuest`. See bear://x-callback-url/open-note?id=63F42C3E-5174-4487-A05C-96F761408B1F
+-- Variant 1 (like before TWW, but only in QuestMapFrame):
+-- Good: Well tested pre-TWW; only one hook
+-- Bad: Works only in QuestMapFrame
+-- Current (11.0.0) function: https://www.townlong-yak.com/framexml/live/Blizzard_UIPanels_Game/QuestMapFrame.lua#1370
+-- hooksecurefunc('QuestMapQuestOptions_TrackQuest', add_quest_to_exceptions)
+
+-- Variant 2 (experimental):
+-- Good: Works also in tracker
+-- Bad: Two hooks; not thoroughly tested; quirks with other addons?
+-- Good/Bad: Quest watch limit is significant: `AddQuestWatch` is not called if over limit
+hooksecurefunc(C_QuestLog, 'AddQuestWatch', add_quest_to_exceptions)
+hooksecurefunc(C_QuestLog, 'RemoveQuestWatch', add_quest_to_exceptions)
 
 local function is_ignored(id, ty, he)
 	if a.gdb.ignoreInstances and (ty == TYPE_DUNG or ty == TYPE_RAID)
@@ -555,6 +559,7 @@ end
 
 -- TODO: Add version info to help
 local function msg_help()
+	print('--------------------')
 	print(MSG_PREFIX .. 'Help: \n'.. C_AQT .. '/autoquesttracker ' .. '\124ror ' .. C_AQT .. '/aqt ' .. '\124runderstands these commands: ')
 	print(C_AQT .. 'on ' .. '\124ror ' .. C_AQT .. 'e' .. '\124r: Enable AQT.')
 	print(C_AQT .. 'off ' .. '\124ror ' .. C_AQT .. 'd' .. '\124r: Disable AQT for the current session.')
@@ -567,7 +572,10 @@ local function msg_help()
 	print(C_AQT .. 'help ' .. '\124ror ' .. C_AQT .. 'h' .. '\124r: Display this help text.')
 	print(C_AQT .. '/aqt ' .. '\124rwithout additional commands: Display status info.')
 	print('Enable/disable is per char, other settings are global.')
-	print('Some commands are also available via the addon compartment button. See the addon compartment button tooltip.')
+	print('Some commands are also available via the ' .. C_AQT .. 'addon compartment button\124r. See the addon compartment button tooltip.')
+	print('To learn how to assign ' .. C_AQT .. 'exceptions\124r (special behavior) to quests or quest groups, please see the AQT Wiki at...')
+	print(C_AQT .. 'https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions')
+	print('--------------------')
 end
 
 local function get_questheader_from_input(t)

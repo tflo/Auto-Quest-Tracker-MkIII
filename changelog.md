@@ -1,3 +1,14 @@
+#### 4.2.10 (2024-07-25)
+
+- Re-established the 'Assign Exceptions via Modified Click' system, similar to before TWW.
+- Hooking different functions now: 
+    - This is a bit experimental, and not thoroughly tested.
+    - Possible interferences with other addons(?)
+    - Please report any quirks you are experiencing to the [GitHub Issues](https://github.com/tflo/Auto-Quest-Tracker-MkIII/issues).
+- Improved the in-game Help text (`/aqt h`).
+- Improved the [AQT Wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions).
+- Minor code refactoring.
+
 #### 4.2.10-beta-1 (2024-07-24)
 
 - This is a *temporary* compatibility update for TWW 110000.
