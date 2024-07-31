@@ -68,6 +68,14 @@ local quest_types = {
 -- § Quest groups
 
 local quest_groups = {
+	['re'] = {
+		['full'] = 'Radiant Echoes Weeklies',
+		['ids'] = {
+			78938, -- Champion of the Waterlords
+			82676, -- Broken Masquerade
+			82689,  -- Only Darkness
+		}
+	},
 	['rtr'] = {
 		['full'] = 'Replenish the Reservoir (SL)',
 		['ids'] = {61981, 61982, 61983, 61984}
