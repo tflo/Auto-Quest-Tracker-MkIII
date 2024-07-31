@@ -76,17 +76,17 @@ local quest_groups = {
 			82689,  -- Only Darkness
 		}
 	},
-	['rtr'] = {
-		['full'] = 'Replenish the Reservoir (SL)',
-		['ids'] = {61981, 61982, 61983, 61984}
+	['lh'] = {
+		['full'] = 'Last Hurrah',
+		['ids'] = {80385, 80386, 80388} -- Unspecified: 80389
 	},
 	['ata'] = {
 		['full'] = 'Aiding the Accord',
 		['ids'] = {70750, 72068, 72373, 72374, 72375, 75259, 75859, 75860, 75861, 77254, 77976, 78446, 78447}
 	},
-	['lh'] = {
-		['full'] = 'Last Hurrah',
-		['ids'] = {80385, 80386, 80388} -- Unspecified: 80389
+	['awa'] = {
+		['full'] = 'A Worthy Ally (Loamm Niffen & Dream Wardens)',
+		['ids'] = {75665, 78444}
 	},
 	['awaln'] = {
 		['full'] = 'A Worthy Ally: Loamm Niffen',
@@ -96,13 +96,17 @@ local quest_groups = {
 		['full'] = 'A Worthy Ally: Dream Wardens',
 		['ids'] = {78444}
 	},
-	['awa'] = {
-		['full'] = 'A Worthy Ally (Loamm Niffen & Dream Wardens)',
-		['ids'] = {75665, 78444}
-	},
 	['car'] = { -- From SavedInstances
 		['full'] = 'Catch and Release',
 		['ids'] = {70199, 70200, 70201, 70202, 70203, 70935}
+	},
+	['dr'] = { -- "The Waking Shores Tour" etc.; even numbers are the "advanced" variants; 78113 is Challenge Tour; 77815: Stone Race Tour
+		['full'] = 'Dragonriding Races',
+		['ids'] = {72481, 72482, 72483, 72484, 72485, 72486, 72487, 72488, 78113, 77815}
+	},
+	['rtr'] = {
+		['full'] = 'Replenish the Reservoir (SL)',
+		['ids'] = {61981, 61982, 61983, 61984}
 	},
 	-- ['donotuse:weeklyprof'] = { -- From SavedInstances
 	-- 	['full'] = 'Profession Weeklies',
@@ -112,10 +116,6 @@ local quest_groups = {
 	-- 	['full'] = 'custom',
 	-- 	['ids'] = {72727} -- A Burning Path Tru Time (TW weekly, 5 dungs)
 	-- },
-	['dr'] = { -- "The Waking Shores Tour" etc.; even numbers are the "advanced" variants; 78113 is Challenge Tour; 77815: Stone Race Tour
-		['full'] = 'Dragonriding Races',
-		['ids'] = {72481, 72482, 72483, 72484, 72485, 72486, 72487, 72488, 78113, 77815}
-	}
 }
 
 local exception_types = {
@@ -225,10 +225,10 @@ local function auto_show_or_hide_quest(questIndex, questId, show)
 	local questTitle, _, id = get_questinfo(questIndex)
 	if not InCombatLockdown() and id == questId then
 		if show then
-			debugprint(string.format('Tracking: %s (%s)', questTitle, questId))
+			debugprint(format('Tracking: %s (%s)', questTitle, questId))
 			C_QuestLogAddQuestWatch(questId, EnumQuestWatchType.Automatic)
 		else
-			debugprint(string.format('Removing: %s (%s)', questTitle, questId))
+			debugprint(format('Removing: %s (%s)', questTitle, questId))
 			C_QuestLogRemoveQuestWatch(questId)
 		end
 	end
@@ -529,7 +529,7 @@ local function msg_list_exceptions()
 		for id, ex in ordered_pairs(a.gdb.exceptions_id) do
 			local title = C_QuestLogGetTitleForQuestID(id) or '[Quest title not (yet) available from server]'
 			local xfull = ''
-			for k, v in pairs(exception_types) do
+			for _, v in pairs(exception_types) do
 				if v['value'] == ex then xfull = v['full'] break end
 			end
 			print(title .. ' (' .. id .. '): ' .. xfull)

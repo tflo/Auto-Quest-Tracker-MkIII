@@ -1,3 +1,8 @@
+#### 4.2.11 (2024-07-31)
+
+- Added a named quest group for the Radiant Echoes weeklies (3 quest IDs). The key is `re`, so you can for example say `/aqt a re` to set the quest IDs of this group to *Always Track.*
+- Updated Exceptions list on the [AQT Wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions).
+
 #### 4.2.10 (2024-07-25)
 
 - Re-established the 'Assign Exceptions via Modified Click' system, similar to before TWW.
