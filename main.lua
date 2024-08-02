@@ -3,6 +3,14 @@ local addon_name, a = ...
 AQT_GlobalDB = AQT_GlobalDB or {}
 AQT_CharDB = AQT_CharDB or {}
 
+--[[===========================================================================
+	Declarations
+===========================================================================]]--
+
+--[[---------------------------------------------------------------------------
+	API
+---------------------------------------------------------------------------]]--
+
 local _
 local C_TimerAfter = _G.C_Timer.After
 local InCombatLockdown, GetRealZoneText, GetMinimapZoneText = _G.InCombatLockdown, _G.GetRealZoneText, _G.GetMinimapZoneText
@@ -16,13 +24,16 @@ local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_Quest
 	_G.C_QuestLog.GetQuestWatchType,
 	_G.C_QuestLog.GetTitleForQuestID,
 	_G.C_QuestLog.IsQuestCalling
-local update_pending -- Serves as ignore flag during the DELAY_ZONE_CHANGE time
--- Colors for msgs
 
 local QUESTFREQUENCY_DAILY = Enum.QuestFrequency.Daily
 local QWT_AUTOMATIC = Enum.QuestWatchType.Automatic
 local QWT_MANUAL = Enum.QuestWatchType.Manual
 
+--[[---------------------------------------------------------------------------
+	Constants
+---------------------------------------------------------------------------]]--
+
+-- Colors for msgs
 local C_AQT = '\124cff2196f3'
 local C_GOOD = '\124cnDIM_GREEN_FONT_COLOR:'
 local C_HALFBAD = '\124cnORANGE_FONT_COLOR:'
@@ -34,17 +45,29 @@ local MSG_PRE = C_AQT .. 'AQT\124r: '
 local C_ALW = C_GOOD
 local C_IGN = C_HALFBAD
 local C_NEV = C_BAD
--- For addon compartment tooltip
+-- Colors for addon compartment tooltip
 local C_TT = '\124cnWHITE_FONT_COLOR:' -- Base color for tooltip body text
 local C_CLICK = '\124cnORANGE_FONT_COLOR:'
 local C_ACTION = '\124cnYELLOW_FONT_COLOR:'
 
--- § Quest types
+-- Quest types Blizz (https://warcraft.wiki.gg/wiki/API_C_QuestLog.GetQuestType)
+-- NOTE: There is also the `Enum.QuestTag`, which contains *some* of the types from `GetQuestType`,
+-- but also some that are not returned by `GetQuestType` (eg Delve = 288). What is this mess?!
 local TYPE_DUNG = 81
 local TYPE_RAID = 62
 local TYPE_PROF = 267
 local TYPE_PET = 102
-local TYPE_PVP = 255 -- TODO: verify if this covers most of PvP or just some
+local TYPE_PVP = 255 -- This is "War Mode PvP"
+
+-- Serves as delay for update after zone change events and as throttle (new zone events are ignored during the time)
+local DELAY_ZONE_CHANGE = 3 -- Testwise 3; we used to use 2
+-- Time between logout and login needed to consider it a new session
+local SESSION_GRACE_TIME = 1200 -- 20 min
+local IS_MAC = IsMacClient()
+
+--[[---------------------------------------------------------------------------
+	Tables
+---------------------------------------------------------------------------]]--
 
 local quest_types = {
 	['dung'] = {
@@ -68,8 +91,6 @@ local quest_types = {
 		['type'] = TYPE_PVP
 	},
 }
-
--- § Quest groups
 
 local quest_groups = {
 	['re'] = {
@@ -141,15 +162,9 @@ local exception_types = {
 	}
 }
 
--- Misc
--- Serves as delay for update after zone change events and as throttle (new zone events are ignored during the time)
-local DELAY_ZONE_CHANGE = 3 -- Testwise 3; we used to use 2
--- Time between logout and login needed to consider it a new session
-local SESSION_GRACE_TIME = 1200 -- 20 min
-
--- For the modifier click on the compartment button
-local is_mac = IsMacClient()
-local text_cmd_key = is_mac and 'Command' or 'Control'
+--[[---------------------------------------------------------------------------
+	Misc functions
+---------------------------------------------------------------------------]]--
 
 local function table_is_empty(t)
 	return next(t) == nil
@@ -242,9 +257,12 @@ local function auto_show_or_hide_quest(questIndex, questId, show)
 end
 
 
---[[---------------------------------------------------------------------------
-	§ Exclusions
----------------------------------------------------------------------------]]--
+--[[===========================================================================
+	Exclusions
+===========================================================================]]--
+
+-- TODO: Let's find out if we can use the new (TWW) menu hooking system, instead of modified clicks!
+-- https://warcraft.wiki.gg/wiki/Patch_11.0.0/API_changes#Hooking_menus
 
 local function confirm_msg(quest_id, predicate, action)
 	print(format('%sQuest %s %s%s.', MSG_PRE, quest_id, predicate, action))
@@ -265,7 +283,7 @@ local function add_quest_to_exceptions(par1)
 		confirm_msg(id, pr, exception_types.n.full)
 		if a.cdb.enabled then C_QuestLogRemoveQuestWatch(id) end
 	-- Ignore quest: Option (Mac), Ctrl-Alt (Win)
-	elseif is_mac and IsAltKeyDown() or IsAltKeyDown() and IsControlKeyDown() then
+	elseif IS_MAC and IsAltKeyDown() or IsAltKeyDown() and IsControlKeyDown() then
 		if a.gdb.exceptions_id[id] ~= exception_types.i.value then
 			a.gdb.exceptions_id[id] = exception_types.i.value
 		else
@@ -296,6 +314,11 @@ local function add_quest_to_exceptions(par1)
 	end
 end
 
+
+--[[---------------------------------------------------------------------------
+	Hook(s)
+---------------------------------------------------------------------------]]--
+
 -- Variant 1 (like before TWW, but only in QuestMapFrame):
 -- Good: Well tested pre-TWW; only one hook
 -- Bad: Works only in QuestMapFrame
@@ -310,6 +333,14 @@ end
 -- FUNCTIONS. OTHERWISE WE HAVE AN INFINITE LOOP.
 hooksecurefunc(C_QuestLog, 'AddQuestWatch', add_quest_to_exceptions)
 hooksecurefunc(C_QuestLog, 'RemoveQuestWatch', add_quest_to_exceptions)
+
+-- Alternatively, to hooking the "watch" functions, we could listen to the QUEST_WATCH_LIST_CHANGED event.
+-- We need a throttle then to avoid loops.
+
+
+--[[===========================================================================
+	Core
+===========================================================================]]--
 
 local function is_ignored(id, ty, he)
 	if a.gdb.ignoreInstances and (ty == TYPE_DUNG or ty == TYPE_RAID)
@@ -334,7 +365,7 @@ local function is_never(id, ty, he)
 end
 
 --[[---------------------------------------------------------------------------
-	§ Core function
+	Main function
 ---------------------------------------------------------------------------]]--
 
 local function update_quests_for_zone()
@@ -370,8 +401,10 @@ end
 
 
 --[[---------------------------------------------------------------------------
-	§ Doing stuff at events
+	Doing stuff at events
 ---------------------------------------------------------------------------]]--
+
+local update_pending -- Ignore flag during the DELAY_ZONE_CHANGE time
 
 local function onEvent(self, event, ...)
 	if event == 'ADDON_LOADED' then
@@ -435,7 +468,7 @@ f:SetScript('OnEvent', onEvent)
 
 
 --[[===========================================================================
-	§ UI
+	UI
 ===========================================================================]]--
 
 local BLOCK_SEP = '----------------------------------------'
@@ -610,7 +643,7 @@ local function get_questheader_from_input(t)
 end
 
 --[[---------------------------------------------------------------------------
-	§ Main switch
+	Main switch
 ---------------------------------------------------------------------------]]--
 
 local function aqt_enable(on, disablemode)
@@ -633,7 +666,7 @@ local function aqt_enable(on, disablemode)
 end
 
 --[[---------------------------------------------------------------------------
-	§ Slash commands
+	Slash commands
 ---------------------------------------------------------------------------]]--
 
 SLASH_AUTOQUESTTRACKER1 = '/autoquesttracker'
@@ -736,8 +769,10 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 end
 
 --[[===========================================================================
-	§ API
+	API
 ===========================================================================]]--
+
+local TEXT_CMD_KEY = IS_MAC and 'Command' or 'Control'
 
 function _G.addon_aqt_enable(v)
 	if type(v) ~= 'boolean' then
@@ -749,7 +784,7 @@ end
 
 function _G.addon_aqt_on_addoncompartment_click(_, btn)
 	if btn == 'LeftButton' then
-		if is_mac and IsMetaKeyDown() or not is_mac and IsControlKeyDown() then
+		if IS_MAC and IsMetaKeyDown() or not IS_MAC and IsControlKeyDown() then
 			msg_help()
 		else
 			msg_status()
@@ -763,7 +798,7 @@ function _G.addon_aqt_on_addoncompartment_enter()
 	GameTooltip:SetOwner(AddonCompartmentFrame)
 	GameTooltip:AddDoubleLine('Auto Quest Tracker', text_activation_status())
 	GameTooltip:AddLine(C_CLICK .. 'Left-click ' .. C_TT .. 'to print ' .. C_ACTION .. 'status\124r.')
-	GameTooltip:AddLine(C_CLICK .. text_cmd_key .. '-left-click ' .. C_TT .. 'to print ' .. C_ACTION .. 'help\124r text.')
+	GameTooltip:AddLine(C_CLICK .. TEXT_CMD_KEY .. '-left-click ' .. C_TT .. 'to print ' .. C_ACTION .. 'help\124r text.')
 	GameTooltip:AddLine(C_CLICK .. 'Right-click ' .. C_TT .. 'to ' .. C_ACTION .. 'toggle\124r AQT for this session.')
 	GameTooltip:Show()
 end
