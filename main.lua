@@ -429,6 +429,8 @@ f:SetScript('OnEvent', onEvent)
 	§ UI
 ===========================================================================]]--
 
+local BLOCK_SEP = '----------------------------------------'
+
 local function text_activation_status()
 	return a.cdb.enabled and C_GOOD .. 'Enabled' or a.cdb.enable_nextsession and C_HALFBAD .. 'Disabled for this session' or a.cdb.enable_nextinstance and C_HALFBAD .. 'Disabled for this instance.' or C_BAD .. 'Disabled'
 end
@@ -448,6 +450,7 @@ local function msg_invalid_input()
 end
 
 local function msg_list_quests()
+	print(BLOCK_SEP)
 	print(MSG_PREFIX, 'Quests currently in quest log:\n[T = type; W = watch type]')
 	for questIndex = 1, C_QuestLogGetNumQuestLogEntries() do
 		local questTitle, isHeader, questId, isWorldQuest, isHidden, isCalling, questType, isOnMap, hasLocalPOI, watchType, frequency, level, isTask, isBounty, isStory, startEvent, isImportant, accountQuest, isComplete, isQuestReplayable, isQuestReplayedRecently, isRepeatableQuest, isQuestTrivial, readyForTurnIn =
@@ -488,6 +491,7 @@ local function msg_list_quests()
 			)
 		end
 	end
+	print(BLOCK_SEP)
 end
 
 -- Ordered pairs
@@ -522,6 +526,7 @@ local function ordered_pairs(t)
 end
 
 local function msg_list_exceptions()
+	print(BLOCK_SEP)
 	if table_is_empty(a.gdb.exceptions_id) then
 		print(MSG_PREFIX .. 'You have no exceptions per quest ' .. C_AQT .. 'ID\124r.')
 	else
@@ -563,11 +568,12 @@ local function msg_list_exceptions()
 			print('"' .. he .. '": ' .. xfull)
 		end
 	end
+	print(BLOCK_SEP)
 end
 
 -- TODO: Add version info to help
 local function msg_help()
-	print('--------------------')
+	print(BLOCK_SEP)
 	print(MSG_PREFIX .. 'Help: \n'.. C_AQT .. '/autoquesttracker ' .. '\124ror ' .. C_AQT .. '/aqt ' .. '\124runderstands these commands: ')
 	print(C_AQT .. 'on ' .. '\124ror ' .. C_AQT .. 'e' .. '\124r: Enable AQT.')
 	print(C_AQT .. 'off ' .. '\124ror ' .. C_AQT .. 'd' .. '\124r: Disable AQT for the current session.')
@@ -583,7 +589,7 @@ local function msg_help()
 	print('Some commands are also available via the ' .. C_AQT .. 'addon compartment button\124r. See the addon compartment button tooltip.')
 	print('To learn how to assign ' .. C_AQT .. 'exceptions\124r (special behavior) to quests or quest groups, please see the AQT Wiki at...')
 	print(C_AQT .. 'https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions')
-	print('--------------------')
+	print(BLOCK_SEP)
 end
 
 local function get_questheader_from_input(t)
