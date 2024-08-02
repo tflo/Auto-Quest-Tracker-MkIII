@@ -634,18 +634,21 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 	for v in msg:gmatch '[^ ]+' do
 		tinsert(mt, v)
 	end
+	-- No command, no args
 	if #mt == 0 then
 		msg_status()
+	-- Command without args
 	elseif #mt == 1 then
+		-- GENERIC STUFF
 		if msg == 'e' or msg == 'on' then
 			aqt_enable(true)
-			-- Disable for current session (default)
+		-- Disable for current session (default disable)
 		elseif msg == 'd' or msg == 'off' then
 			aqt_enable(false, nil)
-			-- Permanently disable
+		-- Permanently disable
 		elseif msg == 'dp' or msg == 'offp' then
 			aqt_enable(false, 0)
-			-- Disable for current instance
+		-- Disable for current instance
 		elseif msg == 'di' or msg == 'offi' then
 			aqt_enable(false, 2)
 		elseif msg == 'loadingmessage' then
@@ -659,10 +662,12 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		elseif msg == 'debug' then
 			a.gdb.debug_mode = not a.gdb.debug_mode
 			msg_confirm('Debug mode ' .. (a.gdb.debug_mode and 'enabled.' or 'disabled.'))
+		-- PRINT LISTS
 		elseif msg == 'q' or msg == 'quests' then
 			msg_list_quests()
 		elseif msg == 'x' or msg == 'exceptions' then
 			msg_list_exceptions()
+		-- CLEAR EXCEPTION TABLES: IDs, Types, Headers, All
 		elseif msg == 'xcleari' or msg == 'exceptionsclearid' then
 			wipe(a.gdb.exceptions_id)
 			if a.cdb.enabled then update_quests_for_zone() end
@@ -686,6 +691,7 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		else
 			msg_invalid_input()
 		end
+	-- 1 cmd, 1 arg: Types & groups exceptions: /aqt <exception cmd> <type | group>
 	elseif #mt == 2 then
 		if exception_types[mt[1]] then
 			if quest_types[mt[2]] then
@@ -709,7 +715,7 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		else
 			msg_invalid_input()
 		end
-	-- Header exceptions format: /aqt <exception cmd> h <quest header>
+	-- 1 cmd, 2+ args: Header exceptions: /aqt <exception cmd> h <quest header string>
 	elseif mt[2] == 'h' and exception_types[mt[1]] then
 		local header = get_questheader_from_input(mt)
 		a.gdb.exceptions_header[header] = exception_types[mt[1]]['value']
