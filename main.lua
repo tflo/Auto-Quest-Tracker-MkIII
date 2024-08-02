@@ -319,11 +319,15 @@ end
 	Hook(s)
 ---------------------------------------------------------------------------]]--
 
+-- Currently preferred: Variant 1
+
 -- Variant 1 (like before TWW, but only in QuestMapFrame):
 -- Good: Well tested pre-TWW; only one hook
 -- Bad: Works only in QuestMapFrame
 -- Current (11.0.0) function: https://www.townlong-yak.com/framexml/live/Blizzard_UIPanels_Game/QuestMapFrame.lua#1370
--- hooksecurefunc('QuestMapQuestOptions_TrackQuest', add_quest_to_exceptions)
+---[[
+hooksecurefunc('QuestMapQuestOptions_TrackQuest', add_quest_to_exceptions)
+--]]
 
 -- Variant 2 (experimental):
 -- Good: Works also in tracker
@@ -331,9 +335,10 @@ end
 -- Good/Bad: Quest watch limit is significant: `AddQuestWatch` is not called if over limit
 -- IF HOOKING THESE FUNCTIONS, MAKE SURE THAT AQT ITSELF USES *ONLY* THE PREVIOUSLY "LOCALIZED" VERSIONS OF THESE
 -- FUNCTIONS. OTHERWISE WE HAVE AN INFINITE LOOP.
+--[[
 hooksecurefunc(C_QuestLog, 'AddQuestWatch', add_quest_to_exceptions)
 hooksecurefunc(C_QuestLog, 'RemoveQuestWatch', add_quest_to_exceptions)
-
+--]]
 -- Alternatively, to hooking the "watch" functions, we could listen to the QUEST_WATCH_LIST_CHANGED event.
 -- We need a throttle then to avoid loops.
 
