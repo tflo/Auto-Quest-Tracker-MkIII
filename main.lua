@@ -24,6 +24,7 @@ local C_AQT = '\124cff2196f3'
 local C_GOOD = '\124cnDIM_GREEN_FONT_COLOR:'
 local C_HALFBAD = '\124cnORANGE_FONT_COLOR:'
 local C_BAD = '\124cnDIM_RED_FONT_COLOR:'
+local C_DEBUG = '\124cffEE82EE'
 local MSG_PREFIX = C_AQT .. 'Auto Quest Tracker\124r: '
 local MSG_PRE = C_AQT .. 'AQT\124r: '
 -- Colors for exception types
@@ -152,7 +153,10 @@ local function table_is_empty(t)
 end
 
 local function debugprint(...)
-	if a.gdb.debug_mode then print(MSG_PRE, 'Debug:', ...) end
+	if a.gdb.debug_mode then
+		local a, b = strsplit('.', GetTimePreciseSec())
+		print(format('[%s.%s] %sAQT >>> Debug >>>\124r', a:sub(-3), b:sub(1, 3), C_DEBUG), ...)
+	end
 end
 
 local function msg_load(msg,delay)
