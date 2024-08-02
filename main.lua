@@ -16,10 +16,13 @@ local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_Quest
 	_G.C_QuestLog.GetQuestWatchType,
 	_G.C_QuestLog.GetTitleForQuestID,
 	_G.C_QuestLog.IsQuestCalling
-local EnumQuestWatchType = _G.Enum.QuestWatchType
-local EnumQuestFrequency = _G.Enum.QuestFrequency
 local update_pending -- Serves as ignore flag during the DELAY_ZONE_CHANGE time
 -- Colors for msgs
+
+local QUESTFREQUENCY_DAILY = Enum.QuestFrequency.Daily
+local QWT_AUTOMATIC = Enum.QuestWatchType.Automatic
+local QWT_MANUAL = Enum.QuestWatchType.Manual
+
 local C_AQT = '\124cff2196f3'
 local C_GOOD = '\124cnDIM_GREEN_FONT_COLOR:'
 local C_HALFBAD = '\124cnORANGE_FONT_COLOR:'
@@ -230,7 +233,7 @@ local function auto_show_or_hide_quest(questIndex, questId, show)
 	if not InCombatLockdown() and id == questId then
 		if show then
 			debugprint(format('Tracking: %s (%s)', questTitle, questId))
-			C_QuestLogAddQuestWatch(questId, EnumQuestWatchType.Automatic)
+			C_QuestLogAddQuestWatch(questId, QWT_AUTOMATIC)
 		else
 			debugprint(format('Removing: %s (%s)', questTitle, questId))
 			C_QuestLogRemoveQuestWatch(questId)
@@ -277,7 +280,7 @@ local function add_quest_to_exceptions(par1)
 			pr = pred[2]
 		end
 		confirm_msg(id, pr, exception_types.a.full)
-		if a.cdb.enabled then C_QuestLogAddQuestWatch(id, EnumQuestWatchType.Automatic) end
+		if a.cdb.enabled then C_QuestLogAddQuestWatch(id, QWT_AUTOMATIC) end
 	-- Remove quest from exceptions: Ctrl (Mac/Win)
 	elseif IsControlKeyDown() then
 		if a.gdb.exceptions_id[id] then
@@ -287,8 +290,8 @@ local function add_quest_to_exceptions(par1)
 			pr = 'did not have any exception assigned'
 		end
 		confirm_msg(id, pr, '')
-		if a.cdb.enabled and C_QuestLogGetQuestWatchType(id) == EnumQuestWatchType.Manual then
-			C_QuestLogAddQuestWatch(id, EnumQuestWatchType.Automatic)
+		if a.cdb.enabled and C_QuestLogGetQuestWatchType(id) == QWT_MANUAL then
+			C_QuestLogAddQuestWatch(id, QWT_AUTOMATIC)
 		end
 	end
 end
@@ -479,7 +482,7 @@ local function msg_list_quests()
 					questType ~= 0 and ', T' .. questType or '',
 					isOnMap and ', OnMap ' or '',
 					hasLocalPOI and ', LocalPOI' or '',
-					frequency ~= 0 and ', ' .. (frequency == EnumQuestFrequency.Daily and 'Daily' or 'Weekly') or '',
+					frequency ~= 0 and ', ' .. (frequency == QUESTFREQUENCY_DAILY and 'Daily' or 'Weekly') or '',
 					watchType and ', W' .. watchType or '',
 					isTask and ', Task' or '',
 					isBounty and ', Bounty' or '',
