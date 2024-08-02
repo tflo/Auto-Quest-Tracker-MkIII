@@ -303,6 +303,8 @@ end
 -- Good: Works also in tracker
 -- Bad: Two hooks; not thoroughly tested; quirks with other addons?
 -- Good/Bad: Quest watch limit is significant: `AddQuestWatch` is not called if over limit
+-- IF HOOKING THESE FUNCTIONS, MAKE SURE THAT AQT ITSELF USES *ONLY* THE PREVIOUSLY "LOCALIZED" VERSIONS OF THESE
+-- FUNCTIONS. OTHERWISE WE HAVE AN INFINITE LOOP.
 hooksecurefunc(C_QuestLog, 'AddQuestWatch', add_quest_to_exceptions)
 hooksecurefunc(C_QuestLog, 'RemoveQuestWatch', add_quest_to_exceptions)
 
