@@ -271,6 +271,7 @@ end
 local pred = {'is now ', 'is already '}
 
 local function add_quest_to_exceptions(par1)
+	debugprint('`add_quest_to_exceptions` called.')
 	local id, pr = par1, pred[1]
 	-- Never track quest: Cmd-Option
 	-- Currently Mac only, due to the lack of enough modifier keys on Windows
@@ -373,6 +374,8 @@ end
 	Main function
 ---------------------------------------------------------------------------]]--
 
+local ignore_qwt = false
+
 local function update_quests_for_zone()
 	local currentZone = GetRealZoneText()
 	local minimapZone = GetMinimapZoneText()
@@ -394,9 +397,11 @@ local function update_quests_for_zone()
 				if is_always(questId, questType, header) or (header == currentZone or header == minimapZone or isOnMap or hasLocalPOI) and not is_never(questId, questType) then
 					if C_QuestLogGetQuestWatchType(questId) == nil then
 						auto_show_or_hide_quest(questIndex, questId, true)
-						debugprint(format('Reason: %s %s %s %s', header == currentZone and 'currZone' or '', header == minimapZone and 'mmZone' or '', isOnMap and 'onMap' or '', hasLocalPOI and 'hasPOI' or ''))
+						if a.gdb.debug_mode then
+							debugprint(format('Reason: %s %s %s %s', header == currentZone and 'currZone' or '', header == minimapZone and 'mmZone' or '', isOnMap and 'onMap' or '', hasLocalPOI and 'hasPOI' or ''))
+						end
 					end
-				elseif is_never(questId, questType, header) or C_QuestLogGetQuestWatchType(questId) == 0 then
+				elseif is_never(questId, questType, header) or C_QuestLogGetQuestWatchType(questId) == QWT_AUTOMATIC or ignore_qwt then
 					auto_show_or_hide_quest(questIndex, questId, false)
 				end
 			end
@@ -709,6 +714,10 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		elseif msg == 'debug' then
 			a.gdb.debug_mode = not a.gdb.debug_mode
 			msg_confirm('Debug mode ' .. (a.gdb.debug_mode and 'enabled.' or 'disabled.'))
+		elseif msg == 'ignore_qwt' and a.gdb.debug_mode then
+			ignore_qwt = not ignore_qwt
+			if a.cdb.enabled then update_quests_for_zone() end
+			msg_confirm(ignore_qwt and 'Quests can now be removed regardless of their QuestWatchType. This screws up AQT\'s behavior, use only for debugging! This setting will not be saved across reloads.' or '"ignore_qwt" disabled (normal behavior).')
 		-- PRINT LISTS
 		elseif msg == 'q' or msg == 'quests' then
 			msg_list_quests()
