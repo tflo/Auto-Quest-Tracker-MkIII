@@ -8,7 +8,7 @@ AQT_CharDB = AQT_CharDB or {}
 ===========================================================================]]--
 
 --[[---------------------------------------------------------------------------
-	API
+	Blizz API
 ---------------------------------------------------------------------------]]--
 
 local _
@@ -193,10 +193,10 @@ local function register_zone_events()
 	f:RegisterEvent 'ZONE_CHANGED_NEW_AREA'
 end
 
-local function unregister_zone_events()
-	f:UnregisterEvent 'ZONE_CHANGED'
-	f:UnregisterEvent 'ZONE_CHANGED_NEW_AREA'
-end
+-- local function unregister_zone_events()
+-- 	f:UnregisterEvent 'ZONE_CHANGED'
+-- 	f:UnregisterEvent 'ZONE_CHANGED_NEW_AREA'
+-- end
 
 local function get_questinfo(index)
 	local quest = C_QuestLogGetInfo(index)
@@ -416,7 +416,7 @@ end
 
 local update_pending -- Ignore flag during the DELAY_ZONE_CHANGE time
 
-local function onEvent(self, event, ...)
+local function onEvent(_, event, ...)
 	if event == 'ADDON_LOADED' then
 		if ... == addon_name then
 			f:UnregisterEvent 'ADDON_LOADED'
@@ -598,11 +598,11 @@ local function msg_list_exceptions()
 		print(MSG_PREFIX .. 'Active exceptions per quest ' .. C_AQT .. 'TYPE\124r:')
 		for ty, ex in ordered_pairs(a.gdb.exceptions_type) do
 			local xfull = ''
-			for k, v in pairs(exception_types) do
+			for _, v in pairs(exception_types) do
 				if v['value'] == ex then xfull = v['full'] break end
 			end
 			local tyfull = ''
-			for k, v in pairs(quest_types) do
+			for _, v in pairs(quest_types) do
 				if v['type'] == ty then tyfull = v['full'] break end
 			end
 			print(ty .. ' (' .. tyfull .. '): ' .. xfull)
@@ -614,7 +614,7 @@ local function msg_list_exceptions()
 		print(MSG_PREFIX .. 'Active exceptions per quest ' .. C_AQT .. 'HEADER\124r:')
 		for he, ex in ordered_pairs(a.gdb.exceptions_header) do
 			local xfull = ''
-			for k, v in pairs(exception_types) do
+			for _, v in pairs(exception_types) do
 				if v['value'] == ex then xfull = v['full'] break end
 			end
 			print('"' .. he .. '": ' .. xfull)
@@ -625,23 +625,27 @@ end
 
 -- TODO: Add version info to help
 local function msg_help()
-	print(BLOCK_SEP)
-	print(MSG_PREFIX .. 'Help: \n'.. C_AQT .. '/autoquesttracker ' .. '\124ror ' .. C_AQT .. '/aqt ' .. '\124runderstands these commands: ')
-	print(C_AQT .. 'on ' .. '\124ror ' .. C_AQT .. 'e' .. '\124r: Enable AQT.')
-	print(C_AQT .. 'off ' .. '\124ror ' .. C_AQT .. 'd' .. '\124r: Disable AQT for the current session.')
-	print(C_AQT .. 'offi ' .. '\124ror ' .. C_AQT .. 'di' .. '\124r: Disable AQT for the current (map) instance.')
-	print(C_AQT .. 'offp ' .. '\124ror ' .. C_AQT .. 'dp' .. '\124r: Disable AQT permanently.')
-	print(C_AQT .. 'instances ' .. '\124ror ' .. C_AQT .. 'in' .. '\124r: Toggle auto-tracking of dungeon/raid quests.')
-	print(C_AQT .. 'loadingmessage' .. '\124r: Toggle status message in chat after reload/login.')
-	print(C_AQT .. 'quests ' .. '\124ror ' .. C_AQT .. 'q' .. '\124r: Show complete quest list.')
-	print(C_AQT .. 'debug' .. '\124r: Toggle debug mode.')
-	print(C_AQT .. 'help ' .. '\124ror ' .. C_AQT .. 'h' .. '\124r: Display this help text.')
-	print(C_AQT .. '/aqt ' .. '\124rwithout additional commands: Display status info.')
-	print('Enable/disable is per char, other settings are global.')
-	print('Some commands are also available via the ' .. C_AQT .. 'addon compartment button\124r. See the addon compartment button tooltip.')
-	print('To learn how to assign ' .. C_AQT .. 'exceptions\124r (special behavior) to quests or quest groups, please see the AQT Wiki at...')
-	print(C_AQT .. 'https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions')
-	print(BLOCK_SEP)
+	local lines = {
+		BLOCK_SEP,
+		C_AQT .. 'Auto Quest Tracker\124r Help:',
+		C_AQT .. '/autoquesttracker ' .. '\124ror ' .. C_AQT .. '/aqt ' .. '\124runderstands these commands: ',
+		C_AQT .. 'on ' .. '\124ror ' .. C_AQT .. 'e' .. '\124r: Enable AQT.',
+		C_AQT .. 'off ' .. '\124ror ' .. C_AQT .. 'd' .. '\124r: Disable AQT for the current session.',
+		C_AQT .. 'offi ' .. '\124ror ' .. C_AQT .. 'di' .. '\124r: Disable AQT for the current (map) instance.',
+		C_AQT .. 'offp ' .. '\124ror ' .. C_AQT .. 'dp' .. '\124r: Disable AQT permanently.',
+		C_AQT .. 'instances ' .. '\124ror ' .. C_AQT .. 'in' .. '\124r: Toggle auto-tracking of dungeon/raid quests.',
+		C_AQT .. 'loadingmessage' .. '\124r: Toggle status message in chat after reload/login.',
+		C_AQT .. 'quests ' .. '\124ror ' .. C_AQT .. 'q' .. '\124r: Show complete quest list.',
+		C_AQT .. 'debug' .. '\124r: Toggle debug mode.',
+		C_AQT .. 'help ' .. '\124ror ' .. C_AQT .. 'h' .. '\124r: Display this help text.',
+		C_AQT .. '/aqt ' .. '\124rwithout additional commands: Display status info.',
+		'- Enable/disable is per char, other settings are global.',
+		'- Some commands are also available via the ' .. C_AQT .. 'addon compartment button\124r. See the addon compartment button tooltip.',
+		'- To learn how to assign ' .. C_AQT .. 'exceptions\124r (special behavior) to quests or quest groups, please see the AQT Wiki at...',
+		C_AQT .. 'https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions',
+		BLOCK_SEP,
+	}
+	for _, l in ipairs(lines) do print(l) end
 end
 
 local function get_questheader_from_input(t)
@@ -790,7 +794,7 @@ local TEXT_CMD_KEY = IS_MAC and 'Command' or 'Control'
 
 function _G.addon_aqt_enable(v)
 	if type(v) ~= 'boolean' then
-		error("Wrong argument type. Usage: 'addon_aqt_enable(boolean)'", 0)
+		error('Wrong argument type. Usage: `addon_aqt_enable(boolean)`', 0)
 	else
 		aqt_enable(v)
 	end
@@ -808,12 +812,11 @@ function _G.addon_aqt_on_addoncompartment_click(_, btn)
 	end
 end
 function _G.addon_aqt_on_addoncompartment_enter()
----@diagnostic disable-next-line: missing-parameter
 	GameTooltip:SetOwner(AddonCompartmentFrame)
 	GameTooltip:AddDoubleLine('Auto Quest Tracker', text_activation_status())
-	GameTooltip:AddLine(C_CLICK .. 'Left-click ' .. C_TT .. 'to print ' .. C_ACTION .. 'status\124r.')
-	GameTooltip:AddLine(C_CLICK .. TEXT_CMD_KEY .. '-left-click ' .. C_TT .. 'to print ' .. C_ACTION .. 'help\124r text.')
-	GameTooltip:AddLine(C_CLICK .. 'Right-click ' .. C_TT .. 'to ' .. C_ACTION .. 'toggle\124r AQT for this session.')
+	GameTooltip:AddLine(format('%sLeft-click %sto print %sstatus\124r.', C_CLICK, C_TT, C_ACTION))
+	GameTooltip:AddLine(format('%s%s-left-click %sto print %shelp\124r text.', C_CLICK, TEXT_CMD_KEY, C_TT, C_ACTION))
+	GameTooltip:AddLine(format('%sRight-click %sto %stoggle\124r AQT for this session.', C_CLICK, C_TT, C_ACTION))
 	GameTooltip:Show()
 end
 
@@ -824,7 +827,7 @@ end
 
 --[[ License ===================================================================
 
-	Portions: Copyright © 2022–2023 Thomas Floeren for the added code of "Mk III"
+	Portions: Copyright © 2022–2024 Thomas Floeren for the added code of "Mk III"
 	          (starting with v2.0)
 
 	This file is part of Auto Quest Tracker Mk III.
