@@ -191,6 +191,7 @@ f:RegisterEvent 'ADDON_LOADED'
 local function register_zone_events()
 	f:RegisterEvent 'ZONE_CHANGED'
 	f:RegisterEvent 'ZONE_CHANGED_NEW_AREA'
+	debugprint 'Zone events registered.'
 end
 
 -- local function unregister_zone_events()
@@ -398,7 +399,7 @@ local function update_quests_for_zone()
 					if C_QuestLogGetQuestWatchType(questId) == nil then
 						auto_show_or_hide_quest(questIndex, questId, true)
 						if a.gdb.debug_mode then
-							debugprint(format('Reason: %s %s %s %s', header == currentZone and 'currZone' or '', header == minimapZone and 'mmZone' or '', isOnMap and 'onMap' or '', hasLocalPOI and 'hasPOI' or ''))
+							debugprint(format('Reason: %s%s%s%s%s', is_always(questId, questType, header) == true and 'alwaysTracked ' or '', header == currentZone and 'currZone ' or '', header == minimapZone and 'mmZone ' or '', isOnMap and 'onMap ' or '', hasLocalPOI and 'hasPOI ' or ''))
 						end
 					end
 				elseif is_never(questId, questType, header) or C_QuestLogGetQuestWatchType(questId) == QWT_AUTOMATIC or ignore_qwt then
