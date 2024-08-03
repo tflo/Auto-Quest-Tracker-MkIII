@@ -1,3 +1,21 @@
+To see all commits, including all alpha changes, go [here](https://github.com/tflo/Auto-Quest-Tracker-MkIII/commits/master/).
+
+---
+
+## Releases
+
+#### 4.3 (2024-08-02)
+
+- I abandoned the “experimental” hooks from v4.2.10 (see 4.2.10 change notes):
+    - The hooks indeed interfered with other things (e.g. my modifier key for auto-accepting quests).
+    - The hooked functions are called very frequently, also outside our context (i.e. the hooks run for nothing in 90% of the cases in which the functions are called).
+    - Now we’re hooking a function that is *only* called when you Shift-click a quest title in the QuestMap frame (or click the quest checkbox).
+    - **This means for you:** *You can no longer assign an exception to a quest via Shift+AQT-modifier click on the quest in the Quest Tracker. You must do this in the QuestMap frame (aka Quest Log) now.*
+    - Tip: When you click the checkbox (instead of the quest title), you don’t need the Shift key; it is sufficient to hold down the respective AQT modifier(s).
+    - I’m investigating alternative methods for single-quest exception assignment (the new TWW menu hooks come to mind…).
+- [Wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions) updated to reflect the changes.
+- Minor optimizations and cleanup.
+
 #### 4.2.11 (2024-07-31)
 
 - Added a named quest group for the Radiant Echoes weeklies (3 quest IDs). The key is `re`, so you can for example say `/aqt a re` to set the quest IDs of this group to *Always Track.*

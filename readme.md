@@ -29,7 +29,6 @@ _Quester + Auto Quest Tracker_ is my preferred combo.
 
 Temporarily disabling AQT can be useful for example if you have a bunch of quests that you want to keep focused as you move back and forth between adjacent zones. You could also just re-track the quests manually (AQT allows this and keeps them tracked), but this can get tedious.
 It can also be useful if you simply have too many quests that technically belong to your zone, but you're not interested in at the moment.
-What happens when you disable AQT is that the two main events become unregistered, i.e. this is close to unloading the addon, but without the need to reload.
 
 New since version 3.0, there are now 3 modes of disabling AQT:
 
@@ -51,8 +50,8 @@ New in v4 is a sophisticated __Exceptions__ system:
   - Ignore (as if AQT was disabled for a specific quest).
   - Track always and everywhere.
   - Never track (disable auto tracking and remove from quest tracker).
-- Exceptions can be assigned via modifier keys while tracking/untracking a quest in the quest log or quest tracker.
-- Exceptions can be assigned via slash commands.
+- Exceptions can be assigned via modifier keys while click-tracking/untracking a quest in the QuestMap frame.
+- Exceptions can be assigned via slash commands to entire quest groups or types, or to all quests under a given header.
 - See the brand new [AQT wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki), namely the [Exceptions section](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions), for how to do. It's too much new stuff to list here.
 - Print Exceptions report with `/aqt x`.
 - Slash commands to clear Exceptions (see Wiki!).
@@ -102,15 +101,11 @@ __Please do not post issues or suggestions in the comments on Curseforge.__
 
 ---
 
-__My other addons:__
+__Some of my other addons:__
 
-- [___PetWalker___](https://www.curseforge.com/wow/addons/petwalker): Never lose your pet again (…or randomly summon a
-  new one).
-- [___Move 'em All___](https://www.curseforge.com/wow/addons/move-em-all): Mass move items/stacks from your bags to
-  wherever. Works also with bag addons.
-- [___Auto-Confirm Equip___](https://www.curseforge.com/wow/addons/auto-confirm-equip): Less (or no) confirmation
-  prompts for BoE gear.
-- [___Action Bar Button Growth Direction___](https://www.curseforge.com/wow/addons/action-bar-button-growth-direction):
-  Fix the button growth direction of multi-row action bars to what is was before Dragonflight (top --> bottom).
-- [___EditBox Font Improver___](https://www.curseforge.com/wow/addons/editbox-font-improver): Better fonts for
-  your macro/script edit boxes.
+- [___PetWalker___](https://www.curseforge.com/wow/addons/petwalker): Never lose your pet again (…or randomly summon a new one).
+- [___Move 'em All___](https://www.curseforge.com/wow/addons/move-em-all): Mass move items/stacks from your bags to wherever. Works also with bag addons.
+- [___Auto-Confirm Equip___](https://www.curseforge.com/wow/addons/auto-confirm-equip): Less (or no) confirmation prompts for BoE gear.
+- [___Action Bar Button Growth Direction___](https://www.curseforge.com/wow/addons/action-bar-button-growth-direction): Fix the button growth direction of multi-row action bars to what is was before Dragonflight (top --> bottom).
+- [___EditBox Font Improver___](https://www.curseforge.com/wow/addons/editbox-font-improver): Better fonts for your macro/script edit boxes.
+- _WeakAuras:_ [___Stats Mini___](https://wago.io/S4023p3Im): A *very* compact but beautiful and feature-loaded stats display: primary/secondary stats, *all* defensives (also against target), GCD, speed (rating/base/actual/Skyriding), iLevel (equipped/overall/difference), char level +progress.
