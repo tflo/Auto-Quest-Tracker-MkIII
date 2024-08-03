@@ -719,7 +719,10 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		elseif msg == 'debug' then
 			a.gdb.debug_mode = not a.gdb.debug_mode
 			msg_confirm('Debug mode ' .. (a.gdb.debug_mode and 'enabled.' or 'disabled.'))
-		elseif msg == 'ignore_qwt' and a.gdb.debug_mode then
+			if a.gdb.debug_mode then a.printvalues() end
+		elseif msg == 'printvalues' and a.gdb.debug_mode then
+			a.print_values()
+		elseif msg == 'ignoreqwt' and a.gdb.debug_mode then
 			ignore_qwt = not ignore_qwt
 			if a.cdb.enabled then update_quests_for_zone() end
 			msg_confirm(ignore_qwt and 'Quests can now be removed regardless of their QuestWatchType. This screws up AQT\'s behavior, use only for debugging! This setting will not be saved across reloads.' or '"ignore_qwt" disabled (normal behavior).')
@@ -786,6 +789,15 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		msg_invalid_input()
 	end
 end
+
+
+function a.print_values()
+	debugprint(format(
+		'DELAY_ZONE_CHANGE: %s; SESSION_GRACE_TIME: %s; IS_MAC: %s; QUESTFREQUENCY_DAILY: %s; QWT_AUTOMATIC: %s (%s); QWT_MANUAL: %s (%s); ignore_qwt: %s',
+		DELAY_ZONE_CHANGE, SESSION_GRACE_TIME, tostring(IS_MAC), QUESTFREQUENCY_DAILY, QWT_AUTOMATIC, type(QWT_AUTOMATIC), QWT_MANUAL, type(QWT_MANUAL), tostring(ignore_qwt)
+	))
+end
+
 
 --[[===========================================================================
 	API
