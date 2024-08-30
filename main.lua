@@ -407,7 +407,7 @@ local function update_quests_for_zone()
 							debugprint(format('Reason: %s%s%s%s%s', is_always(questId, questType, header) == true and 'alwaysTracked ' or '', header == currentZone and 'currZone ' or '', header == minimapZone and 'mmZone ' or '', isOnMap and 'onMap ' or '', hasLocalPOI and 'hasPOI ' or ''))
 						end
 					end
-				elseif is_never(questId, questType, header) or C_QuestLogGetQuestWatchType(questId) == QWT_AUTOMATIC or ignore_qwt then
+				elseif ignore_qwt or is_never(questId, questType, header) or C_QuestLogGetQuestWatchType(questId) == QWT_AUTOMATIC then
 					auto_show_or_hide_quest(questIndex, questId, false)
 				end
 			end
