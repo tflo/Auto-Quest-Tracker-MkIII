@@ -1,6 +1,6 @@
 # Auto Quest Tracker Mk III
 
-***TWW INFO: Currently we ar using a workaround to make AQT work with TWW. Check the release notes of AQT 4.3.1 (2024-08-30) for more info and to learn about implications!***
+***TWW INFO: Currently we ar using a workaround to make AQT work with TWW. Check the [release notes of AQT 4.3.1 (2024-08-30)](https://www.curseforge.com/wow/addons/auto-quest-tracker-mk-iii/files/5677938) for more info and to learn about implications!***
 
 Auto Quest Tracker Mk III started out as the continuation of a [continuation](https://github.com/gamer-angel05/AutoQuestTracker) (last version: Jan 2021) of the [original Auto Quest Tracker](https://www.curseforge.com/wow/addons/auto-quest-tracker) addon (last version: Jan 2018).
 
