@@ -529,7 +529,7 @@ local function msg_list_quests()
 					questId,
 					level,
 					questType ~= 0 and ', T' .. questType or '',
-					isOnMap and ', OnMap ' or '',
+					isOnMap and ', OnMap' or '',
 					hasLocalPOI and ', LocalPOI' or '',
 					frequency ~= 0 and ', ' .. (frequency == QUESTFREQUENCY_DAILY and 'Daily' or 'Weekly') or '',
 					watchType and ', W' .. watchType or '',
