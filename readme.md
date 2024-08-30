@@ -1,5 +1,7 @@
 # Auto Quest Tracker Mk III
 
+***TWW INFO: Currently we ar using a workaround to make AQT work with TWW. Check the release notes of AQT 4.3.1 (2024-08-30) for more info and to learn about implications!***
+
 Auto Quest Tracker Mk III started out as the continuation of a [continuation](https://github.com/gamer-angel05/AutoQuestTracker) (last version: Jan 2021) of the [original Auto Quest Tracker](https://www.curseforge.com/wow/addons/auto-quest-tracker) addon (last version: Jan 2018).
 
 But in the meantime, and especially since version 4, it would be an understatement to call AQT Mk III a "continuation" of the original. It has gained so many new features and improvements, and not even the core function has remained unchanged.
@@ -101,11 +103,14 @@ __Please do not post issues or suggestions in the comments on Curseforge.__
 
 ---
 
-__Some of my other addons:__
+__Other addons by me:__
 
 - [___PetWalker___](https://www.curseforge.com/wow/addons/petwalker): Never lose your pet again (…or randomly summon a new one).
 - [___Move 'em All___](https://www.curseforge.com/wow/addons/move-em-all): Mass move items/stacks from your bags to wherever. Works also with bag addons.
 - [___Auto-Confirm Equip___](https://www.curseforge.com/wow/addons/auto-confirm-equip): Less (or no) confirmation prompts for BoE gear.
 - [___Action Bar Button Growth Direction___](https://www.curseforge.com/wow/addons/action-bar-button-growth-direction): Fix the button growth direction of multi-row action bars to what is was before Dragonflight (top --> bottom).
 - [___EditBox Font Improver___](https://www.curseforge.com/wow/addons/editbox-font-improver): Better fonts for your macro/script edit boxes.
-- _WeakAuras:_ [___Stats Mini___](https://wago.io/S4023p3Im): A *very* compact but beautiful and feature-loaded stats display: primary/secondary stats, *all* defensives (also against target), GCD, speed (rating/base/actual/Skyriding), iLevel (equipped/overall/difference), char level +progress.
+
+__WeakAuras:__
+
+- [___Stats Mini___](https://wago.io/S4023p3Im): A *very* compact but beautiful and feature-loaded stats display: primary/secondary stats, *all* defensive stats (also against target), GCD, speed (rating/base/actual/Skyriding), iLevel (equipped/overall/difference), char level +progress.

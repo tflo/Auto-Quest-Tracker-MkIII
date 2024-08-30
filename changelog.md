@@ -1,8 +1,18 @@
-To see all commits, including all alpha changes, go [here](https://github.com/tflo/Auto-Quest-Tracker-MkIII/commits/master/).
+To see all commits, including all alpha changes, [*go here*](https://github.com/tflo/PetWalker/commits/master/).
 
 ---
 
 ## Releases
+
+#### 4.3.1 (2024-08-30)
+
+- Temporary workaround for auto-tracking not working in TWW:
+    - It seems since 11.0.0, Blizz is using QuestWatchType 1 (manual) for everything, e.g. also for auto-tracked quests after picking up a quest (which used to be QWT 0 (auto)). In addition, it is currently impossible to set QWT 0, even explicitly.
+    - *Our temporary brute-force workaround is to treat every QWT as 0.*
+    - A side effect of this is that quests that you have tracked manually (Shift-click or checkbox) may also be removed at zone changes. 
+        - If this becomes an annoyance, remember that you can temporarily disable AQT (check the [AQT Wiki](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Enabling-&-Disabling-AQT) for the different ways to disable AQT). You can also use the [companion WeakAura](https://wago.io/3sHwNATna) to quickly toggle AQT..
+    - The workaround may also have impact on AQT’s exceptions system, though “always track” exceptions should still work fine.
+    - I still hope that Blizz’s changes are bugs/oversights. If not, a better solution must be found.
 
 #### 4.3 (2024-08-02)
 

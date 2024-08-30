@@ -375,7 +375,12 @@ end
 	Main function
 ---------------------------------------------------------------------------]]--
 
-local ignore_qwt = false
+-- It seems since 11.0.0, Blizz is (ab)using quest watch type 1 (manual) for
+-- everything, e.g. also for auto-tracking after picking up a quest (which
+-- should be QWT 0 (auto)).
+-- It is currently impossible to set QWT 0, even explicitly.
+-- Our brute-force workaround is to treat every QWT as 0.
+local ignore_qwt = true
 
 local function update_quests_for_zone()
 	local currentZone = GetRealZoneText()
@@ -719,7 +724,6 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		elseif msg == 'debug' then
 			a.gdb.debug_mode = not a.gdb.debug_mode
 			msg_confirm('Debug mode ' .. (a.gdb.debug_mode and 'enabled.' or 'disabled.'))
-			if a.gdb.debug_mode then a.printvalues() end
 		elseif msg == 'printvalues' and a.gdb.debug_mode then
 			a.print_values()
 		elseif msg == 'ignoreqwt' and a.gdb.debug_mode then
