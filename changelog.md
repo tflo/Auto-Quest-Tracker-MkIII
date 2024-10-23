@@ -4,6 +4,12 @@ To see all commits, including all alpha changes, [*go here*](https://github.com/
 
 ## Releases
 
+#### 4.3.2 (2024-10-23)
+
+- toc bump to 110005.
+- Very minor optimization.
+- Docs.
+
 #### 4.3.1 (2024-08-30)
 
 - Temporary workaround for auto-tracking not working in TWW:
