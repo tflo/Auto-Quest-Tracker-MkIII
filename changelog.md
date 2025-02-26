@@ -1,8 +1,13 @@
-To see all commits, including all alpha changes, [*go here*](https://github.com/tflo/PetWalker/commits/master/).
+To see all commits, including all alpha changes, [*go here*](https://github.com/tflo/Auto-Quest-Tracker-MkIII/commits/master/).
 
 ---
 
 ## Releases
+
+#### 4.3.4 (2025-02-26)
+
+- Added category to toc.
+- toc bump to 110100.
 
 #### 4.3.3 (2024-12-19)
 

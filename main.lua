@@ -844,7 +844,7 @@ end
 
 --[[ License ===================================================================
 
-	Portions: Copyright © 2022–2024 Thomas Floeren for the added code of "Mk III"
+	Portions: Copyright © 2022–2025 Thomas Floeren for the added code of "Mk III"
 	          (starting with v2.0)
 
 	This file is part of Auto Quest Tracker Mk III.
