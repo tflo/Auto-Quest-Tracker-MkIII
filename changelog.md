@@ -4,7 +4,13 @@ To see all commits, including all alpha changes, [*go here*](https://github.com/
 
 ## Releases
 
+#### 4.3.6 (2025-06-18)
+
+- toc: Added `AllowAddOnTableAccess: 1`
+- toc: Bumped Interface to `110107`
+
 #### 4.3.5 (2025-04-23)
+
 - toc bump to 110105.
     - I could not really test if it is compatible because 11.1.5 has so many bugs / API weirdnesses at the moment that I decided to suspend WoW until they fix their stuff. So this “update” is just for you hypocrites who notoriously refuse to tick the hypocritical “Load out of date AddOns” checkbox ;)
 
