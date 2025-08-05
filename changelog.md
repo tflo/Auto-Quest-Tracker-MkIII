@@ -4,6 +4,10 @@ To see all commits, including all alpha changes, [*go here*](https://github.com/
 
 ## Releases
 
+#### 4.3.7 (2025-08-05)
+
+- toc: Added interface `110200`
+
 #### 4.3.6 (2025-06-18)
 
 - toc: Added `AllowAddOnTableAccess: 1`
