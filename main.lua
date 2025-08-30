@@ -94,23 +94,23 @@ local quest_types = {
 
 local quest_groups = {
 	['ata'] = {
-		['full'] = 'Aiding the Accord',
+		['full'] = 'DF: Aiding the Accord',
 		['ids'] = {70750, 72068, 72373, 72374, 72375, 75259, 75859, 75860, 75861, 77254, 77976, 78446, 78447, 78861, 80385, 80386, 80388, 80389}
 	},
 	['awa'] = {
-		['full'] = 'A Worthy Ally (Loamm Niffen & Dream Wardens)',
+		['full'] = 'DF: A Worthy Ally',
 		['ids'] = {75665, 78444}
 	},
-	['car'] = { -- From SavedInstances
-		['full'] = 'Catch and Release',
+	['car'] = {
+		['full'] = 'DF: Catch and Release',
 		['ids'] = {70199, 70200, 70201, 70202, 70203, 70935}
 	},
 	['dr'] = { -- "The Waking Shores Tour" etc.; even numbers are the "advanced" variants; 78113 is Challenge Tour; 77815: Stone Race Tour
-		['full'] = 'Dragonriding Races',
+		['full'] = 'DF: Dragonriding Races',
 		['ids'] = {72481, 72482, 72483, 72484, 72485, 72486, 72487, 72488, 78113, 77815}
 	},
 	['rtr'] = {
-		['full'] = 'Replenish the Reservoir (SL)',
+		['full'] = 'SL: Replenish the Reservoir',
 		['ids'] = {61981, 61982, 61983, 61984}
 	},
 	-- ['donotuse:weeklyprof'] = { -- From SavedInstances
