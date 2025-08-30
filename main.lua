@@ -93,14 +93,6 @@ local quest_types = {
 }
 
 local quest_groups = {
-	['re'] = {
-		['full'] = 'Radiant Echoes Weeklies',
-		['ids'] = {
-			78938, -- Champion of the Waterlords
-			82676, -- Broken Masquerade
-			82689,  -- Only Darkness
-		}
-	},
 	['ata'] = {
 		['full'] = 'Aiding the Accord',
 		['ids'] = {70750, 72068, 72373, 72374, 72375, 75259, 75859, 75860, 75861, 77254, 77976, 78446, 78447, 78861, 80385, 80386, 80388, 80389}
