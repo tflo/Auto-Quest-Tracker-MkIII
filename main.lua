@@ -109,14 +109,6 @@ local quest_groups = {
 		['full'] = 'A Worthy Ally (Loamm Niffen & Dream Wardens)',
 		['ids'] = {75665, 78444}
 	},
-	['awaln'] = {
-		['full'] = 'A Worthy Ally: Loamm Niffen',
-		['ids'] = {75665}
-	},
-	['awadw'] = {
-		['full'] = 'A Worthy Ally: Dream Wardens',
-		['ids'] = {78444}
-	},
 	['car'] = { -- From SavedInstances
 		['full'] = 'Catch and Release',
 		['ids'] = {70199, 70200, 70201, 70202, 70203, 70935}
