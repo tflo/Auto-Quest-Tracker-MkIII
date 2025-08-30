@@ -4,6 +4,13 @@ To see all commits, including all alpha changes, [*go here*](https://github.com/
 
 ## Releases
 
+#### 4.4.0 (2025-08-30)
+
+- Updated many quest groups and added new ones, especially TWW. Sorry for being so late.
+    - For the new (and old) abbreviations, see the updated [Wiki: Groups](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions#named-groups-of-quest-ids)
+    - Reminder: These groups can be used with the powerful Exceptions feature. For example: `/aqt a kw` to _always_ track K'aresh Warrant quests, no matter the zone you’re in.
+    - Legacy quest groups (e.g. from Dragonflight or Shadowlands) are now prefixed appropriately (e.g. with “SL” or “DF”) in their full name. This does not affect your existing group exceptions, just the displayed name of the group, when quarried.
+    
 #### 4.3.7 (2025-08-05)
 
 - toc: Added interface `110200`
