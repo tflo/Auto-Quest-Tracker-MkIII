@@ -1,6 +1,6 @@
 ## Interface: 110107, 110200
 ## Title: Auto Quest Tracker Mk III
-## Version: 4.4.0
+## Version: 4.4.1
 ## IconTexture: Interface/Minimap/Tracking/QuestBlob
 ## AddonCompartmentFunc: addon_aqt_on_addoncompartment_click
 ## AddonCompartmentFuncOnEnter: addon_aqt_on_addoncompartment_enter
@@ -22,7 +22,7 @@
 ## AllowAddOnTableAccess: 1
 ## X-Wago-ID: q96dg1NO
 ## X-Curse-Project-ID: 775978
-## X-License: GPLv3
+## SPDX-License-Identifier: GPL-3.0-or-later
 ## X-Localizations: enUS
 ## SavedVariables: AQT_GlobalDB
 ## SavedVariablesPerCharacter: AQT_CharDB
@@ -34,33 +34,3 @@ main.lua
 # version: Jan 2021), which is a fork of the original
 # https://www.curseforge.com/wow/addons/auto-quest-tracker (last version: Jan
 # 2018)
-
-
-
-
-
-
-
-
-
-
-
-
-# License ======================================================================
-
-# Portions: Copyright © 2022–2025 Thomas Floeren for the added/changed code of "Mk III"
-# (version 2 and later)
-#
-# This program is free software: you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software
-# Foundation, either version 3 of the License, or (at your option) any later
-# version.
-#
-# This program is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License along with
-# this program. If not, see <https://www.gnu.org/licenses/>.
-#
-# ==============================================================================

@@ -4,6 +4,11 @@ To see all commits, including all alpha changes, [*go here*](https://github.com/
 
 ## Releases
 
+#### 4.4.1 (2025-09-14)
+
+- Standardized licensing information in the files.
+- ReadMe/description: minor changes; added my new addon [Auto Discount Repair](https://www.curseforge.com/wow/addons/auto-discount-repair) to the “Other addons” list.
+    
 #### 4.4.0 (2025-08-30)
 
 - Updated many quest groups and added new ones, especially TWW. Sorry for being so late.

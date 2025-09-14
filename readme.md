@@ -1,7 +1,5 @@
 # Auto Quest Tracker Mk III
 
-***TWW INFO: Currently we ar using a workaround to make AQT work with TWW. Check the [release notes of AQT 4.3.1 (2024-08-30)](https://www.curseforge.com/wow/addons/auto-quest-tracker-mk-iii/files/5677938) for more info and to learn about implications!***
-
 Auto Quest Tracker Mk III started out as the continuation of a [continuation](https://github.com/gamer-angel05/AutoQuestTracker) (last version: Jan 2021) of the [original Auto Quest Tracker](https://www.curseforge.com/wow/addons/auto-quest-tracker) addon (last version: Jan 2018).
 
 But in the meantime, and especially since version 4, it would be an understatement to call AQT Mk III a "continuation" of the original. It has gained so many new features and improvements, and not even the core function has remained unchanged.
@@ -15,6 +13,9 @@ The addon works with most known quest trackers, like [Quester](https://www.curse
 I have updated Auto Quest Tracker, because – in my experience – it works better than all other similarly featured addons I've tried over the last years. For example, it's the only one – again: in my experience – that properly handles Callings and account-wide pet quests. (When I'm in Shadowlands, I do _not_ want to see my Pandaria Beasts of Fable pet dailies popping up in the tracker, and when I'm pet battling in Pandaria I'm not interested in seeing my Maldraxxus Callings, …)
 
 _Quester + Auto Quest Tracker_ is my preferred combo.
+
+___If you’re having trouble reading this description on CurseForge, you might want to try switching to the [REPO PAGE](https://github.com/tflo/Auto-Quest-Tracker-MkIII?tab=readme-ov-file#auto-quest-tracker-mk-iii). You’ll find the exact same text there, but it’s much easier to read and free from CurseForge’s rendering errors.___
+
 
 ## New features of "Mk III"
 
@@ -98,15 +99,16 @@ You can download a plugin-style addon that will do this for you [in this GitHub 
 
 ---
 
-Feel free to post suggestions or issues in the [GitHub Issues](https://github.com/tflo/Auto-Quest-Tracker-MkIII/issues) of the repo!
-__Please do not post issues or suggestions in the comments on Curseforge.__
+Feel free to share your suggestions or report issues on the [GitHub Issues](https://github.com/tflo/Auto-Quest-Tracker-MkIII/issues) page of the repository.  
+__Please avoid posting suggestions or issues in the comments on Curseforge.__
 
 ---
 
 __Other addons by me:__
 
 - [___PetWalker___](https://www.curseforge.com/wow/addons/petwalker): Never lose your pet again (…or randomly summon a new one).
-- [___Move 'em All___](https://www.curseforge.com/wow/addons/move-em-all): Mass move items/stacks from your bags to wherever. Works also with bag addons.
+- [___Move 'em All___](https://www.curseforge.com/wow/addons/move-em-all): Mass move items/stacks from your bags to wherever. Works also fine with most bag addons.
+- [___Auto Discount Repair___](https://www.curseforge.com/wow/addons/auto-discount-repair): Automatically repair your gear – where it’s cheap.
 - [___Auto-Confirm Equip___](https://www.curseforge.com/wow/addons/auto-confirm-equip): Less (or no) confirmation prompts for BoE gear.
 - [___Action Bar Button Growth Direction___](https://www.curseforge.com/wow/addons/action-bar-button-growth-direction): Fix the button growth direction of multi-row action bars to what is was before Dragonflight (top --> bottom).
 - [___EditBox Font Improver___](https://www.curseforge.com/wow/addons/editbox-font-improver): Better fonts for your macro/script edit boxes.

@@ -1,3 +1,6 @@
+-- SPDX-License-Identifier: GPL-3.0-or-later
+-- Portions: Copyright (c) 2022-2025 Thomas Floeren for the added/changed code of "Mk III" (aka version 2 and later)
+
 local addon_name, a = ...
 
 AQT_GlobalDB = AQT_GlobalDB or {}
@@ -840,26 +843,3 @@ end
 function _G.addon_aqt_on_addoncompartment_leave()
 	GameTooltip:Hide()
 end
-
-
---[[ License ===================================================================
-
-	Portions: Copyright © 2022–2025 Thomas Floeren for the added code of "Mk III"
-	          (starting with v2.0)
-
-	This file is part of Auto Quest Tracker Mk III.
-
-	Auto Quest Tracker Mk III is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by the
-	Free Software Foundation, either version 3 of the License, or (at your
-	option) any later version.
-
-	Auto Quest Tracker Mk III is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-	or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-	more details.
-
-	You should have received a copy of the GNU General Public License along with
-	Auto Quest Tracker Mk III. If not, see <https://www.gnu.org/licenses/>.
-
-==============================================================================]]
