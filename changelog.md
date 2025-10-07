@@ -4,6 +4,10 @@ To see all commits, including all alpha changes, [*go here*](https://github.com/
 
 ## Releases
 
+#### 4.4.2 (2025-10-07)
+
+- toc bumped to 110205, no changes.
+    
 #### 4.4.1 (2025-09-14)
 
 - Standardized licensing information in the files.
