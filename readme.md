@@ -14,8 +14,11 @@ I have updated Auto Quest Tracker, because – in my experience – it works bet
 
 _Quester + Auto Quest Tracker_ is my preferred combo.
 
-___If you’re having trouble reading this description on CurseForge, you might want to try switching to the [REPO PAGE](https://github.com/tflo/Auto-Quest-Tracker-MkIII?tab=readme-ov-file#auto-quest-tracker-mk-iii). You’ll find the exact same text there, but it’s much easier to read and free from CurseForge’s rendering errors.___
+---
 
+*If you’re having trouble reading this description on CurseForge, you might want to try switching to the [Repo Page](https://github.com/tflo/Auto-Quest-Tracker-MkIII?tab=readme-ov-file#auto-quest-tracker-mk-iii). You’ll find the exact same text there, but it’s much easier to read and free from CurseForge’s rendering errors.*
+
+---
 
 ## New features of "Mk III"
 
