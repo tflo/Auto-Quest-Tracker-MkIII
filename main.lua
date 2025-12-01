@@ -1,5 +1,5 @@
--- SPDX-License-Identifier: GPL-3.0-or-later
--- Portions: Copyright (c) 2022-2025 Thomas Floeren for the added/changed code of "Mk III" (aka version 2 and later)
+-- SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+-- Portions: Copyright (c) 2022-2026 Thomas Floeren for the added/changed code of "Mk III" (aka version 2 and later)
 
 local addon_name, a = ...
 

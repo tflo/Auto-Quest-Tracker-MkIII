@@ -22,7 +22,7 @@
 ## AllowAddOnTableAccess: 1
 ## X-Wago-ID: q96dg1NO
 ## X-Curse-Project-ID: 775978
-## SPDX-License-Identifier: GPL-3.0-or-later
+## SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 ## X-Localizations: enUS
 ## SavedVariables: AQT_GlobalDB
 ## SavedVariablesPerCharacter: AQT_CharDB
