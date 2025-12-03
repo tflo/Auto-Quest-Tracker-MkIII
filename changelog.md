@@ -4,6 +4,12 @@ To see all commits, including all alpha changes, [*go here*](https://github.com/
 
 ## Releases
 
+#### 4.4.3 (2025-12-03)
+
+- Change license, add CONTRIBUTING/CLA.
+- Update readme/description.
+- toc: compat flag 110207
+
 #### 4.4.2 (2025-10-07)
 
 - toc bumped to 110205, no changes.
