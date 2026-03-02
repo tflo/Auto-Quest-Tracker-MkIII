@@ -1,6 +1,6 @@
-## Interface: 110207, 120000, 120001, 120002
+## Interface: 120001, 120002, 120005
 ## Title: Auto Quest Tracker Mk III
-## Version: 4.4.4
+## Version: 4.4.5
 ## IconTexture: Interface/Minimap/Tracking/QuestBlob
 ## AddonCompartmentFunc: addon_aqt_on_addoncompartment_click
 ## AddonCompartmentFuncOnEnter: addon_aqt_on_addoncompartment_enter
@@ -19,11 +19,11 @@
 ## Category-zhCN: 任务
 ## Category-zhTW: 任務
 ## Author: ErrondGamer (original version); gamer-angel05 (SL fork 2021); Mot (@6mot, @tflo; this fork)
+## X-Category: Quests
 ## AllowAddOnTableAccess: 1
 ## X-Wago-ID: q96dg1NO
 ## X-Curse-Project-ID: 775978
 ## SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
-## X-Localizations: enUS
 ## SavedVariables: AQT_GlobalDB
 ## SavedVariablesPerCharacter: AQT_CharDB
 
