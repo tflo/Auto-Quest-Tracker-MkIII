@@ -1,6 +1,6 @@
-## Interface: 120001, 120002, 120005
+## Interface: 120005, 120007, 120100
 ## Title: Auto Quest Tracker Mk III
-## Version: 4.4.5
+## Version: 4.4.6
 ## IconTexture: Interface/Minimap/Tracking/QuestBlob
 ## AddonCompartmentFunc: addon_aqt_on_addoncompartment_click
 ## AddonCompartmentFuncOnEnter: addon_aqt_on_addoncompartment_enter

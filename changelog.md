@@ -4,6 +4,10 @@ To see all commits, including all alpha changes, [*go here*](https://github.com/
 
 ## Releases
 
+#### 4.4.6 (2026-06-14)
+
+- toc bump, no changes.
+
 #### 4.4.5 (2026-03-02)
 
 - Remove old interface compatibility flags from toc.
