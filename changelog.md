@@ -4,6 +4,10 @@ To see all commits, including all alpha changes, [*go here*](https://github.com/
 
 ## Releases
 
+#### 4.4.7 (2026-10-10)
+
+- toc bump for 12.1.5, no changes.
+
 #### 4.4.6 (2026-06-14)
 
 - toc bump, no changes.
