@@ -1,7 +1,7 @@
 -- SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 -- Portions: Copyright (c) 2022-2026 Thomas Floeren for the added/changed code of "Mk III" (aka version 2 and later)
 
-local addon_name, a = ...
+local MYNAME, A = ...
 
 AQT_GlobalDB = AQT_GlobalDB or {}
 AQT_CharDB = AQT_CharDB or {}
@@ -174,14 +174,14 @@ local function table_is_empty(t)
 end
 
 local function debugprint(...)
-	if a.gdb.debug_mode then
+	if A.gdb.debug_mode then
 		local a, b = strsplit('.', GetTimePreciseSec())
 		print(format('[%s.%s] %sAQT >>> Debug >>>\124r', a:sub(-3), b:sub(1, 3), C_DEBUG), ...)
 	end
 end
 
 local function msg_load(msg,delay)
-	if a.gdb.loadMsg then C_Timer_After(delay, function() print(MSG_PREFIX .. msg) end) end
+	if A.gdb.loadMsg then C_Timer_After(delay, function() print(MSG_PREFIX .. msg) end) end
 end
 
 local function msg_confirm(msg)
@@ -280,40 +280,40 @@ local function add_quest_to_exceptions(par1)
 	-- Never track quest: Cmd-Option
 	-- Currently Mac only, due to the lack of enough modifier keys on Windows
 	if IsMetaKeyDown() and IsAltKeyDown() then
-		if a.gdb.exceptions_id[id] ~= exception_types.n.value then
-			a.gdb.exceptions_id[id] = exception_types.n.value
+		if A.gdb.exceptions_id[id] ~= exception_types.n.value then
+			A.gdb.exceptions_id[id] = exception_types.n.value
 		else
 			pr = pred[2]
 		end
 		confirm_msg(id, pr, exception_types.n.full)
-		if a.cdb.enabled then C_QuestLog_RemoveQuestWatch(id) end
+		if A.cdb.enabled then C_QuestLog_RemoveQuestWatch(id) end
 	-- Ignore quest: Option (Mac), Ctrl-Alt (Win)
 	elseif IS_MAC and IsAltKeyDown() or IsAltKeyDown() and IsControlKeyDown() then
-		if a.gdb.exceptions_id[id] ~= exception_types.i.value then
-			a.gdb.exceptions_id[id] = exception_types.i.value
+		if A.gdb.exceptions_id[id] ~= exception_types.i.value then
+			A.gdb.exceptions_id[id] = exception_types.i.value
 		else
 			pr = pred[2]
 		end
 		confirm_msg(id, pr, exception_types.i.full)
 	-- Always track quest: Cmd (Mac), Alt (Win)
 	elseif IsMetaKeyDown() or IsAltKeyDown() then
-		if a.gdb.exceptions_id[id] ~= exception_types.a.value then
-			a.gdb.exceptions_id[id] = exception_types.a.value
+		if A.gdb.exceptions_id[id] ~= exception_types.a.value then
+			A.gdb.exceptions_id[id] = exception_types.a.value
 		else
 			pr = pred[2]
 		end
 		confirm_msg(id, pr, exception_types.a.full)
-		if a.cdb.enabled then C_QuestLog_AddQuestWatch(id, QWT_AUTOMATIC) end
+		if A.cdb.enabled then C_QuestLog_AddQuestWatch(id, QWT_AUTOMATIC) end
 	-- Remove quest from exceptions: Ctrl (Mac/Win)
 	elseif IsControlKeyDown() then
-		if a.gdb.exceptions_id[id] then
-			a.gdb.exceptions_id[id] = nil
+		if A.gdb.exceptions_id[id] then
+			A.gdb.exceptions_id[id] = nil
 			pr = 'removed from exceptions'
 		else
 			pr = 'did not have any exception assigned'
 		end
 		confirm_msg(id, pr, '')
-		if a.cdb.enabled and C_QuestLog_GetQuestWatchType(id) == QWT_MANUAL then
+		if A.cdb.enabled and C_QuestLog_GetQuestWatchType(id) == QWT_MANUAL then
 			C_QuestLog_AddQuestWatch(id, QWT_AUTOMATIC)
 		end
 	end
@@ -353,22 +353,22 @@ hooksecurefunc(C_QuestLog, 'RemoveQuestWatch', add_quest_to_exceptions)
 ===========================================================================]]--
 
 local function is_ignored(id, ty, he)
-	if a.gdb.ignoreInstances and (ty == TYPE_DUNG or ty == TYPE_RAID)
-		or a.gdb.exceptions_id[id] == 0 or a.gdb.exceptions_type[ty] == 0 or a.gdb.exceptions_header[he] == 0
+	if A.gdb.ignoreInstances and (ty == TYPE_DUNG or ty == TYPE_RAID)
+		or A.gdb.exceptions_id[id] == 0 or A.gdb.exceptions_type[ty] == 0 or A.gdb.exceptions_header[he] == 0
 	then
 		return true
 	end
 end
 
 local function is_always(id, ty, he)
-	if a.gdb.exceptions_id[id] == 1 or a.gdb.exceptions_type[ty] == 1 or a.gdb.exceptions_header[he] == 1
+	if A.gdb.exceptions_id[id] == 1 or A.gdb.exceptions_type[ty] == 1 or A.gdb.exceptions_header[he] == 1
 	then
 		return true
 	end
 end
 
 local function is_never(id, ty, he)
-	if a.gdb.exceptions_id[id] == -1 or a.gdb.exceptions_type[ty] == -1 or a.gdb.exceptions_header[he] == -1
+	if A.gdb.exceptions_id[id] == -1 or A.gdb.exceptions_type[ty] == -1 or A.gdb.exceptions_header[he] == -1
 	then
 		return true
 	end
@@ -406,7 +406,7 @@ local function update_quests_for_zone()
 				if is_always(questId, questType, header) or (header == currentZone or header == minimapZone or isOnMap or hasLocalPOI) and not is_never(questId, questType) then
 					if C_QuestLog_GetQuestWatchType(questId) == nil then
 						auto_show_or_hide_quest(questIndex, questId, true)
-						if a.gdb.debug_mode then
+						if A.gdb.debug_mode then
 							debugprint(format('Reason: %s%s%s%s%s', is_always(questId, questType, header) == true and 'alwaysTracked ' or '', header == currentZone and 'currZone ' or '', header == minimapZone and 'mmZone ' or '', isOnMap and 'onMap ' or '', hasLocalPOI and 'hasPOI ' or ''))
 						end
 					end
@@ -427,22 +427,22 @@ local update_pending -- Ignore flag during the DELAY_ZONE_CHANGE time
 
 local function onEvent(_, event, ...)
 	if event == 'ADDON_LOADED' then
-		if ... == addon_name then
+		if ... == MYNAME then
 			f:UnregisterEvent 'ADDON_LOADED'
-			a.gdb, a.cdb = AQT_GlobalDB, AQT_CharDB
-			a.cdb.enabled = a.cdb.enabled == nil and true or a.cdb.enabled
-			a.gdb.loadMsg = a.gdb.loadMsg == nil and true or a.gdb.loadMsg
-			a.gdb.ignoreInstances = a.gdb.ignoreInstances or false
-			a.gdb.debug_mode = a.gdb.debug_mode or false
-			a.cdb.time_logout = a.cdb.time_logout or 0
-			a.gdb.exceptions_id = a.gdb.exceptions_id or {}
-			a.gdb.exceptions_type = a.gdb.exceptions_type or {}
-			a.gdb.exceptions_header = a.gdb.exceptions_header or {}
-			if a.cdb.enabled then
+			A.gdb, A.cdb = AQT_GlobalDB, AQT_CharDB
+			A.cdb.enabled = A.cdb.enabled == nil and true or A.cdb.enabled
+			A.gdb.loadMsg = A.gdb.loadMsg == nil and true or A.gdb.loadMsg
+			A.gdb.ignoreInstances = A.gdb.ignoreInstances or false
+			A.gdb.debug_mode = A.gdb.debug_mode or false
+			A.cdb.time_logout = A.cdb.time_logout or 0
+			A.gdb.exceptions_id = A.gdb.exceptions_id or {}
+			A.gdb.exceptions_type = A.gdb.exceptions_type or {}
+			A.gdb.exceptions_header = A.gdb.exceptions_header or {}
+			if A.cdb.enabled then
 				register_zone_events()
 				msg_load(C_GOOD .. 'Enabled.', 8)
 			else
-				if not a.cdb.enable_nextsession and not a.cdb.enable_nextinstance then
+				if not A.cdb.enable_nextsession and not A.cdb.enable_nextinstance then
 					msg_load(C_BAD .. 'Disabled.', 8)
 				else
 					f:RegisterEvent 'PLAYER_ENTERING_WORLD'
@@ -453,26 +453,26 @@ local function onEvent(_, event, ...)
 		local is_login, is_reload = ...
 		if not is_reload then
 			if is_login then
-				if a.cdb.enable_nextsession and time() - a.cdb.time_logout > SESSION_GRACE_TIME then
+				if A.cdb.enable_nextsession and time() - A.cdb.time_logout > SESSION_GRACE_TIME then
 					register_zone_events()
-					a.cdb.enabled = true
-					a.cdb.enable_nextsession = nil
+					A.cdb.enabled = true
+					A.cdb.enable_nextsession = nil
 					msg_load(C_GOOD .. 'Re-enabled because of new session.', 6)
 				end
-			elseif a.cdb.enable_nextinstance then
+			elseif A.cdb.enable_nextinstance then
 				register_zone_events()
-				a.cdb.enabled = true
-				a.cdb.enable_nextinstance = nil
+				A.cdb.enabled = true
+				A.cdb.enable_nextinstance = nil
 				msg_load(C_GOOD .. 'Re-enabled because of new (map) instance.', 6)
 			end
 		end
-		if a.cdb.enable_nextsession or a.cdb.enable_nextinstance then
-			msg_load(C_HALFBAD .. 'Disabled for this ' .. (a.cdb.enable_nextsession and 'session.' or 'instance.'), 6)
-			if a.cdb.enable_nextsession then f:RegisterEvent 'PLAYER_LOGOUT' end
-			if not a.cdb.enable_nextinstance then f:UnregisterEvent 'PLAYER_ENTERING_WORLD' end
+		if A.cdb.enable_nextsession or A.cdb.enable_nextinstance then
+			msg_load(C_HALFBAD .. 'Disabled for this ' .. (A.cdb.enable_nextsession and 'session.' or 'instance.'), 6)
+			if A.cdb.enable_nextsession then f:RegisterEvent 'PLAYER_LOGOUT' end
+			if not A.cdb.enable_nextinstance then f:UnregisterEvent 'PLAYER_ENTERING_WORLD' end
 		end
 	elseif event == 'PLAYER_LOGOUT' then
-		a.cdb.time_logout = time()
+		A.cdb.time_logout = time()
 	else -- The ZONE events
 		if update_pending then return end
 		update_pending = true
@@ -493,14 +493,14 @@ f:SetScript('OnEvent', onEvent)
 local BLOCK_SEP = '----------------------------------------'
 
 local function text_activation_status()
-	return a.cdb.enabled and C_GOOD .. 'Enabled' or a.cdb.enable_nextsession and C_HALFBAD .. 'Disabled for this session' or a.cdb.enable_nextinstance and C_HALFBAD .. 'Disabled for this instance.' or C_BAD .. 'Disabled'
+	return A.cdb.enabled and C_GOOD .. 'Enabled' or A.cdb.enable_nextsession and C_HALFBAD .. 'Disabled for this session' or A.cdb.enable_nextinstance and C_HALFBAD .. 'Disabled for this instance.' or C_BAD .. 'Disabled'
 end
 
 local function msg_status()
 	print(MSG_PREFIX
 		.. 'Status: '
 		.. text_activation_status() .. '\124r.'
-		.. (a.gdb.ignoreInstances and ' Ignoring instance quests.' or '')
+		.. (A.gdb.ignoreInstances and ' Ignoring instance quests.' or '')
 		.. '\nType ' .. C_AQT .. '/aqt h\124r for a list of commands.')
 end
 
@@ -588,11 +588,11 @@ end
 
 local function msg_list_exceptions()
 	print(BLOCK_SEP)
-	if table_is_empty(a.gdb.exceptions_id) then
+	if table_is_empty(A.gdb.exceptions_id) then
 		print(MSG_PREFIX .. 'You have no exceptions per quest ' .. C_AQT .. 'ID\124r.')
 	else
 		print(MSG_PREFIX .. 'Active exceptions per quest ' .. C_AQT .. 'ID\124r:')
-		for id, ex in ordered_pairs(a.gdb.exceptions_id) do
+		for id, ex in ordered_pairs(A.gdb.exceptions_id) do
 			local title = C_QuestLog_GetTitleForQuestID(id) or '[Quest title not (yet) available from server]'
 			local xfull = ''
 			for _, v in pairs(exception_types) do
@@ -601,11 +601,11 @@ local function msg_list_exceptions()
 			print(title .. ' (' .. id .. '): ' .. xfull)
 		end
 	end
-	if table_is_empty(a.gdb.exceptions_type) then
+	if table_is_empty(A.gdb.exceptions_type) then
 		print(MSG_PREFIX .. 'You have no exceptions per quest ' .. C_AQT .. 'TYPE\124r.')
 	else
 		print(MSG_PREFIX .. 'Active exceptions per quest ' .. C_AQT .. 'TYPE\124r:')
-		for ty, ex in ordered_pairs(a.gdb.exceptions_type) do
+		for ty, ex in ordered_pairs(A.gdb.exceptions_type) do
 			local xfull = ''
 			for _, v in pairs(exception_types) do
 				if v['value'] == ex then xfull = v['full'] break end
@@ -617,11 +617,11 @@ local function msg_list_exceptions()
 			print(ty .. ' (' .. tyfull .. '): ' .. xfull)
 		end
 	end
-	if table_is_empty(a.gdb.exceptions_header) then
+	if table_is_empty(A.gdb.exceptions_header) then
 		print(MSG_PREFIX .. 'You have no exceptions per quest ' .. C_AQT .. 'HEADER\124r.')
 	else
 		print(MSG_PREFIX .. 'Active exceptions per quest ' .. C_AQT .. 'HEADER\124r:')
-		for he, ex in ordered_pairs(a.gdb.exceptions_header) do
+		for he, ex in ordered_pairs(A.gdb.exceptions_header) do
 			local xfull = ''
 			for _, v in pairs(exception_types) do
 				if v['value'] == ex then xfull = v['full'] break end
@@ -671,20 +671,20 @@ end
 
 local function aqt_enable(on, disablemode)
 	f:UnregisterAllEvents()
-	a.cdb.enable_nextsession, a.cdb.enable_nextinstance = nil, nil
+	A.cdb.enable_nextsession, A.cdb.enable_nextinstance = nil, nil
 	if on then
 		update_quests_for_zone()
 		register_zone_events()
 	else
 		if not disablemode or disablemode == 1 then
-			a.cdb.enable_nextsession = true
+			A.cdb.enable_nextsession = true
 			f:RegisterEvent 'PLAYER_LOGOUT'
 		elseif disablemode == 2 then
-			a.cdb.enable_nextinstance = true
+			A.cdb.enable_nextinstance = true
 			f:RegisterEvent 'PLAYER_ENTERING_WORLD'
 		end
 	end
-	a.cdb.enabled = on
+	A.cdb.enabled = on
 	msg_confirm(text_activation_status() .. '.')
 end
 
@@ -717,21 +717,21 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		elseif msg == 'di' or msg == 'offi' then
 			aqt_enable(false, 2)
 		elseif msg == 'loadingmessage' then
-			a.gdb.loadMsg = not a.gdb.loadMsg
-			msg_confirm('Loading message ' .. (a.gdb.loadMsg and 'enabled' or 'disabled') .. ' for all chars.')
+			A.gdb.loadMsg = not A.gdb.loadMsg
+			msg_confirm('Loading message ' .. (A.gdb.loadMsg and 'enabled' or 'disabled') .. ' for all chars.')
 		elseif msg == 'in' or msg == 'instances' then
-			a.gdb.ignoreInstances = not a.gdb.ignoreInstances
-			if a.cdb.enabled then update_quests_for_zone() end
+			A.gdb.ignoreInstances = not A.gdb.ignoreInstances
+			if A.cdb.enabled then update_quests_for_zone() end
 			msg_confirm('Instance quests are ' ..
-			(a.gdb.ignoreInstances and 'ignored' or 'treated normally') .. ' for all chars.')
+			(A.gdb.ignoreInstances and 'ignored' or 'treated normally') .. ' for all chars.')
 		elseif msg == 'debug' then
-			a.gdb.debug_mode = not a.gdb.debug_mode
-			msg_confirm('Debug mode ' .. (a.gdb.debug_mode and 'enabled.' or 'disabled.'))
-		elseif msg == 'printvalues' and a.gdb.debug_mode then
-			a.print_values()
-		elseif msg == 'ignoreqwt' and a.gdb.debug_mode then
+			A.gdb.debug_mode = not A.gdb.debug_mode
+			msg_confirm('Debug mode ' .. (A.gdb.debug_mode and 'enabled.' or 'disabled.'))
+		elseif msg == 'printvalues' and A.gdb.debug_mode then
+			A.print_values()
+		elseif msg == 'ignoreqwt' and A.gdb.debug_mode then
 			ignore_qwt = not ignore_qwt
-			if a.cdb.enabled then update_quests_for_zone() end
+			if A.cdb.enabled then update_quests_for_zone() end
 			msg_confirm(ignore_qwt and 'Quests can now be removed regardless of their QuestWatchType. This screws up AQT\'s behavior, use only for debugging! This setting will not be saved across reloads.' or '"ignore_qwt" disabled (normal behavior).')
 		-- PRINT LISTS
 		elseif msg == 'q' or msg == 'quests' then
@@ -740,22 +740,22 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 			msg_list_exceptions()
 		-- CLEAR EXCEPTION TABLES: IDs, Types, Headers, All
 		elseif msg == 'xcleari' or msg == 'exceptionsclearid' then
-			wipe(a.gdb.exceptions_id)
-			if a.cdb.enabled then update_quests_for_zone() end
+			wipe(A.gdb.exceptions_id)
+			if A.cdb.enabled then update_quests_for_zone() end
 			msg_confirm('All exceptions per quest ID cleared.')
 		elseif msg == 'xcleart' or msg == 'exceptionscleartype' then
-			wipe(a.gdb.exceptions_type)
-			if a.cdb.enabled then update_quests_for_zone() end
+			wipe(A.gdb.exceptions_type)
+			if A.cdb.enabled then update_quests_for_zone() end
 			msg_confirm('All exceptions per quest type cleared.')
 		elseif msg == 'xclearh' or msg == 'exceptionsclearheader' then
-			wipe(a.gdb.exceptions_header)
-			if a.cdb.enabled then update_quests_for_zone() end
+			wipe(A.gdb.exceptions_header)
+			if A.cdb.enabled then update_quests_for_zone() end
 			msg_confirm('All exceptions per quest header cleared.')
 		elseif msg == 'xclearall' or msg == 'exceptionsclearall' then
-			wipe(a.gdb.exceptions_id)
-			wipe(a.gdb.exceptions_type)
-			wipe(a.gdb.exceptions_header)
-			if a.cdb.enabled then update_quests_for_zone() end
+			wipe(A.gdb.exceptions_id)
+			wipe(A.gdb.exceptions_type)
+			wipe(A.gdb.exceptions_header)
+			if A.cdb.enabled then update_quests_for_zone() end
 			msg_confirm('All quest exceptions (ID & type & header) cleared.')
 		elseif msg == 'h' or msg == 'help' then
 			msg_help()
@@ -766,20 +766,20 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 	elseif #mt == 2 then
 		if exception_types[mt[1]] then
 			if quest_types[mt[2]] then
-				a.gdb.exceptions_type[quest_types[mt[2]]['type']] = exception_types[mt[1]]['value']
+				A.gdb.exceptions_type[quest_types[mt[2]]['type']] = exception_types[mt[1]]['value']
 				msg_confirm('Quest type "' ..
 					quest_types[mt[2]]['type'] ..
 					'" (' .. quest_types[mt[2]]['full'] .. ') is now ' .. exception_types[mt[1]]['full'] .. '.')
-				if a.cdb.enabled then update_quests_for_zone() end
+				if A.cdb.enabled then update_quests_for_zone() end
 			elseif quest_groups[mt[2]] then
 				for _, id in ipairs(quest_groups[mt[2]]['ids']) do
-					a.gdb.exceptions_id[id] = exception_types[mt[1]]['value']
+					A.gdb.exceptions_id[id] = exception_types[mt[1]]['value']
 				end
 				msg_confirm('Quest group "' ..
 					quest_groups[mt[2]]['full'] ..
 					'" (' ..
 					#quest_groups[mt[2]]['ids'] .. ' quest IDs) is now ' .. exception_types[mt[1]]['full'] .. '.')
-				if a.cdb.enabled then update_quests_for_zone() end
+				if A.cdb.enabled then update_quests_for_zone() end
 			else
 				msg_invalid_input()
 			end
@@ -789,16 +789,16 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 	-- 1 cmd, 2+ args: Header exceptions: /aqt <exception cmd> h <quest header string>
 	elseif mt[2] == 'h' and exception_types[mt[1]] then
 		local header = get_questheader_from_input(mt)
-		a.gdb.exceptions_header[header] = exception_types[mt[1]]['value']
+		A.gdb.exceptions_header[header] = exception_types[mt[1]]['value']
 		msg_confirm('All quests with header "' .. header .. '" are now ' .. exception_types[mt[1]]['full'] .. '.')
-		if a.cdb.enabled then update_quests_for_zone() end
+		if A.cdb.enabled then update_quests_for_zone() end
 	else
 		msg_invalid_input()
 	end
 end
 
 
-function a.print_values()
+function A.print_values()
 	debugprint(format(
 		'DELAY_ZONE_CHANGE: %s; SESSION_GRACE_TIME: %s; IS_MAC: %s; QUESTFREQUENCY_DAILY: %s; QWT_AUTOMATIC: %s (%s); QWT_MANUAL: %s (%s); ignore_qwt: %s',
 		DELAY_ZONE_CHANGE, SESSION_GRACE_TIME, tostring(IS_MAC), QUESTFREQUENCY_DAILY, QWT_AUTOMATIC, type(QWT_AUTOMATIC), QWT_MANUAL, type(QWT_MANUAL), tostring(ignore_qwt)
