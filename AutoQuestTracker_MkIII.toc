@@ -29,6 +29,7 @@
 
 constants.lua
 main.lua
+ui.lua
 
 
 # This is a fork of https://github.com/gamer-angel05/AutoQuestTracker (last
