@@ -490,7 +490,7 @@ f:SetScript('OnEvent', onEvent)
 	UI
 ===========================================================================]]--
 
-local BLOCK_SEP = '----------------------------------------'
+local BLOCK_SEP = strrep('+', 42)
 
 local function text_activation_status()
 	return A.cdb.enabled and C_GOOD .. 'Enabled' or A.cdb.enable_nextsession and C_HALFBAD .. 'Disabled for this session' or A.cdb.enable_nextinstance and C_HALFBAD .. 'Disabled for this instance.' or C_BAD .. 'Disabled'
