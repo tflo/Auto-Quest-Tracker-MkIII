@@ -3,7 +3,45 @@
 
 local MYNAME, A = ...
 
+--[[---------------------------------------------------------------------------
+	Constants
+---------------------------------------------------------------------------]]--
 
+A.QUESTFREQUENCY_DAILY = Enum.QuestFrequency.Daily
+A.QWT_AUTOMATIC = Enum.QuestWatchType.Automatic
+A.QWT_MANUAL = Enum.QuestWatchType.Manual
+
+-- Colors for msgs
+A.CLR_AQT = '\124cff2196f3'
+A.CLR_GOOD = '\124cnDIM_GREEN_FONT_COLOR:'
+A.CLR_HALFBAD = '\124cnORANGE_FONT_COLOR:'
+A.CLR_BAD = '\124cnDIM_RED_FONT_COLOR:'
+A.CLR_DEBUG = '\124cffEE82EE'
+A.MSG_PREFIX = A.CLR_AQT .. 'Auto Quest Tracker\124r: '
+A.MSG_PRE = A.CLR_AQT .. 'AQT\124r: '
+-- Colors for exception types
+A.CLR_ALW = A.CLR_GOOD
+A.CLR_IGN = A.CLR_HALFBAD
+A.CLR_NEV = A.CLR_BAD
+-- Colors for addon compartment tooltip
+A.CLR_TT = '\124cnWHITE_FONT_COLOR:' -- Base color for tooltip body text
+A.CLR_CLICK = '\124cnORANGE_FONT_COLOR:'
+A.CLR_ACTION = '\124cnYELLOW_FONT_COLOR:'
+
+-- Serves as delay for update after zone change events and as throttle (new zone events are ignored during the time)
+A.DELAY_ZONE_CHANGE = 3 -- Testwise 3; we used to use 2
+-- Time between logout and login needed to consider it a new session
+A.SESSION_GRACE_TIME = 1200 -- 20 min
+A.IS_MAC = IsMacClient()
+
+-- Quest types Blizz (https://warcraft.wiki.gg/wiki/API_C_QuestLog.GetQuestType)
+-- NOTE: There is also the `Enum.QuestTag`, which contains *some* of the types from `GetQuestType`,
+-- but also some that are not returned by `GetQuestType` (eg Delve = 288). What is this mess?!
+A.TYPE_DUNG = 81
+A.TYPE_RAID = 62
+A.TYPE_PROF = 267
+A.TYPE_PET = 102
+A.TYPE_PVP = 255 -- This is "War Mode PvP"
 
 --[[---------------------------------------------------------------------------
 	Tables
@@ -12,23 +50,23 @@ local MYNAME, A = ...
 A.QUEST_TYPES = {
 	['dung'] = {
 		['full'] = 'Dungeon Quests',
-		['type'] = TYPE_DUNG
+		['type'] = A.TYPE_DUNG
 	},
 	['raid'] = {
 		['full'] = 'Raid Quests',
-		['type'] = TYPE_RAID
+		['type'] = A.TYPE_RAID
 	},
 	['prof'] = {
 		['full'] = 'Profession Quests',
-		['type'] = TYPE_PROF
+		['type'] = A.TYPE_PROF
 	},
 	['pet'] = {
 		['full'] = 'Battle Pet Quests',
-		['type'] = TYPE_PET
+		['type'] = A.TYPE_PET
 	},
 	['pvp'] = {
 		['full'] = 'PvP Quests',
-		['type'] = TYPE_PVP
+		['type'] = A.TYPE_PVP
 	},
 }
 

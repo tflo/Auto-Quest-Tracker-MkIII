@@ -28,46 +28,6 @@ local C_QuestLog_GetInfo, C_QuestLog_IsWorldQuest, C_QuestLog_GetQuestType, C_Qu
 	C_QuestLog.GetTitleForQuestID,
 	C_QuestLog.IsQuestCalling
 
-A.QUESTFREQUENCY_DAILY = Enum.QuestFrequency.Daily
-A.QWT_AUTOMATIC = Enum.QuestWatchType.Automatic
-A.QWT_MANUAL = Enum.QuestWatchType.Manual
-
---[[---------------------------------------------------------------------------
-	Constants
----------------------------------------------------------------------------]]--
-
--- Colors for msgs
-A.CLR_AQT = '\124cff2196f3'
-A.CLR_GOOD = '\124cnDIM_GREEN_FONT_COLOR:'
-A.CLR_HALFBAD = '\124cnORANGE_FONT_COLOR:'
-A.CLR_BAD = '\124cnDIM_RED_FONT_COLOR:'
-A.CLR_DEBUG = '\124cffEE82EE'
-A.MSG_PREFIX = A.CLR_AQT .. 'Auto Quest Tracker\124r: '
-A.MSG_PRE = A.CLR_AQT .. 'AQT\124r: '
--- Colors for exception types
-A.CLR_ALW = A.CLR_GOOD
-A.CLR_IGN = A.CLR_HALFBAD
-A.CLR_NEV = A.CLR_BAD
--- Colors for addon compartment tooltip
-A.CLR_TT = '\124cnWHITE_FONT_COLOR:' -- Base color for tooltip body text
-A.CLR_CLICK = '\124cnORANGE_FONT_COLOR:'
-A.CLR_ACTION = '\124cnYELLOW_FONT_COLOR:'
-
--- Quest types Blizz (https://warcraft.wiki.gg/wiki/API_C_QuestLog.GetQuestType)
--- NOTE: There is also the `Enum.QuestTag`, which contains *some* of the types from `GetQuestType`,
--- but also some that are not returned by `GetQuestType` (eg Delve = 288). What is this mess?!
-local TYPE_DUNG = 81
-local TYPE_RAID = 62
-local TYPE_PROF = 267
-local TYPE_PET = 102
-local TYPE_PVP = 255 -- This is "War Mode PvP"
-
--- Serves as delay for update after zone change events and as throttle (new zone events are ignored during the time)
-A.DELAY_ZONE_CHANGE = 3 -- Testwise 3; we used to use 2
--- Time between logout and login needed to consider it a new session
-A.SESSION_GRACE_TIME = 1200 -- 20 min
-A.IS_MAC = IsMacClient()
-
 --[[---------------------------------------------------------------------------
 	Misc functions
 ---------------------------------------------------------------------------]]--
@@ -256,7 +216,7 @@ hooksecurefunc(C_QuestLog, 'RemoveQuestWatch', add_quest_to_exceptions)
 ===========================================================================]]--
 
 local function is_ignored(id, ty, he)
-	if A.gdb.ignoreInstances and (ty == TYPE_DUNG or ty == TYPE_RAID)
+	if A.gdb.ignoreInstances and (ty == A.TYPE_DUNG or ty == A.TYPE_RAID)
 		or A.gdb.exceptions_id[id] == 0 or A.gdb.exceptions_type[ty] == 0 or A.gdb.exceptions_header[he] == 0
 	then
 		return true
