@@ -72,7 +72,7 @@ local IS_MAC = IsMacClient()
 	Tables
 ---------------------------------------------------------------------------]]--
 
-local quest_types = {
+local QUEST_TYPES = {
 	['dung'] = {
 		['full'] = 'Dungeon Quests',
 		['type'] = TYPE_DUNG
@@ -95,7 +95,7 @@ local quest_types = {
 	},
 }
 
-local quest_groups = {
+local QUEST_GROUPS = {
 	['ws'] = {
 		['full'] = 'The Call of the Worldsoul',
 		['ids'] = {82482, 82516, 82483, 82453, 82489, 82659, 87417, 91052, 87419, 82490, 82491, 82492, 82493, 82494, 82496, 82497, 82498, 82499, 82500, 82501, 82502, 82503, 82504, 82505, 82506, 82507, 82508, 82509, 82510, 89514, 87424, 82511, 82512, 89492, 87423, 82488, 91855, 82487, 82486, 82485, 82452, 87422, 82495, 89502}
@@ -146,7 +146,7 @@ local quest_groups = {
 	},
 }
 
-local exception_types = {
+local EXCEPTION_TYPES = {
 	['always'] = {
 		['value'] = 1,
 		['full'] = C_ALW .. 'Always Tracked\124r',
@@ -280,29 +280,29 @@ local function add_quest_to_exceptions(par1)
 	-- Never track quest: Cmd-Option
 	-- Currently Mac only, due to the lack of enough modifier keys on Windows
 	if IsMetaKeyDown() and IsAltKeyDown() then
-		if A.gdb.exceptions_id[id] ~= exception_types.normal.value then
-			A.gdb.exceptions_id[id] = exception_types.normal.value
+		if A.gdb.exceptions_id[id] ~= EXCEPTION_TYPES.normal.value then
+			A.gdb.exceptions_id[id] = EXCEPTION_TYPES.normal.value
 		else
 			pr = pred[2]
 		end
-		confirm_msg(id, pr, exception_types.normal.full)
+		confirm_msg(id, pr, EXCEPTION_TYPES.normal.full)
 		if A.cdb.enabled then C_QuestLog_RemoveQuestWatch(id) end
 	-- Ignore quest: Option (Mac), Ctrl-Alt (Win)
 	elseif IS_MAC and IsAltKeyDown() or IsAltKeyDown() and IsControlKeyDown() then
-		if A.gdb.exceptions_id[id] ~= exception_types.ignore.value then
-			A.gdb.exceptions_id[id] = exception_types.ignore.value
+		if A.gdb.exceptions_id[id] ~= EXCEPTION_TYPES.ignore.value then
+			A.gdb.exceptions_id[id] = EXCEPTION_TYPES.ignore.value
 		else
 			pr = pred[2]
 		end
-		confirm_msg(id, pr, exception_types.ignore.full)
+		confirm_msg(id, pr, EXCEPTION_TYPES.ignore.full)
 	-- Always track quest: Cmd (Mac), Alt (Win)
 	elseif IsMetaKeyDown() or IsAltKeyDown() then
-		if A.gdb.exceptions_id[id] ~= exception_types.always.value then
-			A.gdb.exceptions_id[id] = exception_types.always.value
+		if A.gdb.exceptions_id[id] ~= EXCEPTION_TYPES.always.value then
+			A.gdb.exceptions_id[id] = EXCEPTION_TYPES.always.value
 		else
 			pr = pred[2]
 		end
-		confirm_msg(id, pr, exception_types.always.full)
+		confirm_msg(id, pr, EXCEPTION_TYPES.always.full)
 		if A.cdb.enabled then C_QuestLog_AddQuestWatch(id, QWT_AUTOMATIC) end
 	-- Remove quest from exceptions: Ctrl (Mac/Win)
 	elseif IsControlKeyDown() then
@@ -595,7 +595,7 @@ local function msg_list_exceptions()
 		for id, ex in ordered_pairs(A.gdb.exceptions_id) do
 			local title = C_QuestLog_GetTitleForQuestID(id) or '[Quest title not (yet) available from server]'
 			local xfull = ''
-			for _, v in pairs(exception_types) do
+			for _, v in pairs(EXCEPTION_TYPES) do
 				if v['value'] == ex then xfull = v['full'] break end
 			end
 			print(title .. ' (' .. id .. '): ' .. xfull)
@@ -607,11 +607,11 @@ local function msg_list_exceptions()
 		print(MSG_PREFIX .. 'Active exceptions per quest ' .. C_AQT .. 'TYPE\124r:')
 		for ty, ex in ordered_pairs(A.gdb.exceptions_type) do
 			local xfull = ''
-			for _, v in pairs(exception_types) do
+			for _, v in pairs(EXCEPTION_TYPES) do
 				if v['value'] == ex then xfull = v['full'] break end
 			end
 			local tyfull = ''
-			for _, v in pairs(quest_types) do
+			for _, v in pairs(QUEST_TYPES) do
 				if v['type'] == ty then tyfull = v['full'] break end
 			end
 			print(ty .. ' (' .. tyfull .. '): ' .. xfull)
@@ -623,7 +623,7 @@ local function msg_list_exceptions()
 		print(MSG_PREFIX .. 'Active exceptions per quest ' .. C_AQT .. 'HEADER\124r:')
 		for he, ex in ordered_pairs(A.gdb.exceptions_header) do
 			local xfull = ''
-			for _, v in pairs(exception_types) do
+			for _, v in pairs(EXCEPTION_TYPES) do
 				if v['value'] == ex then xfull = v['full'] break end
 			end
 			print('"' .. he .. '": ' .. xfull)
@@ -764,21 +764,21 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		end
 	-- 1 cmd, 1 arg: Types & groups exceptions: /aqt <exception cmd> <type | group>
 	elseif #mt == 2 then
-		if exception_types[mt[1]] then
-			if quest_types[mt[2]] then
-				A.gdb.exceptions_type[quest_types[mt[2]]['type']] = exception_types[mt[1]]['value']
+		if EXCEPTION_TYPES[mt[1]] then
+			if QUEST_TYPES[mt[2]] then
+				A.gdb.exceptions_type[QUEST_TYPES[mt[2]]['type']] = EXCEPTION_TYPES[mt[1]]['value']
 				msg_confirm('Quest type "' ..
-					quest_types[mt[2]]['type'] ..
-					'" (' .. quest_types[mt[2]]['full'] .. ') is now ' .. exception_types[mt[1]]['full'] .. '.')
+					QUEST_TYPES[mt[2]]['type'] ..
+					'" (' .. QUEST_TYPES[mt[2]]['full'] .. ') is now ' .. EXCEPTION_TYPES[mt[1]]['full'] .. '.')
 				if A.cdb.enabled then update_quests_for_zone() end
-			elseif quest_groups[mt[2]] then
-				for _, id in ipairs(quest_groups[mt[2]]['ids']) do
-					A.gdb.exceptions_id[id] = exception_types[mt[1]]['value']
+			elseif QUEST_GROUPS[mt[2]] then
+				for _, id in ipairs(QUEST_GROUPS[mt[2]]['ids']) do
+					A.gdb.exceptions_id[id] = EXCEPTION_TYPES[mt[1]]['value']
 				end
 				msg_confirm('Quest group "' ..
-					quest_groups[mt[2]]['full'] ..
+					QUEST_GROUPS[mt[2]]['full'] ..
 					'" (' ..
-					#quest_groups[mt[2]]['ids'] .. ' quest IDs) is now ' .. exception_types[mt[1]]['full'] .. '.')
+					#QUEST_GROUPS[mt[2]]['ids'] .. ' quest IDs) is now ' .. EXCEPTION_TYPES[mt[1]]['full'] .. '.')
 				if A.cdb.enabled then update_quests_for_zone() end
 			else
 				msg_invalid_input()
@@ -787,10 +787,10 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 			msg_invalid_input()
 		end
 	-- 1 cmd, 2+ args: Header exceptions: /aqt <exception cmd> h <quest header string>
-	elseif mt[2] == 'h' and exception_types[mt[1]] then
+	elseif mt[2] == 'h' and EXCEPTION_TYPES[mt[1]] then
 		local header = get_questheader_from_input(mt)
-		A.gdb.exceptions_header[header] = exception_types[mt[1]]['value']
-		msg_confirm('All quests with header "' .. header .. '" are now ' .. exception_types[mt[1]]['full'] .. '.')
+		A.gdb.exceptions_header[header] = EXCEPTION_TYPES[mt[1]]['value']
+		msg_confirm('All quests with header "' .. header .. '" are now ' .. EXCEPTION_TYPES[mt[1]]['full'] .. '.')
 		if A.cdb.enabled then update_quests_for_zone() end
 	else
 		msg_invalid_input()
