@@ -280,12 +280,12 @@ local function add_quest_to_exceptions(par1)
 	-- Never track quest: Cmd-Option
 	-- Currently Mac only, due to the lack of enough modifier keys on Windows
 	if IsMetaKeyDown() and IsAltKeyDown() then
-		if A.gdb.exceptions_id[id] ~= EXCEPTION_TYPES.normal.value then
-			A.gdb.exceptions_id[id] = EXCEPTION_TYPES.normal.value
+		if A.gdb.exceptions_id[id] ~= EXCEPTION_TYPES.never.value then
+			A.gdb.exceptions_id[id] = EXCEPTION_TYPES.never.value
 		else
 			pr = pred[2]
 		end
-		confirm_msg(id, pr, EXCEPTION_TYPES.normal.full)
+		confirm_msg(id, pr, EXCEPTION_TYPES.never.full)
 		if A.cdb.enabled then C_QuestLog_RemoveQuestWatch(id) end
 	-- Ignore quest: Option (Mac), Ctrl-Alt (Win)
 	elseif IS_MAC and IsAltKeyDown() or IsAltKeyDown() and IsControlKeyDown() then
