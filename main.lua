@@ -147,19 +147,19 @@ local quest_groups = {
 }
 
 local exception_types = {
-	['a'] = {
+	['always'] = {
 		['value'] = 1,
 		['full'] = C_ALW .. 'Always Tracked\124r',
 	},
-	['n'] = {
+	['never'] = {
 		['value'] = -1,
 		['full'] = C_NEV .. 'Never Tracked\124r',
 	},
-	['i'] = {
+	['ignore'] = {
 		['value'] = 0,
 		['full'] = C_IGN .. 'Ignored\124r',
 	},
-	['r'] = {
+	['removed'] = {
 		['value'] = nil,
 		['full'] = 'Removed from Exceptions',
 	}
@@ -280,29 +280,29 @@ local function add_quest_to_exceptions(par1)
 	-- Never track quest: Cmd-Option
 	-- Currently Mac only, due to the lack of enough modifier keys on Windows
 	if IsMetaKeyDown() and IsAltKeyDown() then
-		if A.gdb.exceptions_id[id] ~= exception_types.n.value then
-			A.gdb.exceptions_id[id] = exception_types.n.value
+		if A.gdb.exceptions_id[id] ~= exception_types.normal.value then
+			A.gdb.exceptions_id[id] = exception_types.normal.value
 		else
 			pr = pred[2]
 		end
-		confirm_msg(id, pr, exception_types.n.full)
+		confirm_msg(id, pr, exception_types.normal.full)
 		if A.cdb.enabled then C_QuestLog_RemoveQuestWatch(id) end
 	-- Ignore quest: Option (Mac), Ctrl-Alt (Win)
 	elseif IS_MAC and IsAltKeyDown() or IsAltKeyDown() and IsControlKeyDown() then
-		if A.gdb.exceptions_id[id] ~= exception_types.i.value then
-			A.gdb.exceptions_id[id] = exception_types.i.value
+		if A.gdb.exceptions_id[id] ~= exception_types.ignore.value then
+			A.gdb.exceptions_id[id] = exception_types.ignore.value
 		else
 			pr = pred[2]
 		end
-		confirm_msg(id, pr, exception_types.i.full)
+		confirm_msg(id, pr, exception_types.ignore.full)
 	-- Always track quest: Cmd (Mac), Alt (Win)
 	elseif IsMetaKeyDown() or IsAltKeyDown() then
-		if A.gdb.exceptions_id[id] ~= exception_types.a.value then
-			A.gdb.exceptions_id[id] = exception_types.a.value
+		if A.gdb.exceptions_id[id] ~= exception_types.always.value then
+			A.gdb.exceptions_id[id] = exception_types.always.value
 		else
 			pr = pred[2]
 		end
-		confirm_msg(id, pr, exception_types.a.full)
+		confirm_msg(id, pr, exception_types.always.full)
 		if A.cdb.enabled then C_QuestLog_AddQuestWatch(id, QWT_AUTOMATIC) end
 	-- Remove quest from exceptions: Ctrl (Mac/Win)
 	elseif IsControlKeyDown() then
