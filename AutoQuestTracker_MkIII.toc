@@ -27,6 +27,7 @@
 ## SavedVariables: AQT_GlobalDB
 ## SavedVariablesPerCharacter: AQT_CharDB
 
+constants.lua
 main.lua
 
 
