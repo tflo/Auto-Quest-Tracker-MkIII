@@ -15,18 +15,18 @@ AQT_CharDB = AQT_CharDB or {}
 ---------------------------------------------------------------------------]]--
 
 local _
-local C_TimerAfter = _G.C_Timer.After
-local InCombatLockdown, GetRealZoneText, GetMinimapZoneText = _G.InCombatLockdown, _G.GetRealZoneText, _G.GetMinimapZoneText
-local C_QuestLogGetInfo, C_QuestLogIsWorldQuest, C_QuestLogGetQuestType, C_QuestLogAddQuestWatch, C_QuestLogRemoveQuestWatch, C_QuestLogGetNumQuestLogEntries, C_QuestLogGetQuestWatchType, C_QuestLogGetTitleForQuestID, C_QuestLogIsQuestCalling =
-	_G.C_QuestLog.GetInfo,
-	_G.C_QuestLog.IsWorldQuest,
-	_G.C_QuestLog.GetQuestType,
-	_G.C_QuestLog.AddQuestWatch,
-	_G.C_QuestLog.RemoveQuestWatch,
-	_G.C_QuestLog.GetNumQuestLogEntries,
-	_G.C_QuestLog.GetQuestWatchType,
-	_G.C_QuestLog.GetTitleForQuestID,
-	_G.C_QuestLog.IsQuestCalling
+local C_Timer_After = C_Timer.After
+local InCombatLockdown, GetRealZoneText, GetMinimapZoneText = InCombatLockdown, GetRealZoneText, GetMinimapZoneText
+local C_QuestLog_GetInfo, C_QuestLog_IsWorldQuest, C_QuestLog_GetQuestType, C_QuestLog_AddQuestWatch, C_QuestLog_RemoveQuestWatch, C_QuestLog_GetNumQuestLogEntries, C_QuestLog_GetQuestWatchType, C_QuestLog_GetTitleForQuestID, C_QuestLog_IsQuestCalling =
+	C_QuestLog.GetInfo,
+	C_QuestLog.IsWorldQuest,
+	C_QuestLog.GetQuestType,
+	C_QuestLog.AddQuestWatch,
+	C_QuestLog.RemoveQuestWatch,
+	C_QuestLog.GetNumQuestLogEntries,
+	C_QuestLog.GetQuestWatchType,
+	C_QuestLog.GetTitleForQuestID,
+	C_QuestLog.IsQuestCalling
 
 local QUESTFREQUENCY_DAILY = Enum.QuestFrequency.Daily
 local QWT_AUTOMATIC = Enum.QuestWatchType.Automatic
@@ -181,7 +181,7 @@ local function debugprint(...)
 end
 
 local function msg_load(msg,delay)
-	if a.gdb.loadMsg then C_TimerAfter(delay, function() print(MSG_PREFIX .. msg) end) end
+	if a.gdb.loadMsg then C_Timer_After(delay, function() print(MSG_PREFIX .. msg) end) end
 end
 
 local function msg_confirm(msg)
@@ -203,32 +203,32 @@ end
 -- end
 
 local function get_questinfo(index)
-	local quest = C_QuestLogGetInfo(index)
+	local quest = C_QuestLog_GetInfo(index)
 	if quest then return
 		quest.title,
 		quest.isHeader,
 		quest.questID,
-		C_QuestLogIsWorldQuest(quest.questID),
+		C_QuestLog_IsWorldQuest(quest.questID),
 		quest.isHidden,
-		C_QuestLogGetQuestType(quest.questID),
+		C_QuestLog_GetQuestType(quest.questID),
 		quest.isOnMap,
 		quest.hasLocalPOI
 	end
 end
 
 local function get_questinfo_for_listing(index)
-	local quest = C_QuestLogGetInfo(index)
+	local quest = C_QuestLog_GetInfo(index)
 	if quest then return
 		quest.title,
 		quest.isHeader,
 		quest.questID,
-		C_QuestLogIsWorldQuest(quest.questID),
+		C_QuestLog_IsWorldQuest(quest.questID),
 		quest.isHidden,
-		C_QuestLogIsQuestCalling(quest.questID),
-		C_QuestLogGetQuestType(quest.questID),
+		C_QuestLog_IsQuestCalling(quest.questID),
+		C_QuestLog_GetQuestType(quest.questID),
 		quest.isOnMap,
 		quest.hasLocalPOI,
-		C_QuestLogGetQuestWatchType(quest.questID),
+		C_QuestLog_GetQuestWatchType(quest.questID),
 		quest.frequency,
 		quest.level,
 		quest.isTask,
@@ -252,10 +252,10 @@ local function auto_show_or_hide_quest(questIndex, questId, show)
 	if not InCombatLockdown() and id == questId then
 		if show then
 			debugprint(format('Tracking: %s (%s)', questTitle, questId))
-			C_QuestLogAddQuestWatch(questId, QWT_AUTOMATIC)
+			C_QuestLog_AddQuestWatch(questId, QWT_AUTOMATIC)
 		else
 			debugprint(format('Removing: %s (%s)', questTitle, questId))
-			C_QuestLogRemoveQuestWatch(questId)
+			C_QuestLog_RemoveQuestWatch(questId)
 		end
 	end
 end
@@ -286,7 +286,7 @@ local function add_quest_to_exceptions(par1)
 			pr = pred[2]
 		end
 		confirm_msg(id, pr, exception_types.n.full)
-		if a.cdb.enabled then C_QuestLogRemoveQuestWatch(id) end
+		if a.cdb.enabled then C_QuestLog_RemoveQuestWatch(id) end
 	-- Ignore quest: Option (Mac), Ctrl-Alt (Win)
 	elseif IS_MAC and IsAltKeyDown() or IsAltKeyDown() and IsControlKeyDown() then
 		if a.gdb.exceptions_id[id] ~= exception_types.i.value then
@@ -303,7 +303,7 @@ local function add_quest_to_exceptions(par1)
 			pr = pred[2]
 		end
 		confirm_msg(id, pr, exception_types.a.full)
-		if a.cdb.enabled then C_QuestLogAddQuestWatch(id, QWT_AUTOMATIC) end
+		if a.cdb.enabled then C_QuestLog_AddQuestWatch(id, QWT_AUTOMATIC) end
 	-- Remove quest from exceptions: Ctrl (Mac/Win)
 	elseif IsControlKeyDown() then
 		if a.gdb.exceptions_id[id] then
@@ -313,8 +313,8 @@ local function add_quest_to_exceptions(par1)
 			pr = 'did not have any exception assigned'
 		end
 		confirm_msg(id, pr, '')
-		if a.cdb.enabled and C_QuestLogGetQuestWatchType(id) == QWT_MANUAL then
-			C_QuestLogAddQuestWatch(id, QWT_AUTOMATIC)
+		if a.cdb.enabled and C_QuestLog_GetQuestWatchType(id) == QWT_MANUAL then
+			C_QuestLog_AddQuestWatch(id, QWT_AUTOMATIC)
 		end
 	end
 end
@@ -394,7 +394,7 @@ local function update_quests_for_zone()
 
 	local header = nil
 
-	for questIndex = 1, C_QuestLogGetNumQuestLogEntries() do
+	for questIndex = 1, C_QuestLog_GetNumQuestLogEntries() do
 		local questTitle, isHeader, questId, isWorldQuest, isHidden, questType, isOnMap, hasLocalPOI =
 			get_questinfo(questIndex)
 		if not isWorldQuest and not isHidden then
@@ -404,13 +404,13 @@ local function update_quests_for_zone()
 				-- Nop
 			else
 				if is_always(questId, questType, header) or (header == currentZone or header == minimapZone or isOnMap or hasLocalPOI) and not is_never(questId, questType) then
-					if C_QuestLogGetQuestWatchType(questId) == nil then
+					if C_QuestLog_GetQuestWatchType(questId) == nil then
 						auto_show_or_hide_quest(questIndex, questId, true)
 						if a.gdb.debug_mode then
 							debugprint(format('Reason: %s%s%s%s%s', is_always(questId, questType, header) == true and 'alwaysTracked ' or '', header == currentZone and 'currZone ' or '', header == minimapZone and 'mmZone ' or '', isOnMap and 'onMap ' or '', hasLocalPOI and 'hasPOI ' or ''))
 						end
 					end
-				elseif ignore_qwt or is_never(questId, questType, header) or C_QuestLogGetQuestWatchType(questId) == QWT_AUTOMATIC then
+				elseif ignore_qwt or is_never(questId, questType, header) or C_QuestLog_GetQuestWatchType(questId) == QWT_AUTOMATIC then
 					auto_show_or_hide_quest(questIndex, questId, false)
 				end
 			end
@@ -476,7 +476,7 @@ local function onEvent(_, event, ...)
 	else -- The ZONE events
 		if update_pending then return end
 		update_pending = true
-		C_TimerAfter(DELAY_ZONE_CHANGE, function()
+		C_Timer_After(DELAY_ZONE_CHANGE, function()
 			update_quests_for_zone()
 			update_pending = nil
 		end)
@@ -513,7 +513,7 @@ end
 local function msg_list_quests()
 	print(BLOCK_SEP)
 	print(MSG_PREFIX, 'Quests currently in quest log:\n[T = type; W = watch type]')
-	for questIndex = 1, C_QuestLogGetNumQuestLogEntries() do
+	for questIndex = 1, C_QuestLog_GetNumQuestLogEntries() do
 		local questTitle, isHeader, questId, isWorldQuest, isHidden, isCalling, questType, isOnMap, hasLocalPOI, watchType, frequency, level, isTask, isBounty, isStory, startEvent, isImportant, accountQuest, isComplete, isQuestReplayable, isQuestReplayedRecently, isRepeatableQuest, isQuestTrivial, readyForTurnIn =
 			get_questinfo_for_listing(questIndex)
 		if isHeader then
@@ -593,7 +593,7 @@ local function msg_list_exceptions()
 	else
 		print(MSG_PREFIX .. 'Active exceptions per quest ' .. C_AQT .. 'ID\124r:')
 		for id, ex in ordered_pairs(a.gdb.exceptions_id) do
-			local title = C_QuestLogGetTitleForQuestID(id) or '[Quest title not (yet) available from server]'
+			local title = C_QuestLog_GetTitleForQuestID(id) or '[Quest title not (yet) available from server]'
 			local xfull = ''
 			for _, v in pairs(exception_types) do
 				if v['value'] == ex then xfull = v['full'] break end
