@@ -135,50 +135,67 @@ local function confirm_msg(quest_id, predicate, action)
 	print(format('%sQuest %s %s%s.', A.MSG_PRE, quest_id, predicate, action))
 end
 
-local pred = {'is now ', 'is already '}
+local predicate = {'is now ', 'is already '}
 
-local function add_quest_to_exceptions(par1)
-	A.dprint('`add_quest_to_exceptions` called.')
-	local id, pr = par1, pred[1]
+function A.add_quest_to_exceptions(quest_id, exc_type)
+	A.dprint('`A.add_quest_to_exceptions` called.')
+	local pred = predicate[1]
+	-- Never track quest: Cmd-Option
+	-- Currently Mac only, due to the lack of enough modifier keys on Windows
+	if exc_type == A.EXCEPTION_TYPES.never.value then
+		if A.gdb.exceptions_id[quest_id] ~= A.EXCEPTION_TYPES.never.value then
+			A.gdb.exceptions_id[quest_id] = A.EXCEPTION_TYPES.never.value
+		else
+			pred = predicate[2]
+		end
+		confirm_msg(quest_id, pred, A.EXCEPTION_TYPES.never.full)
+		if A.cdb.enabled then C_QuestLog_RemoveQuestWatch(quest_id) end
+	-- Ignore quest: Option (Mac), Ctrl-Alt (Win)
+	elseif exc_type == A.EXCEPTION_TYPES.ignore.value then
+		if A.gdb.exceptions_id[quest_id] ~= A.EXCEPTION_TYPES.ignore.value then
+			A.gdb.exceptions_id[quest_id] = A.EXCEPTION_TYPES.ignore.value
+		else
+			pred = predicate[2]
+		end
+		confirm_msg(quest_id, pred, A.EXCEPTION_TYPES.ignore.full)
+	-- Always track quest: Cmd (Mac), Alt (Win)
+	elseif exc_type == A.EXCEPTION_TYPES.always.value then
+		if A.gdb.exceptions_id[quest_id] ~= A.EXCEPTION_TYPES.always.value then
+			A.gdb.exceptions_id[quest_id] = A.EXCEPTION_TYPES.always.value
+		else
+			pred = predicate[2]
+		end
+		confirm_msg(quest_id, pred, A.EXCEPTION_TYPES.always.full)
+		if A.cdb.enabled then C_QuestLog_AddQuestWatch(quest_id, A.QWT_AUTOMATIC) end
+	-- Remove quest from exceptions: Ctrl (Mac/Win)
+	elseif exc_type == A.EXCEPTION_TYPES.remove.value then
+		if A.gdb.exceptions_id[quest_id] then
+			A.gdb.exceptions_id[quest_id] = nil
+			pred = 'removed from exceptions'
+		else
+			pred = 'did not have any exception assigned'
+		end
+		confirm_msg(quest_id, pred, '')
+		if A.cdb.enabled and C_QuestLog_GetQuestWatchType(quest_id) == A.QWT_MANUAL then
+			C_QuestLog_AddQuestWatch(quest_id, A.QWT_AUTOMATIC)
+		end
+	end
+end
+
+local function TrackQuest_modifiers_handler(quest_id)
 	-- Never track quest: Cmd-Option
 	-- Currently Mac only, due to the lack of enough modifier keys on Windows
 	if IsMetaKeyDown() and IsAltKeyDown() then
-		if A.gdb.exceptions_id[id] ~= A.EXCEPTION_TYPES.never.value then
-			A.gdb.exceptions_id[id] = A.EXCEPTION_TYPES.never.value
-		else
-			pr = pred[2]
-		end
-		confirm_msg(id, pr, A.EXCEPTION_TYPES.never.full)
-		if A.cdb.enabled then C_QuestLog_RemoveQuestWatch(id) end
+		A.add_quest_to_exceptions(quest_id, A.EXCEPTION_TYPES.never.value)
 	-- Ignore quest: Option (Mac), Ctrl-Alt (Win)
 	elseif A.IS_MAC and IsAltKeyDown() or IsAltKeyDown() and IsControlKeyDown() then
-		if A.gdb.exceptions_id[id] ~= A.EXCEPTION_TYPES.ignore.value then
-			A.gdb.exceptions_id[id] = A.EXCEPTION_TYPES.ignore.value
-		else
-			pr = pred[2]
-		end
-		confirm_msg(id, pr, A.EXCEPTION_TYPES.ignore.full)
+		A.add_quest_to_exceptions(quest_id, A.EXCEPTION_TYPES.ignore.value)
 	-- Always track quest: Cmd (Mac), Alt (Win)
 	elseif IsMetaKeyDown() or IsAltKeyDown() then
-		if A.gdb.exceptions_id[id] ~= A.EXCEPTION_TYPES.always.value then
-			A.gdb.exceptions_id[id] = A.EXCEPTION_TYPES.always.value
-		else
-			pr = pred[2]
-		end
-		confirm_msg(id, pr, A.EXCEPTION_TYPES.always.full)
-		if A.cdb.enabled then C_QuestLog_AddQuestWatch(id, A.QWT_AUTOMATIC) end
+		A.add_quest_to_exceptions(quest_id, A.EXCEPTION_TYPES.always.value)
 	-- Remove quest from exceptions: Ctrl (Mac/Win)
 	elseif IsControlKeyDown() then
-		if A.gdb.exceptions_id[id] then
-			A.gdb.exceptions_id[id] = nil
-			pr = 'removed from exceptions'
-		else
-			pr = 'did not have any exception assigned'
-		end
-		confirm_msg(id, pr, '')
-		if A.cdb.enabled and C_QuestLog_GetQuestWatchType(id) == A.QWT_MANUAL then
-			C_QuestLog_AddQuestWatch(id, A.QWT_AUTOMATIC)
-		end
+		A.add_quest_to_exceptions(quest_id, A.EXCEPTION_TYPES.remove.value)
 	end
 end
 
@@ -194,7 +211,7 @@ end
 -- Bad: Works only in QuestMapFrame
 -- Current (11.0.0) function: https://www.townlong-yak.com/framexml/live/Blizzard_UIPanels_Game/QuestMapFrame.lua#1370
 ---[[
-hooksecurefunc('QuestMapQuestOptions_TrackQuest', add_quest_to_exceptions)
+hooksecurefunc('QuestMapQuestOptions_TrackQuest', TrackQuest_modifiers_handler)
 --]]
 
 -- Variant 2 (experimental):
@@ -204,8 +221,8 @@ hooksecurefunc('QuestMapQuestOptions_TrackQuest', add_quest_to_exceptions)
 -- IF HOOKING THESE FUNCTIONS, MAKE SURE THAT AQT ITSELF USES *ONLY* THE PREVIOUSLY "LOCALIZED" VERSIONS OF THESE
 -- FUNCTIONS. OTHERWISE WE HAVE AN INFINITE LOOP.
 --[[
-hooksecurefunc(C_QuestLog, 'AddQuestWatch', add_quest_to_exceptions)
-hooksecurefunc(C_QuestLog, 'RemoveQuestWatch', add_quest_to_exceptions)
+hooksecurefunc(C_QuestLog, 'AddQuestWatch', TrackQuest_modifiers_handler)
+hooksecurefunc(C_QuestLog, 'RemoveQuestWatch', TrackQuest_modifiers_handler)
 --]]
 -- Alternatively, to hooking the "watch" functions, we could listen to the QUEST_WATCH_LIST_CHANGED event.
 -- We need a throttle then to avoid loops.
