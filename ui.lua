@@ -3,8 +3,80 @@
 
 local MYNAME, A = ...
 
+--[[---------------------------------------------------------------------------
+	API
+---------------------------------------------------------------------------]]--
+
+local _
+-- local C_Timer_After = C_Timer.After
+-- local InCombatLockdown = InCombatLockdown
+-- local GetRealZoneText = GetRealZoneText
+-- local GetMinimapZoneText = GetMinimapZoneText
+
+-- local C_QuestLog_GetInfo = C_QuestLog.GetInfo
+-- local C_QuestLog_IsWorldQuest = C_QuestLog.IsWorldQuest
+-- local C_QuestLog_GetQuestType = C_QuestLog.GetQuestType
+-- local C_QuestLog_AddQuestWatch = C_QuestLog.AddQuestWatch
+-- local C_QuestLog_RemoveQuestWatch = C_QuestLog.RemoveQuestWatch
+local C_QuestLog_GetNumQuestLogEntries = C_QuestLog.GetNumQuestLogEntries
+-- local C_QuestLog_GetQuestWatchType = C_QuestLog.GetQuestWatchType
+local C_QuestLog_GetTitleForQuestID = C_QuestLog.GetTitleForQuestID
+-- local C_QuestLog_IsQuestCalling = C_QuestLog.IsQuestCalling
+
 --[[===========================================================================
-	UI
+	Handle modifier keys while tracking/untracking a quest
+===========================================================================]]--
+
+local function TrackQuest_modifiers_handler(quest_id)
+	-- Never track quest: Cmd-Option
+	-- Currently Mac only, due to the lack of enough modifier keys on Windows
+	if IsMetaKeyDown() and IsAltKeyDown() then
+		A.add_quest_to_exceptions(quest_id, A.EXCEPTION_TYPES.never.value)
+	-- Ignore quest: Option (Mac), Ctrl-Alt (Win)
+	elseif A.IS_MAC and IsAltKeyDown() or IsAltKeyDown() and IsControlKeyDown() then
+		A.add_quest_to_exceptions(quest_id, A.EXCEPTION_TYPES.ignore.value)
+	-- Always track quest: Cmd (Mac), Alt (Win)
+	elseif IsMetaKeyDown() or IsAltKeyDown() then
+		A.add_quest_to_exceptions(quest_id, A.EXCEPTION_TYPES.always.value)
+	-- Remove quest from exceptions: Ctrl (Mac/Win)
+	elseif IsControlKeyDown() then
+		A.add_quest_to_exceptions(quest_id, A.EXCEPTION_TYPES.remove.value)
+	end
+end
+
+-- Check the modifiers when a quest is added or removed to/from the tracker.
+-- `QuestMapQuestOptions_TrackQuest` is called when
+	-- Shift-clicking a quest in the quest log;
+	-- Clicking the quest checkbox in the quest log.
+-- Note that this is quest log only, not in the tracker.
+
+-- Variant 1 (like before TWW, but only in QuestMapFrame):
+-- Good: Well tested pre-TWW; only one hook
+-- Bad: Works only in QuestMapFrame
+-- Current (11.0.0) function: https://www.townlong-yak.com/framexml/live/Blizzard_UIPanels_Game/QuestMapFrame.lua#1370
+---[[
+hooksecurefunc('QuestMapQuestOptions_TrackQuest', TrackQuest_modifiers_handler)
+--]]
+
+-- Variant 2 (experimental):
+-- Good: Works also in tracker
+-- Bad: Two hooks; not thoroughly tested; quirks with other addons?
+-- Good/Bad: Quest watch limit is significant: `AddQuestWatch` is not called if over limit
+-- IF HOOKING THESE FUNCTIONS, MAKE SURE THAT AQT ITSELF USES *ONLY* THE PREVIOUSLY "LOCALIZED" VERSIONS OF THESE
+-- FUNCTIONS. OTHERWISE WE HAVE AN INFINITE LOOP.
+--[[
+hooksecurefunc(C_QuestLog, 'AddQuestWatch', TrackQuest_modifiers_handler)
+hooksecurefunc(C_QuestLog, 'RemoveQuestWatch', TrackQuest_modifiers_handler)
+--]]
+-- Alternatively, to hooking the "watch" functions, we could listen to the QUEST_WATCH_LIST_CHANGED event.
+-- We need a throttle then to avoid loops.
+
+-- Currently preferred: Variant 1
+-- This is also the only safe variant, since a modifier key may also be down while the game (not the user)
+-- tracks or untracks a quest.
+
+--[[===========================================================================
+	Console UI
 ===========================================================================]]--
 
 local BLOCK_SEP = strrep('+', 42)
