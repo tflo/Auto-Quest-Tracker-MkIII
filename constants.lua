@@ -124,17 +124,17 @@ A.QUEST_GROUPS = {
 A.EXCEPTION_TYPES = {
 	['always'] = {
 		['value'] = 1,
-		['full'] = C_ALW .. 'Always Tracked\124r',
+		['full'] = A.CLR_ALW .. 'Always Tracked\124r',
 	},
 	['never'] = {
 		['value'] = -1,
-		['full'] = C_NEV .. 'Never Tracked\124r',
+		['full'] = A.CLR_NEV .. 'Never Tracked\124r',
 	},
 	['ignore'] = {
 		['value'] = 0,
-		['full'] = C_IGN .. 'Ignored\124r',
+		['full'] = A.CLR_IGN .. 'Ignored\124r',
 	},
-	['removed'] = {
+	['remove'] = {
 		['value'] = nil,
 		['full'] = 'Removed from Exceptions',
 	}

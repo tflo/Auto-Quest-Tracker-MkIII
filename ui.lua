@@ -187,18 +187,18 @@ end
 ---------------------------------------------------------------------------]]--
 
 local function aqt_enable(on, disablemode)
-	f:UnregisterAllEvents()
+	A.ef:UnregisterAllEvents()
 	A.cdb.enable_nextsession, A.cdb.enable_nextinstance = nil, nil
 	if on then
 		A.update_quests_for_zone()
-		register_zone_events()
+		A.ef:register_zone_events()
 	else
 		if not disablemode or disablemode == 1 then
 			A.cdb.enable_nextsession = true
-			f:RegisterEvent 'PLAYER_LOGOUT'
+			A.ef:RegisterEvent 'PLAYER_LOGOUT'
 		elseif disablemode == 2 then
 			A.cdb.enable_nextinstance = true
-			f:RegisterEvent 'PLAYER_ENTERING_WORLD'
+			A.ef:RegisterEvent 'PLAYER_ENTERING_WORLD'
 		end
 	end
 	A.cdb.enabled = on

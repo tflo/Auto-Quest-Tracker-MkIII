@@ -51,18 +51,18 @@ function A.msg_confirm(msg)
 	print(A.MSG_PRE .. msg)
 end
 
-local f = CreateFrame 'Frame'
-f:RegisterEvent 'ADDON_LOADED'
+A.ef = CreateFrame 'Frame'
+A.ef:RegisterEvent 'ADDON_LOADED'
 
-local function register_zone_events()
-	f:RegisterEvent 'ZONE_CHANGED'
-	f:RegisterEvent 'ZONE_CHANGED_NEW_AREA'
+function A.ef:register_zone_events()
+	self:RegisterEvent 'ZONE_CHANGED'
+	self:RegisterEvent 'ZONE_CHANGED_NEW_AREA'
 	A.dprint 'Zone events registered.'
 end
 
 -- local function unregister_zone_events()
--- 	f:UnregisterEvent 'ZONE_CHANGED'
--- 	f:UnregisterEvent 'ZONE_CHANGED_NEW_AREA'
+-- 	A.ef:UnregisterEvent 'ZONE_CHANGED'
+-- 	A.ef:UnregisterEvent 'ZONE_CHANGED_NEW_AREA'
 -- end
 
 local function get_questinfo(index)
@@ -291,7 +291,7 @@ local update_pending -- Ignore flag during the A.DELAY_ZONE_CHANGE time
 local function onEvent(_, event, ...)
 	if event == 'ADDON_LOADED' then
 		if ... == MYNAME then
-			f:UnregisterEvent 'ADDON_LOADED'
+			A.ef:UnregisterEvent 'ADDON_LOADED'
 			A.gdb, A.cdb = AQT_GlobalDB, AQT_CharDB
 			A.cdb.enabled = A.cdb.enabled == nil and true or A.cdb.enabled
 			A.gdb.loadMsg = A.gdb.loadMsg == nil and true or A.gdb.loadMsg
@@ -302,13 +302,13 @@ local function onEvent(_, event, ...)
 			A.gdb.exceptions_type = A.gdb.exceptions_type or {}
 			A.gdb.exceptions_header = A.gdb.exceptions_header or {}
 			if A.cdb.enabled then
-				register_zone_events()
+				A.ef:register_zone_events()
 				A.msg_load(A.CLR_GOOD .. 'Enabled.', 8)
 			else
 				if not A.cdb.enable_nextsession and not A.cdb.enable_nextinstance then
 					A.msg_load(A.CLR_BAD .. 'Disabled.', 8)
 				else
-					f:RegisterEvent 'PLAYER_ENTERING_WORLD'
+					A.ef:RegisterEvent 'PLAYER_ENTERING_WORLD'
 				end
 			end
 		end
@@ -317,13 +317,13 @@ local function onEvent(_, event, ...)
 		if not is_reload then
 			if is_login then
 				if A.cdb.enable_nextsession and time() - A.cdb.time_logout > A.SESSION_GRACE_TIME then
-					register_zone_events()
+					A.ef:register_zone_events()
 					A.cdb.enabled = true
 					A.cdb.enable_nextsession = nil
 					A.msg_load(A.CLR_GOOD .. 'Re-enabled because of new session.', 6)
 				end
 			elseif A.cdb.enable_nextinstance then
-				register_zone_events()
+				A.ef:register_zone_events()
 				A.cdb.enabled = true
 				A.cdb.enable_nextinstance = nil
 				A.msg_load(A.CLR_GOOD .. 'Re-enabled because of new (map) instance.', 6)
@@ -331,8 +331,8 @@ local function onEvent(_, event, ...)
 		end
 		if A.cdb.enable_nextsession or A.cdb.enable_nextinstance then
 			A.msg_load(A.CLR_HALFBAD .. 'Disabled for this ' .. (A.cdb.enable_nextsession and 'session.' or 'instance.'), 6)
-			if A.cdb.enable_nextsession then f:RegisterEvent 'PLAYER_LOGOUT' end
-			if not A.cdb.enable_nextinstance then f:UnregisterEvent 'PLAYER_ENTERING_WORLD' end
+			if A.cdb.enable_nextsession then A.ef:RegisterEvent 'PLAYER_LOGOUT' end
+			if not A.cdb.enable_nextinstance then A.ef:UnregisterEvent 'PLAYER_ENTERING_WORLD' end
 		end
 	elseif event == 'PLAYER_LOGOUT' then
 		A.cdb.time_logout = time()
@@ -346,4 +346,15 @@ local function onEvent(_, event, ...)
 	end
 end
 
-f:SetScript('OnEvent', onEvent)
+A.ef:SetScript('OnEvent', onEvent)
+
+-- TODO:
+-- Context menu for tracker and log
+-- Possiblity to add/remove by ID via slash command
+-- Do something when user reaches the tracking limit
+
+-- TODO, maybe:
+-- Option to track only when completed or not completed; could be a "Track conditionally" with submenu
+-- Another possible conditional tracking: ALways/Never track in current zone/continent
+-- LDB button for quick access to enable/disable, plus status indicator; plus number of always/never/ignore quests
+-- Save a snaphot of what is tracked when the user activates AQT. Optionally restore this when the user deactivates AQT.
