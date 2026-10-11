@@ -155,20 +155,25 @@ local function gen_ordered_index(t)
 	return ordered_index
 end
 
+-- Let's keep the `ordered_index` tmp table out of the source table, because if the function
+-- errors out before it nilifies it, it will end up inside the source table in the SV file.
+-- And then, any future table.sort will not be happy.
+local ordered_index
 local function ordered_next(t, state)
 	local key = nil
+	-- print("orderedNext: state = "..tostring(state) )
 	if state == nil then
-		t.ordered_index = gen_ordered_index(t)
-		key = t.ordered_index[1]
+		ordered_index = gen_ordered_index(t)
+		key = ordered_index[1]
 	else
-		for i = 1, #t.ordered_index do
-			if t.ordered_index[i] == state then
-				key = t.ordered_index[i+1]
+		for i = 1, #ordered_index do
+			if ordered_index[i] == state then
+				key = ordered_index[i+1]
 			end
 		end
 	end
 	if key then return key, t[key] end
-	t.ordered_index = nil
+	ordered_index = nil
 end
 
 local function ordered_pairs(t)
