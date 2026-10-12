@@ -23,6 +23,11 @@ local function on_event(_, event, ...)
 			A.gdb.exceptions_id = A.gdb.exceptions_id or {}
 			A.gdb.exceptions_type = A.gdb.exceptions_type or {}
 			A.gdb.exceptions_header = A.gdb.exceptions_header or {}
+
+			-- For the new menu items
+			A.initialize_hooks_for_quest_id()
+			A.register_menuitems()
+
 			if A.cdb.enabled then
 				A.ef:register_zone_events()
 				A.msg_load(A.CLR_GOOD .. 'Enabled.', 8)
