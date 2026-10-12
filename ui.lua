@@ -3,26 +3,6 @@
 
 local MYNAME, A = ...
 
---[[---------------------------------------------------------------------------
-	API
----------------------------------------------------------------------------]]--
-
-local _
--- local C_Timer_After = C_Timer.After
--- local InCombatLockdown = InCombatLockdown
--- local GetRealZoneText = GetRealZoneText
--- local GetMinimapZoneText = GetMinimapZoneText
-
--- local C_QuestLog_GetInfo = C_QuestLog.GetInfo
--- local C_QuestLog_IsWorldQuest = C_QuestLog.IsWorldQuest
--- local C_QuestLog_GetQuestType = C_QuestLog.GetQuestType
--- local C_QuestLog_AddQuestWatch = C_QuestLog.AddQuestWatch
--- local C_QuestLog_RemoveQuestWatch = C_QuestLog.RemoveQuestWatch
-local C_QuestLog_GetNumQuestLogEntries = C_QuestLog.GetNumQuestLogEntries
--- local C_QuestLog_GetQuestWatchType = C_QuestLog.GetQuestWatchType
-local C_QuestLog_GetTitleForQuestID = C_QuestLog.GetTitleForQuestID
--- local C_QuestLog_IsQuestCalling = C_QuestLog.IsQuestCalling
-
 --[[===========================================================================
 	Handle modifier keys while tracking/untracking a quest
 ===========================================================================]]--
@@ -85,6 +65,14 @@ local function text_activation_status()
 	return A.cdb.enabled and A.CLR_GOOD .. 'Enabled' or A.cdb.enable_nextsession and A.CLR_HALFBAD .. 'Disabled for this session' or A.cdb.enable_nextinstance and A.CLR_HALFBAD .. 'Disabled for this instance.' or A.CLR_BAD .. 'Disabled'
 end
 
+function A.msg_load(msg,delay)
+	if A.gdb.loadMsg then C_Timer.After(delay, function() print(A.MSG_PREFIX .. msg) end) end
+end
+
+function A.msg_confirm(msg)
+	print(A.MSG_PRE .. msg)
+end
+
 local function msg_status()
 	print(A.MSG_PREFIX
 		.. 'Status: '
@@ -99,10 +87,40 @@ local function msg_invalid_input()
 	.. A.CLR_AQT .. '/aqt h\124r for help.')
 end
 
+local function get_questinfo_for_listing(index)
+	local quest = C_QuestLog.GetInfo(index)
+	if quest then return
+		quest.title,
+		quest.isHeader,
+		quest.questID,
+		C_QuestLog.IsWorldQuest(quest.questID),
+		quest.isHidden,
+		C_QuestLog.IsQuestCalling(quest.questID),
+		C_QuestLog.GetQuestType(quest.questID),
+		quest.isOnMap,
+		quest.hasLocalPOI,
+		C_QuestLog.GetQuestWatchType(quest.questID),
+		quest.frequency,
+		quest.level,
+		quest.isTask,
+		quest.isBounty,
+		quest.isStory,
+		quest.startEvent,
+		C_QuestLog.IsImportantQuest(quest.questID),
+		C_QuestLog.IsAccountQuest(quest.questID),
+		C_QuestLog.IsComplete(quest.questID),
+		C_QuestLog.IsQuestReplayable(quest.questID),
+		C_QuestLog.IsQuestReplayedRecently(quest.questID),
+		C_QuestLog.IsRepeatableQuest(quest.questID),
+		C_QuestLog.IsQuestTrivial(quest.questID),
+		C_QuestLog.ReadyForTurnIn(quest.questID)
+	end
+end
+
 local function msg_list_quests()
 	print(BLOCK_SEP)
 	print(A.MSG_PREFIX, 'Quests currently in quest log:\n[T = type; W = watch type]')
-	for questIndex = 1, C_QuestLog_GetNumQuestLogEntries() do
+	for questIndex = 1, C_QuestLog.GetNumQuestLogEntries() do
 		local questTitle, isHeader, questId, isWorldQuest, isHidden, isCalling, questType, isOnMap, hasLocalPOI, watchType, frequency, level, isTask, isBounty, isStory, startEvent, isImportant, accountQuest, isComplete, isQuestReplayable, isQuestReplayedRecently, isRepeatableQuest, isQuestTrivial, readyForTurnIn =
 			get_questinfo_for_listing(questIndex)
 		if isHeader then
@@ -144,41 +162,6 @@ local function msg_list_quests()
 	print(BLOCK_SEP)
 end
 
--- Ordered pairs
--- From http://lua-users.org/wiki/SortedIteration
-local function gen_ordered_index(t)
-	local ordered_index = {}
-	for key in pairs(t) do
-		table.insert(ordered_index, key)
-	end
-	table.sort(ordered_index)
-	return ordered_index
-end
-
--- Let's keep the `ordered_index` tmp table out of the source table, because if the function
--- errors out before it nilifies it, it will end up inside the source table in the SV file.
--- And then, any future table.sort will not be happy.
-local ordered_index
-local function ordered_next(t, state)
-	local key = nil
-	-- print("orderedNext: state = "..tostring(state) )
-	if state == nil then
-		ordered_index = gen_ordered_index(t)
-		key = ordered_index[1]
-	else
-		for i = 1, #ordered_index do
-			if ordered_index[i] == state then
-				key = ordered_index[i+1]
-			end
-		end
-	end
-	if key then return key, t[key] end
-	ordered_index = nil
-end
-
-local function ordered_pairs(t)
-	return ordered_next, t, nil
-end
 
 local function msg_list_exceptions()
 	print(BLOCK_SEP)
@@ -186,8 +169,8 @@ local function msg_list_exceptions()
 		print(A.MSG_PREFIX .. 'You have no exceptions per quest ' .. A.CLR_AQT .. 'ID\124r.')
 	else
 		print(A.MSG_PREFIX .. 'Active exceptions per quest ' .. A.CLR_AQT .. 'ID\124r:')
-		for id, ex in ordered_pairs(A.gdb.exceptions_id) do
-			local title = C_QuestLog_GetTitleForQuestID(id) or '[Quest title not (yet) available from server]'
+		for id, ex in A.ordered_pairs(A.gdb.exceptions_id) do
+			local title = C_QuestLog.GetTitleForQuestID(id) or '[Quest title not (yet) available from server]'
 			local xfull = ''
 			for _, v in pairs(A.EXCEPTION_TYPES) do
 				if v['value'] == ex then xfull = v['full'] break end
@@ -199,7 +182,7 @@ local function msg_list_exceptions()
 		print(A.MSG_PREFIX .. 'You have no exceptions per quest ' .. A.CLR_AQT .. 'TYPE\124r.')
 	else
 		print(A.MSG_PREFIX .. 'Active exceptions per quest ' .. A.CLR_AQT .. 'TYPE\124r:')
-		for ty, ex in ordered_pairs(A.gdb.exceptions_type) do
+		for ty, ex in A.ordered_pairs(A.gdb.exceptions_type) do
 			local xfull = ''
 			for _, v in pairs(A.EXCEPTION_TYPES) do
 				if v['value'] == ex then xfull = v['full'] break end
@@ -215,7 +198,7 @@ local function msg_list_exceptions()
 		print(A.MSG_PREFIX .. 'You have no exceptions per quest ' .. A.CLR_AQT .. 'HEADER\124r.')
 	else
 		print(A.MSG_PREFIX .. 'Active exceptions per quest ' .. A.CLR_AQT .. 'HEADER\124r:')
-		for he, ex in ordered_pairs(A.gdb.exceptions_header) do
+		for he, ex in A.ordered_pairs(A.gdb.exceptions_header) do
 			local xfull = ''
 			for _, v in pairs(A.EXCEPTION_TYPES) do
 				if v['value'] == ex then xfull = v['full'] break end
@@ -249,14 +232,6 @@ local function msg_help()
 		BLOCK_SEP,
 	}
 	for _, l in ipairs(lines) do print(l) end
-end
-
-local function get_questheader_from_input(t)
-	local headerarray = {}
-	for i = 3, #t do
-		tinsert(headerarray, t[i])
-	end
-	return table.concat(headerarray, ' ')
 end
 
 --[[---------------------------------------------------------------------------
@@ -382,7 +357,7 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		end
 	-- 1 cmd, 2+ args: Header exceptions: /aqt <exception cmd> h <quest header string>
 	elseif mt[2] == 'h' and A.EXCEPTION_TYPES[mt[1]] then
-		local header = get_questheader_from_input(mt)
+		local header = A.get_questheader_from_input(mt)
 		A.gdb.exceptions_header[header] = A.EXCEPTION_TYPES[mt[1]]['value']
 		A.msg_confirm('All quests with header "' .. header .. '" are now ' .. A.EXCEPTION_TYPES[mt[1]]['full'] .. '.')
 		if A.cdb.enabled then A.update_quests_for_zone() end
@@ -390,15 +365,6 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		msg_invalid_input()
 	end
 end
-
-
-function A.print_values()
-	A.dprint(format(
-		'DELAY_ZONE_CHANGE: %s; SESSION_GRACE_TIME: %s; IS_MAC: %s; QUESTFREQUENCY_DAILY: %s; QWT_AUTOMATIC: %s (%s); QWT_MANUAL: %s (%s); IGNORE_QWT: %s',
-		A.DELAY_ZONE_CHANGE, A.SESSION_GRACE_TIME, tostring(A.IS_MAC), A.QUESTFREQUENCY_DAILY, A.QWT_AUTOMATIC, type(A.QWT_AUTOMATIC), A.QWT_MANUAL, type(A.QWT_MANUAL), tostring(A.IGNORE_QWT)
-	))
-end
-
 
 --[[===========================================================================
 	External API

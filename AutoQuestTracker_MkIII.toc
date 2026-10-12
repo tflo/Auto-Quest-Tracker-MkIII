@@ -5,7 +5,7 @@
 ## AddonCompartmentFunc: addon_aqt_on_addoncompartment_click
 ## AddonCompartmentFuncOnEnter: addon_aqt_on_addoncompartment_enter
 ## AddonCompartmentFuncOnLeave: addon_aqt_on_addoncompartment_leave
-## Notes: Automatically updates the quest tracker to track only the quests in your current zone, while still retaining your manually tracked quests.
+## Notes: See the quests from your current zone in the Objective Tracker, plus the ones you want to see always.
 ## Category: Quests
 ## Category-enUS: Quests
 ## Category-deDE: Quests
@@ -20,16 +20,20 @@
 ## Category-zhTW: 任務
 ## Author: ErrondGamer (original version); gamer-angel05 (SL fork 2021); Mot (@6mot, @tflo; this fork)
 ## X-Category: Quests
-## AllowAddOnTableAccess: 1
 ## X-Wago-ID: q96dg1NO
 ## X-Curse-Project-ID: 775978
 ## SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+## AllowAddOnTableAccess: 1
+## LoadSavedVariablesFirst: 1
 ## SavedVariables: AQT_GlobalDB
 ## SavedVariablesPerCharacter: AQT_CharDB
 
+init.lua
 constants.lua
+utils.lua
 main.lua
 ui.lua
+events.lua
 
 
 # This is a fork of https://github.com/gamer-angel05/AutoQuestTracker (last
