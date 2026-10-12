@@ -298,7 +298,7 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 			if A.cdb.enabled then A.update_quests_for_zone() end
 			A.msg_confirm('Instance quests are ' ..
 			(A.gdb.ignoreInstances and 'ignored' or 'treated normally') .. ' for all chars.')
-		elseif msg == 'debug' then
+		elseif msg == 'debug' or msg == 'dm' then
 			A.gdb.debug_mode = not A.gdb.debug_mode
 			A.msg_confirm('Debug mode ' .. (A.gdb.debug_mode and 'enabled.' or 'disabled.'))
 		elseif msg == 'printvalues' and A.gdb.debug_mode then
