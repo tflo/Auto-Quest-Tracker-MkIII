@@ -70,6 +70,13 @@ function A.print_values()
 	))
 end
 
+function A.is_integer_in_range(value, min, max)
+	if type(value) ~= 'number' then return false end
+	if value ~= math.floor(value) then return false end
+	if value < min or value > max then return false end
+	return true
+end
+
 --[[---------------------------------------------------------------------------
 	Debug
 ---------------------------------------------------------------------------]]--

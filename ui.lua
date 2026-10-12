@@ -239,12 +239,17 @@ end
 ---------------------------------------------------------------------------]]--
 
 local function aqt_enable(on, disablemode)
+	if disablemode and not A.is_integer_in_range(disablemode, 0, 2) then
+		error('Arg2 (disablemode) must be nil|0|1|2', 1)
+	end
 	A.ef:UnregisterAllEvents()
 	A.cdb.enable_nextsession, A.cdb.enable_nextinstance = nil, nil
 	if on then
+		-- Serves as force update if already enabled
 		A.update_quests_for_zone()
 		A.ef:register_zone_events()
 	else
+		-- Only an explicit `0` disables permanently
 		if not disablemode or disablemode == 1 then
 			A.cdb.enable_nextsession = true
 			A.ef:RegisterEvent 'PLAYER_LOGOUT'
@@ -370,12 +375,16 @@ end
 	External API
 ===========================================================================]]--
 
-function _G.addon_aqt_enable(v)
-	if type(v) ~= 'boolean' then
-		error('Wrong argument type. Usage: `addon_aqt_enable(boolean)`', 0)
+function _G.addon_aqt_enable(on, disablemode)
+	if type(on) ~= 'boolean' then
+		error('Usage: addon_aqt_enable(enable: bool[, disableMode: int])', 0)
 	else
-		aqt_enable(v)
+		aqt_enable(on, disablemode)
 	end
+end
+
+function _G.addon_aqt_status()
+	return A.cdb.enabled, A.cdb.enable_nextsession, A.cdb.enable_nextinstance
 end
 
 --[[---------------------------------------------------------------------------
