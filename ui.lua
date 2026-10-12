@@ -401,10 +401,8 @@ end
 
 
 --[[===========================================================================
-	API
+	External API
 ===========================================================================]]--
-
-local TEXT_CMD_KEY = A.IS_MAC and 'Command' or 'Control'
 
 function _G.addon_aqt_enable(v)
 	if type(v) ~= 'boolean' then
@@ -413,6 +411,12 @@ function _G.addon_aqt_enable(v)
 		aqt_enable(v)
 	end
 end
+
+--[[---------------------------------------------------------------------------
+	Addon Compartment (Blizz)
+---------------------------------------------------------------------------]]--
+
+local TEXT_CMD_KEY = A.IS_MAC and 'Command' or 'Control'
 
 function _G.addon_aqt_on_addoncompartment_click(_, btn)
 	if btn == 'LeftButton' then
