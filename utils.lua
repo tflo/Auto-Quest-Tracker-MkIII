@@ -84,7 +84,7 @@ end
 function A.dprint(...)
 	if A.gdb.debug_mode then
 		local a, b = strsplit('.', GetTimePreciseSec())
-		print(format('[%s.%s] %sAQT >>> Debug >>>\124r', a:sub(-3), b:sub(1, 3), A.CLR_DEBUG), ...)
+		print(format('[%s.%s] %sAQT > Debug >\124r', a:sub(-3), b:sub(1, 3), A.CLR_DEBUG), ...)
 	end
 end
 

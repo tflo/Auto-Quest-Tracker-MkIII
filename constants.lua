@@ -7,6 +7,9 @@ local MYNAME, A = ...
 	Constants
 ---------------------------------------------------------------------------]]--
 
+A.MYFULLNAME = 'Auto Quest Tracker'
+A.MYSHORTNAME = 'AQT'
+
 A.QUESTFREQUENCY_DAILY = Enum.QuestFrequency.Daily
 A.QWT_AUTOMATIC = Enum.QuestWatchType.Automatic
 A.QWT_MANUAL = Enum.QuestWatchType.Manual

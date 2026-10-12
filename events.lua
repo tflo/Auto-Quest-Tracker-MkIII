@@ -49,6 +49,7 @@ local function on_event(_, event, ...)
 					A.cdb.enable_nextsession = nil
 					A.msg_load(A.CLR_GOOD .. 'Re-enabled because of new session.', 6)
 				end
+			-- TODO: check for instance 'world' here, as we actually only want continent changes
 			elseif A.cdb.enable_nextinstance then
 				A.ef:register_zone_events()
 				A.cdb.enabled = true
