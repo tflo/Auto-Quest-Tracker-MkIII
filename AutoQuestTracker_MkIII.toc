@@ -32,8 +32,8 @@ init.lua
 constants.lua
 utils.lua
 main.lua
-ui.lua
-menus.lua
+ui/ui.lua
+ui/menus.lua
 events.lua
 
 
