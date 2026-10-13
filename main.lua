@@ -44,7 +44,9 @@ end
 local function auto_show_or_hide_quest(quest_idx, quest_id, show)
 	local questTitle, _, id = get_questinfo(quest_idx)
 	-- Check if the targeted quest is still in the log
-	if not InCombatLockdown() and id == quest_id then
+	-- TODO: check if we really can't do this in combat
+	if id == quest_id then
+-- 	if not InCombatLockdown() and id == quest_id then
 		if show then
 			A.dprint(format('Tracking: %s (%s)', questTitle, quest_id))
 			C_QuestLog_AddQuestWatch(quest_id, A.QWT_AUTOMATIC)

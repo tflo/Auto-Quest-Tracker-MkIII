@@ -115,3 +115,24 @@ function A.dprint(...)
 	end
 end
 
+-- Print tags and types
+local function pqtt(qid)
+do
+	local info = C_QuestLog.GetQuestTagInfo(qid)
+	print(info.tagID, info.tagName, 'C_QuestLog.GetQuestTagInfo')
+end
+do
+   local num = C_QuestLog.GetQuestType(qid)
+	print(num, str, 'C_QuestLog.GetQuestType')
+end
+do
+   local isMeta = C_QuestLog.IsMetaQuest(qid)
+	print('meta:', isMeta, 'C_QuestLog.IsMetaQuest')
+end
+do
+   local isImportant = C_QuestLog.IsImportantQuest(qid)
+	print('impo:', isImportant, 'C_QuestLog.IsImportantQuest')
+end
+end
+
+-- _G.pqtt = pqtt

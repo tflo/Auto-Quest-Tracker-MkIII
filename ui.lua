@@ -315,6 +315,7 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 		elseif msg == 'x' or msg == 'exceptions' then
 			msg_list_exceptions()
 		-- CLEAR EXCEPTION TABLES: IDs, Types, Headers, All
+		-- TODO: These need mention in the Help text
 		elseif msg == 'xcleari' or msg == 'exceptionsclearid' then
 			wipe(A.gdb.exceptions_id)
 			if A.cdb.enabled then A.update_quests_for_zone() end
