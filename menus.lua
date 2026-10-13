@@ -34,9 +34,6 @@ local LABEL = {
 	},
 }
 
-local this_quest_id = 00000
-local this_quest_header = ''
-
 --[[---------------------------------------------------------------------------
 	Handlers for always, never, ignore
 ---------------------------------------------------------------------------]]--
@@ -74,26 +71,6 @@ end
 
 ---------------------------------
 
-local function should_show_remove()
-	return true
-end
-
-local function should_show_ignore()
-	return true
-end
-
-local function should_show_always()
-	return true
-end
-
-local function should_show_never()
-	return true
-end
-
----------------------------------
-
--- This is currently pointless as we get the quest id too late
-
 local function is_ignore(id) return A.gdb.exceptions_id[id] == 0 end
 local function is_always(id) return A.gdb.exceptions_id[id] == 1 end
 local function is_never(id) return A.gdb.exceptions_id[id] == -1 end
@@ -119,11 +96,6 @@ local function populate_quest_context_menu(owner, root_description, context_data
 		local title = root_description:CreateTitle(format('Setting for quest %s:', quest_id or '???'))
 -- 		dtd(owner:GetName().block)
 
--- 		if should_show_remove() then
--- 			root_description:CreateButton(LABEL.single.remove, function()
--- 				on_quest_single(this_quest_id, 'remove')
--- 			end)
--- 		end
 		root_description:CreateRadio(
 			LABEL.single.remove,
 			function()
@@ -134,11 +106,6 @@ local function populate_quest_context_menu(owner, root_description, context_data
 			end
 		)
 
--- 		if should_show_ignore() then
--- 			root_description:CreateButton(LABEL.single.ignore, function()
--- 				on_quest_single(this_quest_id, 'ignore')
--- 			end)
--- 		end
 		root_description:CreateRadio(
 			LABEL.single.ignore,
 			function()
@@ -149,11 +116,6 @@ local function populate_quest_context_menu(owner, root_description, context_data
 			end
 		)
 
--- 		if should_show_always() then
--- 			root_description:CreateButton(LABEL.single.always, function()
--- 				on_quest_single(this_quest_id, 'always')
--- 			end)
--- 		end
 		root_description:CreateRadio(
 			LABEL.single.always,
 			function()
@@ -164,11 +126,6 @@ local function populate_quest_context_menu(owner, root_description, context_data
 			end
 		)
 
--- 		if should_show_never() then
--- 			root_description:CreateButton(LABEL.single.never, function()
--- 				on_quest_single(this_quest_id, 'never')
--- 			end)
--- 		end
 		root_description:CreateRadio(
 			LABEL.single.never,
 			function()
@@ -179,36 +136,6 @@ local function populate_quest_context_menu(owner, root_description, context_data
 			end
 		)
 	end
-
--- 	this_quest_id = nil
-end
-
---[[---------------------------------------------------------------------------
-	Hackish hooks to get the quest ID
----------------------------------------------------------------------------]]--
-
--- So far, the only way to get the quest ID, since `context_data` of these menus is nil
-
-function A.initialize_hooks_for_quest_id()
-	-- TRACKER
-	-- Quests and Campaign quests are separate
-	hooksecurefunc(QuestObjectiveTracker, "OnBlockHeaderClick", function(_, block)
-		this_quest_id = block and block.id
-		A.dprint('tracker: quest:', this_quest_id)
-	end)
-	hooksecurefunc(CampaignQuestObjectiveTracker, "OnBlockHeaderClick", function(_, block)
-		this_quest_id = block and block.id
-		A.dprint('tracker: campaign:', this_quest_id)
-	end)
-
-	-- QUEST LOG
-	hooksecurefunc('QuestMapLogTitleButton_OnClick', function(self, btn)
-		this_quest_id = self.questID
-		this_quest_header = self.info.header.title
-		A.dprint('log:', this_quest_id)
-		A.dprint('log:', this_quest_header)
--- 		dtd(self)
-	end)
 
 end
 
