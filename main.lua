@@ -183,16 +183,3 @@ function A.update_quests_for_zone()
 		end
 	end
 end
-
-
-
--- TODO:
--- Context menu for tracker and log
--- Possiblity to add/remove by ID via slash command
--- Do something when user reaches the tracking limit
-
--- TODO, maybe:
--- Option to track only when completed or not completed; could be a "Track conditionally" with submenu
--- Another possible conditional tracking: ALways/Never track in current zone/continent
--- LDB button for quick access to enable/disable, plus status indicator; plus number of always/never/ignore quests
--- Save a snaphot of what is tracked when the user activates AQT. Optionally restore this when the user deactivates AQT.
