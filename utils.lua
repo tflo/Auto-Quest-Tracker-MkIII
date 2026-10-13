@@ -51,6 +51,33 @@ function A.table_is_empty(t)
 	return next(t) == nil
 end
 
+function A.tabledump_first(tbl)
+	if type(tbl) ~= 'table' then
+		print('Not a table: ', tbl)
+		return
+	end
+
+	print '{'
+	for key, value in pairs(tbl) do
+		local keystr = tostring(key)
+
+		if type(key) == 'string' then keystr = format('%q', key) end
+
+		if type(value) == 'table' then
+			print(format('  [%s] = <table>,', keystr))
+		elseif type(value) == 'function' then
+			print(format('  [%s] = <function>,', keystr))
+		elseif type(value) == 'string' then
+			print(format('  [%s] = %q,', keystr, value))
+		else
+			print(format('  [%s] = %s,', keystr, tostring(value)))
+		end
+	end
+	print '}'
+end
+
+A.DTD = DevTools_Dump
+
 --[[===========================================================================
 	Other
 ===========================================================================]]--
