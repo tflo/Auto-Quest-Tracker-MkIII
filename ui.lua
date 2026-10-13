@@ -162,7 +162,8 @@ local function msg_list_quests()
 	print(BLOCK_SEP)
 end
 
-
+-- For quests that are not in the log, the title may not be available on the first run;
+-- So, the user has to run it twice, unless we do a C_QuestLog.RequestLoadQuestByID(questID) before.
 local function msg_list_exceptions()
 	print(BLOCK_SEP)
 	if A.table_is_empty(A.gdb.exceptions_id) then
@@ -170,6 +171,7 @@ local function msg_list_exceptions()
 	else
 		print(A.MSG_PREFIX .. 'Active exceptions per quest ' .. A.CLR_AQT .. 'ID\124r:')
 		for id, ex in A.ordered_pairs(A.gdb.exceptions_id) do
+			-- C_QuestLog.RequestLoadQuestByID(id) -- TODO: test
 			local title = C_QuestLog.GetTitleForQuestID(id) or '[Quest title not (yet) available from server]'
 			local xfull = ''
 			for _, v in pairs(A.EXCEPTION_TYPES) do

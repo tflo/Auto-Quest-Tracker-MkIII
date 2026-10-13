@@ -118,7 +118,7 @@ end
 	Core
 ===========================================================================]]--
 
-local function is_ignored(id, ty, he)
+local function is_ignore(id, ty, he)
 	if A.gdb.ignoreInstances and (ty == A.TYPE_DUNG or ty == A.TYPE_RAID)
 		or A.gdb.exceptions_id[id] == 0 or A.gdb.exceptions_type[ty] == 0 or A.gdb.exceptions_header[he] == 0
 	then
@@ -166,7 +166,7 @@ function A.update_quests_for_zone()
 		if not isWorldQuest and not isHidden then
 			if isHeader then
 				header = questTitle
-			elseif is_ignored(quest_id, questType, header) then
+			elseif is_ignore(quest_id, questType, header) then
 				-- Nop
 			else
 				if is_always(quest_id, questType, header) or (header == currentZone or header == minimapZone or isOnMap or hasLocalPOI) and not is_never(quest_id, questType) then
