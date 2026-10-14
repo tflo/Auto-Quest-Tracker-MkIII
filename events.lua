@@ -39,6 +39,8 @@ local function on_event(_, event, ...)
 				end
 			end
 		end
+	elseif event == 'PLAYER_LOGIN' then
+		A.user_is_author = tf6 and tf6.user_is_tflo
 	elseif event == 'PLAYER_ENTERING_WORLD' then
 		local is_login, is_reload = ...
 		if not is_reload then
@@ -76,6 +78,7 @@ end
 
 A.ef = CreateFrame 'Frame'
 A.ef:RegisterEvent 'ADDON_LOADED'
+A.ef:RegisterEvent 'PLAYER_LOGIN'
 
 function A.ef:register_zone_events()
 	self:RegisterEvent 'ZONE_CHANGED'

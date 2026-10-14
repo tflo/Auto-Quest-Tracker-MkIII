@@ -335,6 +335,9 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 			wipe(A.gdb.exceptions_header)
 			if A.cdb.enabled then A.update_quests_for_zone() end
 			A.msg_confirm('All quest exceptions (ID & type & header) cleared.')
+		elseif msg == 'notme' or msg == 'itsme' then -- Debug
+			A.user_is_author = not A.user_is_author
+			A.msg_confirm(user_is_author and CLR.ON("It's me.") or CLR.OFF("It's not me!"))
 		elseif msg == 'h' or msg == 'help' then
 			msg_help()
 		else
