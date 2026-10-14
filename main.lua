@@ -2,6 +2,7 @@
 -- Portions: Copyright (c) 2022-2026 Thomas Floeren for the added/changed code of "Mk III" (aka version 2 and later)
 
 local MYNAME, A = ...
+local CLR = A.CLR
 
 local InCombatLockdown = InCombatLockdown
 local GetRealZoneText = GetRealZoneText

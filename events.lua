@@ -2,6 +2,7 @@
 -- Portions: Copyright (c) 2022-2026 Thomas Floeren for the added/changed code of "Mk III" (aka version 2 and later)
 
 local MYNAME, A = ...
+local CLR = A.CLR
 
 --[[---------------------------------------------------------------------------
 	Doing stuff at events
@@ -29,10 +30,10 @@ local function on_event(_, event, ...)
 
 			if A.cdb.enabled then
 				A.ef:register_zone_events()
-				A.msg_load(A.CLR_GOOD .. 'Enabled.', 8)
+				A.msg_load(CLR.GOOD('Enabled'), 8)
 			else
 				if not A.cdb.enable_nextsession and not A.cdb.enable_nextinstance then
-					A.msg_load(A.CLR_BAD .. 'Disabled.', 8)
+					A.msg_load(CLR.BAD('Disabled.'), 8)
 				else
 					A.ef:RegisterEvent 'PLAYER_ENTERING_WORLD'
 				end
@@ -46,18 +47,18 @@ local function on_event(_, event, ...)
 					A.ef:register_zone_events()
 					A.cdb.enabled = true
 					A.cdb.enable_nextsession = nil
-					A.msg_load(A.CLR_GOOD .. 'Re-enabled because of new session.', 6)
+					A.msg_load(CLR.GOOD('Re-enabled because of new session'), 6)
 				end
 			-- TODO: check for instance 'world' here, as we actually only want continent changes
 			elseif A.cdb.enable_nextinstance then
 				A.ef:register_zone_events()
 				A.cdb.enabled = true
 				A.cdb.enable_nextinstance = nil
-				A.msg_load(A.CLR_GOOD .. 'Re-enabled because of new (map) instance.', 6)
+				A.msg_load(CLR.GOOD('Re-enabled because of new (map) instance'), 6)
 			end
 		end
 		if A.cdb.enable_nextsession or A.cdb.enable_nextinstance then
-			A.msg_load(A.CLR_HALFBAD .. 'Disabled for this ' .. (A.cdb.enable_nextsession and 'session.' or 'instance.'), 6)
+			A.msg_load(CLR.HALFBAD() .. 'Disabled for this ' .. (A.cdb.enable_nextsession and 'session.' or 'instance'), 6)
 			if A.cdb.enable_nextsession then A.ef:RegisterEvent 'PLAYER_LOGOUT' end
 			if not A.cdb.enable_nextinstance then A.ef:UnregisterEvent 'PLAYER_ENTERING_WORLD' end
 		end

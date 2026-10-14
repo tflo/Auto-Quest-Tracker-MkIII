@@ -2,6 +2,8 @@
 -- Portions: Copyright (c) 2022-2026 Thomas Floeren for the added/changed code of "Mk III" (aka version 2 and later)
 
 local MYNAME, A = ...
+local CLR = A.CLR
+
 local DEBUG_WITH_TIME = false
 
 
@@ -118,9 +120,9 @@ function A.dprint(lvl, ...)
 		if A.gdb.debug_level < lvl then return end
 		if DEBUG_WITH_TIME then
 			local a, b = strsplit('.', GetTimePreciseSec())
-			print(format('[%s.%s] %sAQT > Debug >\124r', a:sub(-3), b:sub(1, 3), A.CLR_DEBUG), ...)
+			print(format('[%s.%s] %s', a:sub(-3), b:sub(1, 3), CLR.DEBUG('AQT > Debug >')), ...)
 		else
-			print(format('%sAQT > Debug >\124r', A.CLR_DEBUG), ...)
+			print(format(CLR.DEBUG('AQT > Debug >')), ...)
 		end
 	end
 end

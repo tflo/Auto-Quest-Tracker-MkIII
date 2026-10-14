@@ -2,6 +2,7 @@
 -- Portions: Copyright (c) 2022-2026 Thomas Floeren for the added/changed code of "Mk III" (aka version 2 and later)
 
 local MYNAME, A = ...
+local CLR = A.CLR
 
 AQT_GlobalDB = AQT_GlobalDB or {}
 AQT_CharDB = AQT_CharDB or {}

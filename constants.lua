@@ -14,28 +14,51 @@ A.QUESTFREQUENCY_DAILY = Enum.QuestFrequency.Daily
 A.QWT_AUTOMATIC = Enum.QuestWatchType.Automatic
 A.QWT_MANUAL = Enum.QuestWatchType.Manual
 
--- Colors for msgs
-A.CLR_AQT = '\124cff2196f3'
-A.CLR_GOOD = '\124cnDIM_GREEN_FONT_COLOR:'
-A.CLR_HALFBAD = '\124cnORANGE_FONT_COLOR:'
-A.CLR_BAD = '\124cnDIM_RED_FONT_COLOR:'
-A.CLR_DEBUG = '\124cffEE82EE'
-A.MSG_PREFIX = A.CLR_AQT .. 'Auto Quest Tracker\124r: '
-A.MSG_PRE = A.CLR_AQT .. 'AQT\124r: '
--- Colors for exception types
-A.CLR_ALW = A.CLR_GOOD
-A.CLR_IGN = A.CLR_HALFBAD
-A.CLR_NEV = A.CLR_BAD
--- Colors for addon compartment tooltip
-A.CLR_TT = '\124cnWHITE_FONT_COLOR:' -- Base color for tooltip body text
-A.CLR_CLICK = '\124cnORANGE_FONT_COLOR:'
-A.CLR_ACTION = '\124cnYELLOW_FONT_COLOR:'
-
 -- Serves as delay for update after zone change events and as throttle (new zone events are ignored during the time)
 A.DELAY_ZONE_CHANGE = 3 -- Testwise 3; we used to use 2
 -- Time between logout and login needed to consider it a new session
 A.SESSION_GRACE_TIME = 1200 -- 20 min
 A.IS_MAC = IsMacClient()
+
+
+--[[---------------------------------------------------------------------------
+	Colors
+---------------------------------------------------------------------------]]--
+
+local colors = {
+-- Colors for msgs
+	AQT = '2196f3', --
+	GOOD = '40C040', -- DIM_GREEN_FONT_COLOR
+	HALFBAD = 'FF8040', -- ORANGE_FONT_COLOR
+	BAD = 'CC1919', -- DIM_RED_FONT_COLOR
+	DEBUG = 'EE82EE', -- Lavender Magenta (closest match)
+-- Colors for exception types
+	ALW = '40C040', -- DIM_GREEN_FONT_COLOR
+	IGN = 'FF8040', -- ORANGE_FONT_COLOR
+	NEV = 'CC1919', -- DIM_RED_FONT_COLOR
+-- Colors for addon compartment tooltip
+	TT = 'FFFFFF', -- white; base color for tooltip body text
+	CLICK = 'FF8040', -- ORANGE_FONT_COLOR
+	ACTION = 'FFFF00', -- yellow
+}
+
+local CLR = setmetatable({}, {
+	__index = function(_, k)
+		local color = colors[k]
+		assert(color, format('Color %q not defined.', k))
+		color = 'FF' .. color
+		return function(text) return text and WrapTextInColorCode(text, color) or '\124c' .. color end
+	end,
+})
+A.CLR = CLR
+-- Usage: print('text ' .. CLR.WARN('warning') .. ' text' .. CLR.HEAD() .. ' text')
+
+A.MSG_PREFIX = CLR.AQT('Auto Quest Tracker: ')
+A.MSG_PRE = CLR.AQT('AQT: ')
+
+--[[---------------------------------------------------------------------------
+	Quests
+---------------------------------------------------------------------------]]--
 
 -- Quest types Blizz (https://warcraft.wiki.gg/wiki/API_C_QuestLog.GetQuestType)
 -- NOTE: There is also the `Enum.QuestTag`, which contains *some* of the types from `GetQuestType`,
@@ -45,10 +68,6 @@ A.TYPE_RAID = 62
 A.TYPE_PROF = 267
 A.TYPE_PET = 102
 A.TYPE_PVP = 255 -- This is "War Mode PvP"
-
---[[---------------------------------------------------------------------------
-	Tables
----------------------------------------------------------------------------]]--
 
 A.QUEST_TYPES = {
 	['dung'] = {
@@ -127,15 +146,15 @@ A.QUEST_GROUPS = {
 A.EXCEPTION_TYPES = {
 	['always'] = {
 		['value'] = 1,
-		['full'] = A.CLR_ALW .. 'Always Tracked\124r',
+		['full'] = CLR.ALW('Always Tracked'),
 	},
 	['never'] = {
 		['value'] = -1,
-		['full'] = A.CLR_NEV .. 'Never Tracked\124r',
+		['full'] = CLR.NEV('Never Tracked'),
 	},
 	['ignore'] = {
 		['value'] = 0,
-		['full'] = A.CLR_IGN .. 'Ignored\124r',
+		['full'] = CLR.IGN('Ignored'),
 	},
 	['remove'] = {
 		['value'] = nil,

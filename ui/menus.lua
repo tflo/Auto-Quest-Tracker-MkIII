@@ -2,6 +2,7 @@
 -- Portions: Copyright (c) 2022-2026 Thomas Floeren for the added/changed code of "Mk III" (aka version 2 and later)
 
 local MYNAME, A = ...
+local CLR = A.CLR
 
 --[[===========================================================================
 	Context menu for tracker and log
@@ -130,7 +131,7 @@ local function populate_quest_context_menu(owner, root_description, context_data
 	root_description:CreateTitle(A.MYFULLNAME)
 
 	if qid then -- By quest ID
-		root_description:CreateTitle(format('Tracking for Quest %s:', qid or '???'))
+		root_description:CreateTitle(format('Tracking for Quest ID %s:', qid or '???'))
 		root_description:CreateRadio(
 			LABEL.single.remove,
 			function()

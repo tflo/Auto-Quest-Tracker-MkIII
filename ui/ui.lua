@@ -2,6 +2,7 @@
 -- Portions: Copyright (c) 2022-2026 Thomas Floeren for the added/changed code of "Mk III" (aka version 2 and later)
 
 local MYNAME, A = ...
+local CLR = A.CLR
 
 --[[===========================================================================
 	Handle modifier keys while tracking/untracking a quest
@@ -62,7 +63,7 @@ hooksecurefunc(C_QuestLog, 'RemoveQuestWatch', TrackQuest_modifiers_handler)
 local BLOCK_SEP = strrep('+', 42)
 
 local function text_activation_status()
-	return A.cdb.enabled and A.CLR_GOOD .. 'Enabled' or A.cdb.enable_nextsession and A.CLR_HALFBAD .. 'Disabled for this session' or A.cdb.enable_nextinstance and A.CLR_HALFBAD .. 'Disabled for this instance.' or A.CLR_BAD .. 'Disabled'
+	return A.cdb.enabled and CLR.GOOD('Enabled') or A.cdb.enable_nextsession and CLR.HALFBAD('Disabled for this session') or A.cdb.enable_nextinstance and CLR.HALFBAD('Disabled for this instance') or CLR.BAD('Disabled')
 end
 
 function A.msg_load(msg,delay)
@@ -78,13 +79,13 @@ local function msg_status()
 		.. 'Status: '
 		.. text_activation_status() .. '\124r.'
 		.. (A.gdb.ignoreInstances and ' Ignoring instance quests.' or '')
-		.. '\nType ' .. A.CLR_AQT .. '/aqt h\124r for a list of commands.')
+		.. '\nType ' .. CLR.AQT('/aqt h') .. ' for a list of commands.')
 end
 
 local function msg_invalid_input()
 	print(A.MSG_PREFIX
-	.. A.CLR_BAD .. 'This was not a valid input.\124r Check for typos and missing spaces, or type '
-	.. A.CLR_AQT .. '/aqt h\124r for help.')
+	.. CLR.BAD('This was not a valid input.') .. ' Check for typos and missing spaces, or type '
+	.. CLR.AQT('/aqt h') .. ' for help.')
 end
 
 local function get_questinfo_for_listing(index)
@@ -167,9 +168,9 @@ end
 local function msg_list_exceptions()
 	print(BLOCK_SEP)
 	if A.table_is_empty(A.gdb.exceptions_id) then
-		print(A.MSG_PREFIX .. 'You have no exceptions per quest ' .. A.CLR_AQT .. 'ID\124r.')
+		print(A.MSG_PREFIX .. 'You have no exceptions per quest ' .. CLR.AQT('ID') .. '.')
 	else
-		print(A.MSG_PREFIX .. 'Active exceptions per quest ' .. A.CLR_AQT .. 'ID\124r:')
+		print(A.MSG_PREFIX .. 'Active exceptions per quest ' .. CLR.AQT('ID') .. ':')
 		for id, ex in A.ordered_pairs(A.gdb.exceptions_id) do
 			-- C_QuestLog.RequestLoadQuestByID(id) -- TODO: test
 			local title = C_QuestLog.GetTitleForQuestID(id) or '[Quest title not (yet) available from server]'
@@ -181,9 +182,9 @@ local function msg_list_exceptions()
 		end
 	end
 	if A.table_is_empty(A.gdb.exceptions_type) then
-		print(A.MSG_PREFIX .. 'You have no exceptions per quest ' .. A.CLR_AQT .. 'TYPE\124r.')
+		print(A.MSG_PREFIX .. 'You have no exceptions per quest ' .. CLR.AQT('TYPE') .. '.')
 	else
-		print(A.MSG_PREFIX .. 'Active exceptions per quest ' .. A.CLR_AQT .. 'TYPE\124r:')
+		print(A.MSG_PREFIX .. 'Active exceptions per quest ' .. CLR.AQT('TYPE') .. ':')
 		for ty, ex in A.ordered_pairs(A.gdb.exceptions_type) do
 			local xfull = ''
 			for _, v in pairs(A.EXCEPTION_TYPES) do
@@ -197,9 +198,9 @@ local function msg_list_exceptions()
 		end
 	end
 	if A.table_is_empty(A.gdb.exceptions_header) then
-		print(A.MSG_PREFIX .. 'You have no exceptions per quest ' .. A.CLR_AQT .. 'HEADER\124r.')
+		print(A.MSG_PREFIX .. 'You have no exceptions per quest ' .. CLR.AQT('HEADER') .. '.')
 	else
-		print(A.MSG_PREFIX .. 'Active exceptions per quest ' .. A.CLR_AQT .. 'HEADER\124r:')
+		print(A.MSG_PREFIX .. 'Active exceptions per quest ' .. CLR.AQT('HEADER') .. ':')
 		for he, ex in A.ordered_pairs(A.gdb.exceptions_header) do
 			local xfull = ''
 			for _, v in pairs(A.EXCEPTION_TYPES) do
@@ -215,22 +216,22 @@ end
 local function msg_help()
 	local lines = {
 		BLOCK_SEP,
-		A.CLR_AQT .. 'Auto Quest Tracker\124r Help:',
-		A.CLR_AQT .. '/autoquesttracker ' .. '\124ror ' .. A.CLR_AQT .. '/aqt ' .. '\124runderstands these commands: ',
-		A.CLR_AQT .. 'on ' .. '\124ror ' .. A.CLR_AQT .. 'e' .. '\124r: Enable AQT.',
-		A.CLR_AQT .. 'off ' .. '\124ror ' .. A.CLR_AQT .. 'd' .. '\124r: Disable AQT for the current session.',
-		A.CLR_AQT .. 'offi ' .. '\124ror ' .. A.CLR_AQT .. 'di' .. '\124r: Disable AQT for the current (map) instance.',
-		A.CLR_AQT .. 'offp ' .. '\124ror ' .. A.CLR_AQT .. 'dp' .. '\124r: Disable AQT permanently.',
-		A.CLR_AQT .. 'instances ' .. '\124ror ' .. A.CLR_AQT .. 'in' .. '\124r: Toggle auto-tracking of dungeon/raid quests.',
-		A.CLR_AQT .. 'loadingmessage' .. '\124r: Toggle status message in chat after reload/login.',
-		A.CLR_AQT .. 'quests ' .. '\124ror ' .. A.CLR_AQT .. 'q' .. '\124r: Show complete quest list.',
-		A.CLR_AQT .. 'debug' .. '\124r: Toggle debug mode.',
-		A.CLR_AQT .. 'help ' .. '\124ror ' .. A.CLR_AQT .. 'h' .. '\124r: Display this help text.',
-		A.CLR_AQT .. '/aqt ' .. '\124rwithout additional commands: Display status info.',
+		CLR.AQT('Auto Quest Tracker') .. ' Help:',
+		CLR.AQT('/autoquesttracker') .. ' or ' .. CLR.AQT('/aqt') .. ' understands these commands: ',
+		CLR.AQT('on') .. ' or ' .. CLR.AQT('e') .. ': Enable AQT.',
+		CLR.AQT('off') .. ' or ' .. CLR.AQT('d') .. ': Disable AQT for the current session.',
+		CLR.AQT('offi') .. ' or ' .. CLR.AQT('di') .. ': Disable AQT for the current (map) instance.',
+		CLR.AQT('offp') .. ' or ' .. CLR.AQT(dp) .. ': Disable AQT permanently.',
+		CLR.AQT('instances') .. ' or ' .. CLR.AQT('in') .. ': Toggle auto-tracking of dungeon/raid quests.',
+		CLR.AQT('loadingmessage') .. ': Toggle status message in chat after reload/login.',
+		CLR.AQT('quests') .. ' or ' .. CLR.AQT('q') .. ': Show complete quest list.',
+		CLR.AQT('debug') .. ': Toggle debug mode.',
+		CLR.AQT('help') .. ' or ' .. CLR.AQT('h') .. ': Display this help text.',
+		CLR.AQT('/aqt') .. ' without additional commands: Display status info.',
 		'- Enable/disable is per char, other settings are global.',
-		'- Some commands are also available via the ' .. A.CLR_AQT .. 'addon compartment button\124r. See the addon compartment button tooltip.',
-		'- To learn how to assign ' .. A.CLR_AQT .. 'exceptions\124r (special behavior) to quests or quest groups, please see the AQT Wiki at...',
-		A.CLR_AQT .. 'https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions',
+		'- Some commands are also available via the ' .. CLR.AQT('addon compartment button') .. '. See the addon compartment button tooltip.',
+		'- To learn how to assign ' .. CLR.AQT('exceptions') .. ' (special behavior) to quests or quest groups, please see the AQT Wiki at...',
+		CLR.AQT('https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions'),
 		BLOCK_SEP,
 	}
 	for _, l in ipairs(lines) do print(l) end
@@ -413,9 +414,9 @@ end
 function _G.addon_aqt_on_addoncompartment_enter()
 	GameTooltip:SetOwner(AddonCompartmentFrame)
 	GameTooltip:AddDoubleLine('Auto Quest Tracker', text_activation_status())
-	GameTooltip:AddLine(format('%sLeft-click %sto print %sstatus\124r.', A.CLR_CLICK, A.CLR_TT, A.CLR_ACTION))
-	GameTooltip:AddLine(format('%s%s-left-click %sto print %shelp\124r text.', A.CLR_CLICK, TEXT_CMD_KEY, A.CLR_TT, A.CLR_ACTION))
-	GameTooltip:AddLine(format('%sRight-click %sto %stoggle\124r AQT for this session.', A.CLR_CLICK, A.CLR_TT, A.CLR_ACTION))
+	GameTooltip:AddLine(CLR.TT(CLR.CLICK('Left-click') .. ' to print the ' .. CLR.ACTION('status') .. '.'))
+	GameTooltip:AddLine(CLR.TT(CLR.CLICK(TEXT_CMD_KEY .. '-left-click') .. ' to print the ' .. CLR.ACTION('help') .. ' text.'))
+	GameTooltip:AddLine(CLR.TT(CLR.CLICK('Right-click') .. ' to ' .. CLR.ACTION('toggle') .. ' AQT for this session.'))
 	GameTooltip:Show()
 end
 
