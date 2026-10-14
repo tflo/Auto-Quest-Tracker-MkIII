@@ -295,21 +295,38 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 			aqt_enable(false, 2)
 		elseif msg == 'loadingmessage' then
 			A.gdb.loadMsg = not A.gdb.loadMsg
-			A.msg_confirm('Loading message ' .. (A.gdb.loadMsg and 'enabled' or 'disabled') .. ' for all chars.')
+			A.msg_confirm(
+				'Loading message '
+					.. (A.gdb.loadMsg and 'enabled' or 'disabled')
+					.. ' for all chars.'
+			)
 		elseif msg == 'in' or msg == 'instances' then
 			A.gdb.ignoreInstances = not A.gdb.ignoreInstances
 			if A.cdb.enabled then A.update_quests_for_zone() end
-			A.msg_confirm('Instance quests are ' ..
-			(A.gdb.ignoreInstances and 'ignored' or 'treated normally') .. ' for all chars.')
+			A.msg_confirm(
+				'Instance quests are '
+					.. (A.gdb.ignoreInstances and 'ignored' or 'treated normally')
+					.. ' for all chars.'
+			)
 		elseif msg == 'debug' or msg == 'dm' then
 			A.gdb.debug_mode = not A.gdb.debug_mode
-			A.msg_confirm('Debug mode' .. ' (' .. A.gdb.debug_level .. ') ' .. (A.gdb.debug_mode and 'enabled.' or 'disabled.'))
+			A.msg_confirm(
+				'Debug mode'
+					.. ' ('
+					.. A.gdb.debug_level
+					.. ') '
+					.. (A.gdb.debug_mode and 'enabled' or 'disabled')
+			)
 		elseif msg == 'printvalues' and A.gdb.debug_mode then
 			A.print_values()
 		elseif msg == 'ignoreqwt' and A.gdb.debug_mode then
 			A.IGNORE_QWT = not A.IGNORE_QWT
 			if A.cdb.enabled then A.update_quests_for_zone() end
-			A.msg_confirm(A.IGNORE_QWT and 'Quests can now be removed regardless of their QuestWatchType. This screws up AQT\'s behavior, use only for debugging! This setting will not be saved across reloads.' or '"IGNORE_QWT" disabled (normal behavior).')
+			A.msg_confirm(
+				A.IGNORE_QWT
+						and "Quests can now be removed regardless of their QuestWatchType. This screws up AQT's behavior, use only for debugging! This setting will not be saved across reloads."
+					or '"IGNORE_QWT" disabled (normal behavior).'
+			)
 		-- PRINT LISTS
 		elseif msg == 'q' or msg == 'quests' then
 			msg_list_quests()
@@ -347,19 +364,31 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 	elseif #mt == 2 then
 		if A.EXCEPTION_TYPES[mt[1]] then
 			if A.QUEST_TYPES[mt[2]] then
-				A.gdb.exceptions_type[A.QUEST_TYPES[mt[2]]['type']] = A.EXCEPTION_TYPES[mt[1]]['value']
-				A.msg_confirm('Quest type "' ..
-					A.QUEST_TYPES[mt[2]]['type'] ..
-					'" (' .. A.QUEST_TYPES[mt[2]]['full'] .. ') is now ' .. A.EXCEPTION_TYPES[mt[1]]['full'] .. '.')
+				A.gdb.exceptions_type[A.QUEST_TYPES[mt[2]]['type']] =
+					A.EXCEPTION_TYPES[mt[1]]['value']
+				A.msg_confirm(
+					'Quest type "'
+						.. A.QUEST_TYPES[mt[2]]['type']
+						.. '" ('
+						.. A.QUEST_TYPES[mt[2]]['full']
+						.. ') is now '
+						.. A.EXCEPTION_TYPES[mt[1]]['full']
+						.. '.'
+				)
 				if A.cdb.enabled then A.update_quests_for_zone() end
 			elseif A.QUEST_GROUPS[mt[2]] then
 				for _, id in ipairs(A.QUEST_GROUPS[mt[2]]['ids']) do
 					A.gdb.exceptions_id[id] = A.EXCEPTION_TYPES[mt[1]]['value']
 				end
-				A.msg_confirm('Quest group "' ..
-					A.QUEST_GROUPS[mt[2]]['full'] ..
-					'" (' ..
-					#A.QUEST_GROUPS[mt[2]]['ids'] .. ' quest IDs) is now ' .. A.EXCEPTION_TYPES[mt[1]]['full'] .. '.')
+				A.msg_confirm(
+					'Quest group "'
+						.. A.QUEST_GROUPS[mt[2]]['full']
+						.. '" ('
+						.. #A.QUEST_GROUPS[mt[2]]['ids']
+						.. ' quest IDs) is now '
+						.. A.EXCEPTION_TYPES[mt[1]]['full']
+						.. '.'
+				)
 				if A.cdb.enabled then A.update_quests_for_zone() end
 			elseif (mt[1] == 'debug' or mt[1] == 'dm') and tonumber(mt[2]) then
 				A.gdb.debug_level = max(min(floor(mt[2]), 3), 0)
@@ -374,7 +403,13 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 	elseif mt[2] == 'h' and A.EXCEPTION_TYPES[mt[1]] then
 		local header = A.get_questheader_from_input(mt)
 		A.gdb.exceptions_header[header] = A.EXCEPTION_TYPES[mt[1]]['value']
-		A.msg_confirm('All quests with header "' .. header .. '" are now ' .. A.EXCEPTION_TYPES[mt[1]]['full'] .. '.')
+		A.msg_confirm(
+			'All quests with header "'
+				.. header
+				.. '" are now '
+				.. A.EXCEPTION_TYPES[mt[1]]['full']
+				.. '.'
+		)
 		if A.cdb.enabled then A.update_quests_for_zone() end
 	else
 		msg_invalid_input()
