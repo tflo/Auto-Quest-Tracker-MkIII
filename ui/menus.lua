@@ -105,13 +105,13 @@ local function populate_quest_context_menu(owner, root_description, context_data
 		if ui == 'tracker' then
 			local poi_qid = qinfo.poiQuestID -- poi ID == quest ID ?
 			if qid ~= poi_qid then
-				A.dprint('Tracker ‹qid› ~= ‹poiQuestID›!', qid, poi_qid)
+				A.dprint(0, 'Tracker ‹qid› ~= ‹poiQuestID›!', qid, poi_qid)
 				PlaySoundFile(2924351)
 			end
 		elseif ui == 'log' then
 			local entry_qid = owner.questID -- alternative ID source from top-level owner
 			if qid ~= entry_qid then
-				A.dprint('Log ‹qid› ~= ‹owner.questID›!', qid, entry_qid)
+				A.dprint(0, 'Log ‹qid› ~= ‹owner.questID›!', qid, entry_qid)
 				PlaySoundFile(2924351)
 			end
 		end

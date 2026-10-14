@@ -19,6 +19,7 @@ local function on_event(_, event, ...)
 			A.gdb.loadMsg = A.gdb.loadMsg == nil and true or A.gdb.loadMsg
 			A.gdb.ignoreInstances = A.gdb.ignoreInstances or false
 			A.gdb.debug_mode = A.gdb.debug_mode or false
+			A.gdb.debug_level = A.gdb.debug_level or 1
 			A.cdb.time_logout = A.cdb.time_logout or 0
 			A.gdb.exceptions_id = A.gdb.exceptions_id or {}
 			A.gdb.exceptions_type = A.gdb.exceptions_type or {}
@@ -78,7 +79,7 @@ A.ef:RegisterEvent 'ADDON_LOADED'
 function A.ef:register_zone_events()
 	self:RegisterEvent 'ZONE_CHANGED'
 	self:RegisterEvent 'ZONE_CHANGED_NEW_AREA'
-	A.dprint 'Zone events registered.'
+	A.dprint(1, 'Zone events registered.')
 end
 
 -- local function unregister_zone_events()

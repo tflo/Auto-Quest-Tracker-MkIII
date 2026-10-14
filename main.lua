@@ -48,10 +48,10 @@ local function auto_show_or_hide_quest(quest_idx, quest_id, show)
 	if id == quest_id then
 -- 	if not InCombatLockdown() and id == quest_id then
 		if show then
-			A.dprint(format('Tracking: %s (%s)', questTitle, quest_id))
+			A.dprint(1, format('Tracking: %s (%s)', questTitle, quest_id))
 			C_QuestLog_AddQuestWatch(quest_id, A.QWT_AUTOMATIC)
 		else
-			A.dprint(format('Removing: %s (%s)', questTitle, quest_id))
+			A.dprint(2, format('Removing: %s (%s)', questTitle, quest_id))
 			C_QuestLog_RemoveQuestWatch(quest_id)
 		end
 	end
@@ -72,7 +72,7 @@ end
 local predicate = {'is now ', 'is already '}
 
 function A.add_quest_to_exceptions(quest_id, exc_type)
-	A.dprint('`A.add_quest_to_exceptions` called.')
+	A.dprint(1, '`A.add_quest_to_exceptions` called.')
 	local pred = predicate[1]
 	-- Never track quest: Cmd-Option
 	-- Currently Mac only, due to the lack of enough modifier keys on Windows
@@ -158,7 +158,7 @@ function A.update_quests_for_zone()
 	local minimapZone = GetMinimapZoneText()
 	if currentZone == nil and minimapZone == nil then return end
 
-	A.dprint('Updating quests for: ' .. currentZone .. ' or ' .. minimapZone)
+	A.dprint(1, 'Updating quests for: ' .. currentZone .. ' or ' .. minimapZone)
 
 	local header = nil
 
@@ -174,8 +174,8 @@ function A.update_quests_for_zone()
 				if is_always(quest_id, questType, header) or (header == currentZone or header == minimapZone or isOnMap or hasLocalPOI) and not is_never(quest_id, questType) then
 					if C_QuestLog_GetQuestWatchType(quest_id) == nil then
 						auto_show_or_hide_quest(quest_idx, quest_id, true)
-						if A.gdb.debug_mode then
-							A.dprint(format('Reason: %s%s%s%s%s', is_always(quest_id, questType, header) == true and 'alwaysTracked ' or '', header == currentZone and 'currZone ' or '', header == minimapZone and 'mmZone ' or '', isOnMap and 'onMap ' or '', hasLocalPOI and 'hasPOI ' or ''))
+						if A.gdb.debug_mode and A.gdb.debug_level >= 1 then
+							A.dprint(0, format('Reason: %s%s%s%s%s', is_always(quest_id, questType, header) == true and 'alwaysTracked ' or '', header == currentZone and 'currZone ' or '', header == minimapZone and 'mmZone ' or '', isOnMap and 'onMap ' or '', hasLocalPOI and 'hasPOI ' or ''))
 						end
 					end
 				elseif A.IGNORE_QWT or is_never(quest_id, questType, header) or C_QuestLog_GetQuestWatchType(quest_id) == A.QWT_AUTOMATIC then

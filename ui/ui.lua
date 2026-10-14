@@ -302,7 +302,7 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 			(A.gdb.ignoreInstances and 'ignored' or 'treated normally') .. ' for all chars.')
 		elseif msg == 'debug' or msg == 'dm' then
 			A.gdb.debug_mode = not A.gdb.debug_mode
-			A.msg_confirm('Debug mode ' .. (A.gdb.debug_mode and 'enabled.' or 'disabled.'))
+			A.msg_confirm('Debug mode' .. ' (' .. A.gdb.debug_level .. ') ' .. (A.gdb.debug_mode and 'enabled.' or 'disabled.'))
 		elseif msg == 'printvalues' and A.gdb.debug_mode then
 			A.print_values()
 		elseif msg == 'ignoreqwt' and A.gdb.debug_mode then
@@ -357,6 +357,9 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 					'" (' ..
 					#A.QUEST_GROUPS[mt[2]]['ids'] .. ' quest IDs) is now ' .. A.EXCEPTION_TYPES[mt[1]]['full'] .. '.')
 				if A.cdb.enabled then A.update_quests_for_zone() end
+			elseif (mt[1] == 'debug' or mt[1] == 'dm') and tonumber(mt[2]) then
+				A.gdb.debug_level = max(min(floor(mt[2]), 3), 0)
+				A.msg_confirm('Debug level ' .. A.gdb.debug_level)
 			else
 				msg_invalid_input()
 			end

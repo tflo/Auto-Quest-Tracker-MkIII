@@ -2,6 +2,7 @@
 -- Portions: Copyright (c) 2022-2026 Thomas Floeren for the added/changed code of "Mk III" (aka version 2 and later)
 
 local MYNAME, A = ...
+local DEBUG_WITH_TIME = false
 
 
 --[[===========================================================================
@@ -91,7 +92,7 @@ function A.get_questheader_from_input(t)
 end
 
 function A.print_values()
-	A.dprint(format(
+	A.dprint(0, format(
 		'DELAY_ZONE_CHANGE: %s; SESSION_GRACE_TIME: %s; IS_MAC: %s; QUESTFREQUENCY_DAILY: %s; QWT_AUTOMATIC: %s (%s); QWT_MANUAL: %s (%s); IGNORE_QWT: %s',
 		A.DELAY_ZONE_CHANGE, A.SESSION_GRACE_TIME, tostring(A.IS_MAC), A.QUESTFREQUENCY_DAILY, A.QWT_AUTOMATIC, type(A.QWT_AUTOMATIC), A.QWT_MANUAL, type(A.QWT_MANUAL), tostring(A.IGNORE_QWT)
 	))
@@ -108,10 +109,19 @@ end
 	Debug
 ---------------------------------------------------------------------------]]--
 
-function A.dprint(...)
+function A.dprint(lvl, ...)
 	if A.gdb.debug_mode then
-		local a, b = strsplit('.', GetTimePreciseSec())
-		print(format('[%s.%s] %sAQT > Debug >\124r', a:sub(-3), b:sub(1, 3), A.CLR_DEBUG), ...)
+		if not tonumber(lvl) then
+			print('Missing debug level!\n', debugstack(2):match('.-\n'))
+			return
+		end
+		if A.gdb.debug_level < lvl then return end
+		if DEBUG_WITH_TIME then
+			local a, b = strsplit('.', GetTimePreciseSec())
+			print(format('[%s.%s] %sAQT > Debug >\124r', a:sub(-3), b:sub(1, 3), A.CLR_DEBUG), ...)
+		else
+			print(format('%sAQT > Debug >\124r', A.CLR_DEBUG), ...)
+		end
 	end
 end
 
