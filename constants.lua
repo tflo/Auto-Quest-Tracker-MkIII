@@ -40,6 +40,9 @@ local colors = {
 	TT = 'FFFFFF', -- white; base color for tooltip body text
 	CLICK = 'FF8040', -- ORANGE_FONT_COLOR
 	ACTION = 'FFFF00', -- yellow
+	-- New colors 5.0; TODO: apply these
+	ON = '32CD32', -- limegreen
+	OFF = 'C0C0C0', -- silver
 }
 
 local CLR = setmetatable({}, {
