@@ -402,15 +402,7 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 	-- 1 cmd, 2+ args: Header exceptions: /aqt <exception cmd> h <quest header string>
 	elseif mt[2] == 'h' and A.EXCEPTION_TYPES[mt[1]] then
 		local header = A.get_questheader_from_input(mt)
-		A.gdb.exceptions_header[header] = A.EXCEPTION_TYPES[mt[1]]['value']
-		A.msg_confirm(
-			'All quests with header "'
-				.. header
-				.. '" are now '
-				.. A.EXCEPTION_TYPES[mt[1]]['full']
-				.. '.'
-		)
-		if A.cdb.enabled then A.update_quests_for_zone() end
+		A.add_header_to_exceptions(header, mt[1])
 	else
 		msg_invalid_input()
 	end

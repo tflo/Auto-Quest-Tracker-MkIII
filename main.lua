@@ -117,6 +117,22 @@ function A.add_quest_to_exceptions(quest_id, exc_type)
 	end
 end
 
+-- Basic form for the moment;
+-- Expand to detailed feedback like we do in add_quest_to_exceptions
+function A.add_header_to_exceptions(header, exception)
+	A.dprint(1, '‹add_header_to_exceptions› called.')
+	A.gdb.exceptions_header[header] = A.EXCEPTION_TYPES[exception].value
+	A.msg_confirm(
+		'All quests with header "'
+			.. header
+			.. '" are now '
+			.. A.EXCEPTION_TYPES[exception].full
+			.. '.'
+	)
+	if A.cdb.enabled then A.update_quests_for_zone() end
+end
+
+
 --[[===========================================================================
 	Core
 ===========================================================================]]--
