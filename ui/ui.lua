@@ -57,6 +57,80 @@ hooksecurefunc(C_QuestLog, 'RemoveQuestWatch', TrackQuest_modifiers_handler)
 -- tracks or untracks a quest.
 
 --[[===========================================================================
+	Exclusions
+===========================================================================]]--
+
+-- TODO: Let's find out if we can use the new (TWW) menu hooking system, instead of modified clicks!
+-- https://warcraft.wiki.gg/wiki/Patch_11.0.0/API_changes#Hooking_menus
+
+local function confirm_msg(quest_id, predicate, action)
+	print(format('%sQuest %s %s%s.', A.MSG_PRE, quest_id, predicate, action))
+end
+
+local predicate = {'is now ', 'is already '}
+
+function A.add_quest_to_exceptions(quest_id, exc_type)
+	A.dprint(1, '‹add_quest_to_exceptions› called.')
+	local pred = predicate[1]
+	-- Never track quest: Cmd-Option
+	-- Currently Mac only, due to the lack of enough modifier keys on Windows
+	if exc_type == A.EXCEPTION_TYPES.never.value then
+		if A.gdb.exceptions_id[quest_id] ~= A.EXCEPTION_TYPES.never.value then
+			A.gdb.exceptions_id[quest_id] = A.EXCEPTION_TYPES.never.value
+		else
+			pred = predicate[2]
+		end
+		confirm_msg(quest_id, pred, A.EXCEPTION_TYPES.never.full)
+		if A.cdb.enabled then C_QuestLog_RemoveQuestWatch(quest_id) end
+	-- Ignore quest: Option (Mac), Ctrl-Alt (Win)
+	elseif exc_type == A.EXCEPTION_TYPES.ignore.value then
+		if A.gdb.exceptions_id[quest_id] ~= A.EXCEPTION_TYPES.ignore.value then
+			A.gdb.exceptions_id[quest_id] = A.EXCEPTION_TYPES.ignore.value
+		else
+			pred = predicate[2]
+		end
+		confirm_msg(quest_id, pred, A.EXCEPTION_TYPES.ignore.full)
+	-- Always track quest: Cmd (Mac), Alt (Win)
+	elseif exc_type == A.EXCEPTION_TYPES.always.value then
+		if A.gdb.exceptions_id[quest_id] ~= A.EXCEPTION_TYPES.always.value then
+			A.gdb.exceptions_id[quest_id] = A.EXCEPTION_TYPES.always.value
+		else
+			pred = predicate[2]
+		end
+		confirm_msg(quest_id, pred, A.EXCEPTION_TYPES.always.full)
+		if A.cdb.enabled then C_QuestLog_AddQuestWatch(quest_id, A.QWT_AUTOMATIC) end
+	-- Remove quest from exceptions: Ctrl (Mac/Win)
+	elseif exc_type == A.EXCEPTION_TYPES.remove.value then
+		if A.gdb.exceptions_id[quest_id] then
+			A.gdb.exceptions_id[quest_id] = nil
+			pred = 'removed from exceptions'
+		else
+			pred = 'did not have any exception assigned'
+		end
+		confirm_msg(quest_id, pred, '')
+		if A.cdb.enabled and C_QuestLog_GetQuestWatchType(quest_id) == A.QWT_MANUAL then
+			C_QuestLog_AddQuestWatch(quest_id, A.QWT_AUTOMATIC)
+		end
+	end
+end
+
+-- Basic form for the moment;
+-- Expand to detailed feedback like we do in add_quest_to_exceptions
+function A.add_header_to_exceptions(header, exception)
+	A.dprint(1, '‹add_header_to_exceptions› called.')
+	A.gdb.exceptions_header[header] = A.EXCEPTION_TYPES[exception].value
+	A.msg_confirm(
+		'All quests with header "'
+			.. header
+			.. '" are now '
+			.. A.EXCEPTION_TYPES[exception].full
+			.. '.'
+	)
+	if A.cdb.enabled then A.update_quests_for_zone() end
+end
+
+
+--[[===========================================================================
 	Console UI
 ===========================================================================]]--
 
