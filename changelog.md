@@ -4,6 +4,27 @@ To see all commits, including all alpha changes, [*go here*](https://github.com/
 
 ## Releases
 
+#### 5.0-beta1 (2026-10-16)
+
+- Version 5 is pretty much a rewrite.
+- This is a beta. Please report issues that don’t get fixed within a few days, or that braek the addon or the game to the [Issues Tracker](https://github.com/tflo/Auto-Quest-Tracker-MkIII/issues).
+- After using the beta, you can go back to the normal release version. Databases are still compatible.
+- **New:** You can now **set your exceptions** (Always Tracked, Never Tracked, Ignored) via the **context menu** of a…
+    - quest in the Objective Tracker
+    - quest in the Quest Log
+    - header in the Quest Log
+- Already implemented via context menu:
+    - By quest id (affects this single quest)
+    - By header (affects all present or future quests with this header)
+- To come:
+    - By quest type
+    - By quest classification
+    - A few other little things
+- Things to be removed or changed:
+    - The existing [exceptions system via modifier keys](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions#kinds-of-exceptions) is currently still functional as alternative, but might be removed or streamlined in the future.
+    - The existing [hard-coded quest groups](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions#named-groups-of-quest-ids), and the corresponding console input method are currently still functional, but very likely will be removed. (The groups are outdated anyway, and having to keep them up to date and relevant is something I’d like to avoid.)
+    - The still existing [special types](https://github.com/tflo/Auto-Quest-Tracker-MkIII/wiki/Exceptions#quest-types) (e.g. instance quests) will also be reomoved, as quest types will become accessible from the context menu of a quest.
+
 #### 4.4.7 (2026-10-10)
 
 - toc bump for 12.1.5, no changes.
