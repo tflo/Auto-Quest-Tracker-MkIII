@@ -43,12 +43,6 @@ local LABEL = {
 -- 	return true
 -- end
 
-local function on_qid(id, exception)
-	A.add_quest_to_exceptions(id, A.EXCEPTION_TYPES[exception].value)
-end
-
--- TODO: add group action
--- TODO: add header action
 
 --[[---------------------------------------------------------------------------
 	Helpers for data
@@ -72,40 +66,12 @@ local function get_header_from_header_idx(hidx)
 	if info and info.isHeader then return info.title end
 end
 
---[[---------------------------------------------------------------------------
-	Menu item visibility
----------------------------------------------------------------------------]]--
-
-local function should_show_qid_menu()
--- 	return not not qid
--- 	return  qid
-	return  true
-end
-
-local function should_show_header_menu()
--- 	return not not qheader
--- 	return qheader
-	return true
-end
-
-local function should_show_type_menu()
--- 	return not not qtype and not not qtype_name
-	return  qtype and  qtype_name
-end
-
-local function should_show_class_menu() -- NYI
-	return false
-end
-
-local function should_show_group_menu() -- NYI
-	return false
-end
-
 ---------------------------------
 
-local function is_ignore(id) return A.gdb.exceptions_id[id] == 0 end
-local function is_always(id) return A.gdb.exceptions_id[id] == 1 end
-local function is_never(id) return A.gdb.exceptions_id[id] == -1 end
+local function get_state(scope, exc, target)
+	if scope == 'quest' then scope = 'id' end
+	return A.gdb['exceptions_' .. scope][target] == A.EXCEPTION_TYPES[exc].value
+end
 
 --[[---------------------------------------------------------------------------
 	Populate menu
@@ -189,40 +155,40 @@ local function populate_quest_context_menu(owner, root_description, context_data
 		root_description:CreateRadio(
 			LABEL.single.remove,
 			function()
-				return not(is_ignore(qid) or is_always(qid) or is_never(qid))
+				return not (get_state('quest', 'ignore', qid) or get_state('quest', 'always', qid) or get_state('quest', 'never', qid))
 			end,
 			function()
-				on_qid(qid, 'remove')
+				A.add_to_exceptions('quest', 'remove', qid, qtitle)
 			end
 		)
 		-- Ignore
 		root_description:CreateRadio(
 			LABEL.single.ignore,
 			function()
-				return is_ignore(qid)
+				return get_state('quest', 'ignore', qid)
 			end,
 			function()
-				on_qid(qid, 'ignore')
+				A.add_to_exceptions('quest', 'ignore', qid, qtitle)
 			end
 		)
 		-- Always
 		root_description:CreateRadio(
 			LABEL.single.always,
 			function()
-				return is_always(qid)
+				return get_state('quest', 'always', qid)
 			end,
 			function()
-				on_qid(qid, 'always')
+				A.add_to_exceptions('quest', 'always', qid, qtitle)
 			end
 		)
 		-- Never
 		root_description:CreateRadio(
 			LABEL.single.never,
 			function()
-				return is_never(qid)
+				return get_state('quest', 'never', qid)
 			end,
 			function()
-				on_qid(qid, 'never')
+				A.add_to_exceptions('quest', 'never', qid, qtitle)
 			end
 		)
 	end
@@ -240,40 +206,40 @@ local function populate_quest_context_menu(owner, root_description, context_data
 		menu:CreateRadio(
 			LABEL.single.remove,
 			function()
-				return not(is_ignore(qid) or is_always(qid) or is_never(qid))
+				return not (get_state('header', 'ignore', qheader) or get_state('header', 'always', qheader) or get_state('header', 'never', qheader))
 			end,
 			function()
-				--on_qid(qid, 'remove')
+				A.add_to_exceptions('header', 'remove', qheader, qheader)
 			end
 		)
 
 		menu:CreateRadio(
 			LABEL.single.ignore,
 			function()
-				return is_ignore(qid)
+				return get_state('header', 'ignore', qheader)
 			end,
 			function()
-				--on_qid(qid, 'ignore')
+				A.add_to_exceptions('header', 'ignore', qheader, qheader)
 			end
 		)
 
 		menu:CreateRadio(
 			LABEL.single.always,
 			function()
-				return is_always(qid)
+				return get_state('header', 'always', qheader)
 			end,
 			function()
-				--on_qid(qid, 'always')
+				A.add_to_exceptions('header', 'always', qheader, qheader)
 			end
 		)
 
 		menu:CreateRadio(
 			LABEL.single.never,
 			function()
-				return is_never(qid)
+				return get_state('header', 'never', qheader)
 			end,
 			function()
-				--on_qid(qid, 'never')
+				A.add_to_exceptions('header', 'never', qheader, qheader)
 			end
 		)
 	end

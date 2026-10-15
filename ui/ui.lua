@@ -12,16 +12,16 @@ local function TrackQuest_modifiers_handler(quest_id)
 	-- Never track quest: Cmd-Option
 	-- Currently Mac only, due to the lack of enough modifier keys on Windows
 	if IsMetaKeyDown() and IsAltKeyDown() then
-		A.add_quest_to_exceptions(quest_id, A.EXCEPTION_TYPES.never.value)
+		A.add_to_exceptions(quest_id, A.EXCEPTION_TYPES.never.value)
 	-- Ignore quest: Option (Mac), Ctrl-Alt (Win)
 	elseif A.IS_MAC and IsAltKeyDown() or IsAltKeyDown() and IsControlKeyDown() then
-		A.add_quest_to_exceptions(quest_id, A.EXCEPTION_TYPES.ignore.value)
+		A.add_to_exceptions(quest_id, A.EXCEPTION_TYPES.ignore.value)
 	-- Always track quest: Cmd (Mac), Alt (Win)
 	elseif IsMetaKeyDown() or IsAltKeyDown() then
-		A.add_quest_to_exceptions(quest_id, A.EXCEPTION_TYPES.always.value)
+		A.add_to_exceptions(quest_id, A.EXCEPTION_TYPES.always.value)
 	-- Remove quest from exceptions: Ctrl (Mac/Win)
 	elseif IsControlKeyDown() then
-		A.add_quest_to_exceptions(quest_id, A.EXCEPTION_TYPES.remove.value)
+		A.add_to_exceptions(quest_id, A.EXCEPTION_TYPES.remove.value)
 	end
 end
 
@@ -60,75 +60,79 @@ hooksecurefunc(C_QuestLog, 'RemoveQuestWatch', TrackQuest_modifiers_handler)
 	Exclusions
 ===========================================================================]]--
 
--- TODO: Let's find out if we can use the new (TWW) menu hooking system, instead of modified clicks!
--- https://warcraft.wiki.gg/wiki/Patch_11.0.0/API_changes#Hooking_menus
+-- Centralized confirmation messages
+local CONFIRM_MSGS = {
+	[true] = { -- is now
+		['always'] = '%s%s is now set to Always Tracked.',
+		['never'] = '%s%s is now set to Never Tracked.',
+		['ignore'] = '%s%s is now set to Ignored.',
+		['remove'] = '%s%s has been removed from exceptions.',
+	},
+	[false] = { -- is already
+		['always'] = '%s%s is already set to Always Tracked.',
+		['never'] = '%s%s is already set to Never Tracked.',
+		['ignore'] = '%s%s is already set to Ignored.',
+		['remove'] = '%s%s does not have any exception assigned.',
+	}
+}
 
-local function confirm_msg(quest_id, predicate, action)
-	print(format('%sQuest %s %s%s.', A.MSG_PRE, quest_id, predicate, action))
-end
+function A.add_to_exceptions(scope, exc_key, target, target_text)
+	A.dprint(1, '‹add_to_exceptions› called.')
 
-local predicate = {'is now ', 'is already '}
+	local exc_type = A.EXCEPTION_TYPES[exc_key]
+	if not exc_type then
+		error(format("AQT: Invalid exception key '%s' passed to add_to_exceptions.", tostring(exc_key)), 2)
+	end
 
-function A.add_quest_to_exceptions(quest_id, exc_type)
-	A.dprint(1, '‹add_quest_to_exceptions› called.')
-	local pred = predicate[1]
-	-- Never track quest: Cmd-Option
-	-- Currently Mac only, due to the lack of enough modifier keys on Windows
-	if exc_type == A.EXCEPTION_TYPES.never.value then
-		if A.gdb.exceptions_id[quest_id] ~= A.EXCEPTION_TYPES.never.value then
-			A.gdb.exceptions_id[quest_id] = A.EXCEPTION_TYPES.never.value
-		else
-			pred = predicate[2]
+	local name_str = target_text or '<no data yet>'
+
+	local db_target, target_name
+	if scope == 'quest' then
+		db_target = A.gdb.exceptions_id
+		target_name = format('Quest %d "%s"', target, name_str)
+	elseif scope == 'header' then
+		db_target = A.gdb.exceptions_header
+		target_name = format('Header "%s"', target)
+	elseif scope == 'type' then
+		db_target = A.gdb.exceptions_type
+		target_name = format('Quest Type %d "%s"', target, name_str)
+	elseif scope == 'class' then
+		db_target = A.gdb.exceptions_class
+		target_name = format('Quest Class %d "%s"', target, name_str)
+	else
+		error(format("AQT: Invalid scope '%s' passed to add_to_exceptions.", tostring(scope)), 2)
+	end
+
+	local is_new = false
+	local current_val = db_target[target]
+	local new_val = exc_type.value
+
+	if exc_key == 'remove' then
+		if current_val ~= nil then
+			db_target[target] = nil
+			is_new = true
 		end
-		confirm_msg(quest_id, pred, A.EXCEPTION_TYPES.never.full)
-		if A.cdb.enabled then C_QuestLog_RemoveQuestWatch(quest_id) end
-	-- Ignore quest: Option (Mac), Ctrl-Alt (Win)
-	elseif exc_type == A.EXCEPTION_TYPES.ignore.value then
-		if A.gdb.exceptions_id[quest_id] ~= A.EXCEPTION_TYPES.ignore.value then
-			A.gdb.exceptions_id[quest_id] = A.EXCEPTION_TYPES.ignore.value
-		else
-			pred = predicate[2]
+	else
+		if current_val ~= new_val then
+			db_target[target] = new_val
+			is_new = true
 		end
-		confirm_msg(quest_id, pred, A.EXCEPTION_TYPES.ignore.full)
-	-- Always track quest: Cmd (Mac), Alt (Win)
-	elseif exc_type == A.EXCEPTION_TYPES.always.value then
-		if A.gdb.exceptions_id[quest_id] ~= A.EXCEPTION_TYPES.always.value then
-			A.gdb.exceptions_id[quest_id] = A.EXCEPTION_TYPES.always.value
-		else
-			pred = predicate[2]
-		end
-		confirm_msg(quest_id, pred, A.EXCEPTION_TYPES.always.full)
-		if A.cdb.enabled then C_QuestLog_AddQuestWatch(quest_id, A.QWT_AUTOMATIC) end
-	-- Remove quest from exceptions: Ctrl (Mac/Win)
-	elseif exc_type == A.EXCEPTION_TYPES.remove.value then
-		if A.gdb.exceptions_id[quest_id] then
-			A.gdb.exceptions_id[quest_id] = nil
-			pred = 'removed from exceptions'
-		else
-			pred = 'did not have any exception assigned'
-		end
-		confirm_msg(quest_id, pred, '')
-		if A.cdb.enabled and C_QuestLog_GetQuestWatchType(quest_id) == A.QWT_MANUAL then
-			C_QuestLog_AddQuestWatch(quest_id, A.QWT_AUTOMATIC)
+	end
+
+	-- Inlined confirmation message
+	local msg_template = CONFIRM_MSGS[is_new][exc_key]
+	print(format(msg_template, A.MSG_PRE, target_name))
+
+	if scope == 'quest' and A.cdb.enabled then
+		if exc_key == 'never' then
+			C_QuestLog.RemoveQuestWatch(target)
+		elseif exc_key == 'always' then
+			C_QuestLog.AddQuestWatch(target, A.QWT_AUTOMATIC)
+		elseif exc_key == 'remove' and C_QuestLog.GetQuestWatchType(target) == A.QWT_MANUAL then
+			C_QuestLog.AddQuestWatch(target, A.QWT_AUTOMATIC)
 		end
 	end
 end
-
--- Basic form for the moment;
--- Expand to detailed feedback like we do in add_quest_to_exceptions
-function A.add_header_to_exceptions(header, exception)
-	A.dprint(1, '‹add_header_to_exceptions› called.')
-	A.gdb.exceptions_header[header] = A.EXCEPTION_TYPES[exception].value
-	A.msg_confirm(
-		'All quests with header "'
-			.. header
-			.. '" are now '
-			.. A.EXCEPTION_TYPES[exception].full
-			.. '.'
-	)
-	if A.cdb.enabled then A.update_quests_for_zone() end
-end
-
 
 --[[===========================================================================
 	Console UI
@@ -476,7 +480,7 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 	-- 1 cmd, 2+ args: Header exceptions: /aqt <exception cmd> h <quest header string>
 	elseif mt[2] == 'h' and A.EXCEPTION_TYPES[mt[1]] then
 		local header = A.get_questheader_from_input(mt)
-		A.add_header_to_exceptions(header, mt[1])
+		A.add_to_exceptions('header', mt[1], header, header)
 	else
 		msg_invalid_input()
 	end
