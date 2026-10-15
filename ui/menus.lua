@@ -80,7 +80,8 @@ end
 local function populate_quest_context_menu(owner, root_description, context_data)
 	-- C_QuestLog.RequestLoadQuestByID(qid) -- Seems we don't need this
 	local framename = owner.GetName and owner:GetName()
-	local object, qinfo, qid, qidx, hidx, qheader, qtype, qclass
+	local object, qinfo, qid, qidx, qtitle, hidx, qheader, qtype, qclass
+	local quid_menu_is_shown
 
 	-- First, leverage the available data from the object itself
 	if framename == 'ObjectiveTrackerFrame' then -- Tracker quest title
@@ -92,6 +93,7 @@ local function populate_quest_context_menu(owner, root_description, context_data
 		qinfo = owner.info
 		qid = qinfo.questID
 		qidx = qinfo.questLogIndex
+		qtitle = qinfo.title
 		qheader = qinfo.header.title
 		qtype = qinfo.type -- not really useful; we want C_QuestLog.GetQuestTagInfo
 		qclass = qinfo.questClassification
@@ -103,9 +105,14 @@ local function populate_quest_context_menu(owner, root_description, context_data
 	-- Get missing data
 	if not qidx and qid then qidx = C_QuestLog.GetLogIndexForQuestID(qid) end
 	if not qid and qidx then qid = C_QuestLog.GetQuestIDForLogIndex(qidx) end
+
+	if not qtitle and qidx then qtitle = C_QuestLog.GetTitleForLogIndex(qidx) end
+	if not qtitle and qid then qtitle = C_QuestLog.GetTitleForQuestID(qidx) end
+
 	if not qheader and qid then qheader = get_header_from_quest_id(qid) end
 	if not qheader and qidx then qheader = get_header_from_quest_idx(qidx) end
 	if not qheader and hidx then qheader = get_header_from_header_idx(hidx) end
+
 	-- Get type
 	if qid then
 		local taginfo = C_QuestLog.GetQuestTagInfo(qid)
@@ -131,8 +138,9 @@ local function populate_quest_context_menu(owner, root_description, context_data
 				PlaySoundFile(2924351)
 			end
 		end
-		print('framename', framename)
-		print('qid', qid)
+		print('framename:', framename)
+		print('qid:', qid)
+		print('qtitle:', qtitle)
 		print('qtype:', qtype)
 		print('qclass:', qclass)
 		print('qheader:', qheader)
@@ -142,14 +150,13 @@ local function populate_quest_context_menu(owner, root_description, context_data
 		if IsControlKeyDown() then A.DTD(owner:SetHeaderText()) end
 	end
 
--- 	if should_show_qid_menu()
--- 		or should_show_header_menu()
 	if qid or qheader then
 		root_description:CreateDivider()
 		root_description:CreateTitle(A.MYFULLNAME)
 	end
 
 	if qid then
+		quid_menu_is_shown = true
 		root_description:CreateTitle(format('Tracking for Quest ID %s:', qid or '???'))
 		-- Auto
 		root_description:CreateRadio(
@@ -194,19 +201,22 @@ local function populate_quest_context_menu(owner, root_description, context_data
 	end
 
 	if qheader then
+		local has_any_exception =
+			get_state('header', 'ignore', qheader)
+			or get_state('header', 'always', qheader)
+			or get_state('header', 'never', qheader)
 		local menu
-		if qid then
-			menu = root_description:CreateButton('This Quest Header')
-			menu:CreateTitle(format('Tracking for Header %q:', qheader or '???'))
+		if quid_menu_is_shown then
+			menu = root_description:CreateButton(format('%sThis Quest Header', has_any_exception and '! ' or ''))
 		else
 			menu = root_description
-			menu:CreateTitle(format('Tracking for Header %q:', qheader or '???'))
 		end
+		menu:CreateTitle(format('Quests with Header %q:', qheader or '???'))
 
 		menu:CreateRadio(
 			LABEL.single.remove,
 			function()
-				return not (get_state('header', 'ignore', qheader) or get_state('header', 'always', qheader) or get_state('header', 'never', qheader))
+				return not has_any_exception
 			end,
 			function()
 				A.add_to_exceptions('header', 'remove', qheader, qheader)
