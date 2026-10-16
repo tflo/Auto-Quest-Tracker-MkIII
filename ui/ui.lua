@@ -127,11 +127,11 @@ function A.add_to_exceptions(scope, exc_key, target, target_text)
 		if exc_key == 'never' then
 			C_QuestLog.RemoveQuestWatch(target)
 		elseif exc_key == 'always' then
-			C_QuestLog.AddQuestWatch(target, A.QWT_AUTOMATIC)
+			C_QuestLog.AddQuestWatch(target)
 			-- Distinguishing the QWTs is pointless since 11.0;
 			-- But leave it in for the moment, maybe they'll restore the pre-11.0 quest handling
 		elseif exc_key == 'remove' and C_QuestLog.GetQuestWatchType(target) == A.QWT_MANUAL then
-			C_QuestLog.AddQuestWatch(target, A.QWT_AUTOMATIC)
+			C_QuestLog.AddQuestWatch(target)
 			A.update_quests_for_zone()
 		end
 	else

@@ -20,7 +20,9 @@ A.QWT_MANUAL = Enum.QuestWatchType.Manual
 -- It is currently impossible to set QWT 0, even explicitly.
 -- Our brute-force workaround is to treat every QWT as 0.
 A.IGNORE_QWT = true
-
+-- NOTE: The different QWTs are definitely gone, as they have eliminated arg2 of
+-- AddQuestWatch: https://warcraft.wiki.gg/wiki/API:C_QuestLog.AddQuestWatch
+-- However, it is not gone for World Quests: https://warcraft.wiki.gg/wiki/API:C_QuestLog.AddWorldQuestWatch
 
 -- Serves as delay for update after zone change events and as throttle (new zone events are ignored during the time)
 A.DELAY_ZONE_CHANGE = 3 -- Testwise 3; we used to use 2
