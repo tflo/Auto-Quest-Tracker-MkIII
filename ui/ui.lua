@@ -130,7 +130,10 @@ function A.add_to_exceptions(scope, exc_key, target, target_text)
 			C_QuestLog.AddQuestWatch(target, A.QWT_AUTOMATIC)
 		elseif exc_key == 'remove' and C_QuestLog.GetQuestWatchType(target) == A.QWT_MANUAL then
 			C_QuestLog.AddQuestWatch(target, A.QWT_AUTOMATIC)
+			A.update_quests_for_zone()
 		end
+	else
+		A.update_quests_for_zone()
 	end
 end
 
