@@ -28,36 +28,33 @@ https://warcraft.wiki.gg/wiki/Category:API_systems/QuestLog
 	Core
 ===========================================================================]]--
 
-local function get_questinfo(index)
-	local info = C_QuestLog_GetInfo(index)
-	if info then return
-		info.title,
-		info.isHeader,
-		info.questID,
-		C_QuestLog_IsWorldQuest(info.questID),
-		info.isHidden,
-		C_QuestLog_GetQuestType(info.questID),
-		info.isOnMap,
-		info.hasLocalPOI
+local function get_questinfo(qidx)
+	local info = C_QuestLog_GetInfo(qidx)
+	if info then
+		info.isWQ = C_QuestLog_IsWorldQuest(info.questID)
+		info.type = C_QuestLog_GetQuestType(info.questID)
 	end
+	return info
+	-- info.keys of C_QuestLog.GetInfo:
+	-- title, questLogIndex, questID, campaignID, level, difficultyLevel, suggestedGroup, frequency, isHeader, useMinimalHeader, sortAsNormalQuest, isCollapsed, startEvent, isTask, isBounty, isStory, isScaling, isOnMap, hasLocalPOI, isHidden, isAutoComplete, overridesSortOrder, readyForTranslation, isInternalOnly, isAbandonOnDisable, headerSortKey, questClassification
 end
 
 --[[---------------------------------------------------------------------------
 	Main function
 ---------------------------------------------------------------------------]]--
 
-local function auto_show_or_hide_quest(quest_idx, quest_id, show)
-	local questTitle, _, id = get_questinfo(quest_idx)
+local function auto_show_or_hide_quest(qidx, qid, show)
+	local info = get_questinfo(qidx)
 	-- Check if the targeted quest is still in the log
-	if id == quest_id then
+	if info.questID == qid then
 		-- TODO: check if we really need this guard
--- 	if not InCombatLockdown() and id == quest_id then
+-- 	if not InCombatLockdown() and info.questID == qid then
 		if show then
-			A.dprint(1, format('Tracking: %s (%s)', questTitle, quest_id))
-			C_QuestLog_AddQuestWatch(quest_id, A.QWT_AUTOMATIC)
+			A.dprint(1, format('Tracking: %s (%s)', info.title, qid))
+			C_QuestLog_AddQuestWatch(qid)
 		else
-			A.dprint(2, format('Removing: %s (%s)', questTitle, quest_id))
-			C_QuestLog_RemoveQuestWatch(quest_id)
+			A.dprint(2, format('Removing: %s (%s)', info.title, qid))
+			C_QuestLog_RemoveQuestWatch(qid)
 		end
 	end
 end
@@ -97,24 +94,23 @@ function A.update_quests_for_zone()
 
 	local header = nil
 
-	for quest_idx = 1, C_QuestLog_GetNumQuestLogEntries() do
-		local questTitle, isHeader, quest_id, isWorldQuest, isHidden, questType, isOnMap, hasLocalPOI =
-			get_questinfo(quest_idx)
-		if not isWorldQuest and not isHidden then
-			if isHeader then
-				header = questTitle
-			elseif is_ignore(quest_id, questType, header) then
+	for idx = 1, C_QuestLog_GetNumQuestLogEntries() do
+		local info = get_questinfo(idx)
+		if not info.isWQ and not info.isHidden then
+			if info.isHeader then
+				header = info.title
+			elseif is_ignore(info.questID, info.type, header) then
 				-- Nop
 			else
-				if is_always(quest_id, questType, header) or (header == currentZone or header == minimapZone or isOnMap or hasLocalPOI) and not is_never(quest_id, questType) then
-					if C_QuestLog_GetQuestWatchType(quest_id) == nil then
-						auto_show_or_hide_quest(quest_idx, quest_id, true)
+				if is_always(info.questID, info.type, header) or (header == currentZone or header == minimapZone or info.isOnMap or info.hasLocalPOI) and not is_never(info.questID, info.type) then
+					if C_QuestLog_GetQuestWatchType(info.questID) == nil then
+						auto_show_or_hide_quest(idx, info.questID, true)
 						if A.gdb.debug_mode and A.gdb.debug_level >= 1 then
-							A.dprint(0, format('Reason: %s%s%s%s%s', is_always(quest_id, questType, header) == true and 'alwaysTracked ' or '', header == currentZone and 'currZone ' or '', header == minimapZone and 'mmZone ' or '', isOnMap and 'onMap ' or '', hasLocalPOI and 'hasPOI ' or ''))
+							A.dprint(0, format('Reason: %s%s%s%s%s', is_always(info.questID, info.type, header) == true and 'alwaysTracked ' or '', header == currentZone and 'currZone ' or '', header == minimapZone and 'mmZone ' or '', info.isOnMap and 'onMap ' or '', info.hasLocalPOI and 'hasPOI ' or ''))
 						end
 					end
-				elseif A.IGNORE_QWT or is_never(quest_id, questType, header) or C_QuestLog_GetQuestWatchType(quest_id) == A.QWT_AUTOMATIC then
-					auto_show_or_hide_quest(quest_idx, quest_id, false)
+				elseif A.IGNORE_QWT or is_never(info.questID, info.type, header) or C_QuestLog_GetQuestWatchType(info.questID) == A.QWT_AUTOMATIC then
+					auto_show_or_hide_quest(idx, info.questID, false)
 				end
 			end
 		end
