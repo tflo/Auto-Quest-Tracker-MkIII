@@ -207,10 +207,30 @@ local function get_questinfo_for_listing(qidx, verbose)
 	-- title, questLogIndex, questID, campaignID, level, difficultyLevel, suggestedGroup, frequency, isHeader, useMinimalHeader, sortAsNormalQuest, isCollapsed, startEvent, isTask, isBounty, isStory, isScaling, isOnMap, hasLocalPOI, isHidden, isAutoComplete, overridesSortOrder, readyForTranslation, isInternalOnly, isAbandonOnDisable, headerSortKey, questClassification
 end
 
-local function msg_list_quests(verbose)
+local function msg_list_quests(verbose, showhidden)
 	print(BLOCK_SEP)
-	print(A.MSG_PREFIX, 'Quests in quest log:\n[L=level, T=type, C=classification, W=watched]')
+	print(A.MSG_PREFIX, 'Quests in quest log:')
+	if not showhidden then print 'Use "/aqt qh" to also show hidden quests.' end
+	print '[L=level, T=type, C=classification, W=watched]'
+	print ' '
+
+	local tmp, filter = {}, {}
 	for qidx = 1, C_QuestLog.GetNumQuestLogEntries() do
+		if showhidden then
+			tinsert(filter, qidx)
+		else
+			local info = C_QuestLog.GetInfo(qidx)
+			-- Headers never have isHidden; so we have to check if the header has no visible content.
+			if not info.isHidden then tinsert(tmp, { qidx = qidx, isheader = info.isHeader }) end
+		end
+	end
+	for i, quest in ipairs(tmp) do
+		if not quest.isheader or not tmp[i+1].isheader then
+			tinsert(filter, quest.qidx)
+		end
+	end
+
+	for _, qidx in ipairs(filter) do
 		local info = get_questinfo_for_listing(qidx, verbose)
 		if info.isHeader then
 			print(format('%02d | [Header] %s', qidx, info.title))
@@ -422,9 +442,11 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 			)
 		-- PRINT LISTS
 		elseif msg == 'q' or msg == 'quests' then
-			msg_list_quests(true)
+			msg_list_quests(true, false)
+		elseif msg == 'qh' or msg == 'questshidden' then
+			msg_list_quests(true, true)
 		elseif msg == 'qc' or msg == 'questscompact' then
-			msg_list_quests(false)
+			msg_list_quests(false, false)
 		elseif msg == 'x' or msg == 'exceptions' then
 			msg_list_exceptions()
 		-- CLEAR EXCEPTION TABLES: IDs, Types, Headers, All
