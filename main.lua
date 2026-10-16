@@ -24,29 +24,33 @@ https://warcraft.wiki.gg/wiki/Category:API_systems/QuestLog
 
 --]=]
 
+--[[===========================================================================
+	Core
+===========================================================================]]--
+
+local function get_questinfo(index)
+	local info = C_QuestLog_GetInfo(index)
+	if info then return
+		info.title,
+		info.isHeader,
+		info.questID,
+		C_QuestLog_IsWorldQuest(info.questID),
+		info.isHidden,
+		C_QuestLog_GetQuestType(info.questID),
+		info.isOnMap,
+		info.hasLocalPOI
+	end
+end
+
 --[[---------------------------------------------------------------------------
 	Main function
 ---------------------------------------------------------------------------]]--
 
-local function get_questinfo(index)
-	local quest = C_QuestLog_GetInfo(index)
-	if quest then return
-		quest.title,
-		quest.isHeader,
-		quest.questID,
-		C_QuestLog_IsWorldQuest(quest.questID),
-		quest.isHidden,
-		C_QuestLog_GetQuestType(quest.questID),
-		quest.isOnMap,
-		quest.hasLocalPOI
-	end
-end
-
 local function auto_show_or_hide_quest(quest_idx, quest_id, show)
 	local questTitle, _, id = get_questinfo(quest_idx)
 	-- Check if the targeted quest is still in the log
-	-- TODO: check if we really can't do this in combat
 	if id == quest_id then
+		-- TODO: check if we really need this guard
 -- 	if not InCombatLockdown() and id == quest_id then
 		if show then
 			A.dprint(1, format('Tracking: %s (%s)', questTitle, quest_id))
@@ -57,10 +61,6 @@ local function auto_show_or_hide_quest(quest_idx, quest_id, show)
 		end
 	end
 end
-
---[[===========================================================================
-	Core
-===========================================================================]]--
 
 local function is_ignore(id, ty, he)
 	if A.gdb.ignoreInstances and (ty == A.TYPE_DUNG or ty == A.TYPE_RAID)
@@ -85,15 +85,8 @@ local function is_never(id, ty, he)
 end
 
 --[[---------------------------------------------------------------------------
-	Main function
+	Zone function
 ---------------------------------------------------------------------------]]--
-
--- It seems since 11.0.0, Blizz is (ab)using quest watch type 1 (manual) for
--- everything, e.g. also for auto-tracking after picking up a quest (which
--- should be QWT 0 (auto)).
--- It is currently impossible to set QWT 0, even explicitly.
--- Our brute-force workaround is to treat every QWT as 0.
-A.IGNORE_QWT = true
 
 function A.update_quests_for_zone()
 	local currentZone = GetRealZoneText()

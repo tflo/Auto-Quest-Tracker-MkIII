@@ -128,6 +128,8 @@ function A.add_to_exceptions(scope, exc_key, target, target_text)
 			C_QuestLog.RemoveQuestWatch(target)
 		elseif exc_key == 'always' then
 			C_QuestLog.AddQuestWatch(target, A.QWT_AUTOMATIC)
+			-- Distinguishing the QWTs is pointless since 11.0;
+			-- But leave it in for the moment, maybe they'll restore the pre-11.0 quest handling
 		elseif exc_key == 'remove' and C_QuestLog.GetQuestWatchType(target) == A.QWT_MANUAL then
 			C_QuestLog.AddQuestWatch(target, A.QWT_AUTOMATIC)
 			A.update_quests_for_zone()
@@ -170,32 +172,32 @@ local function msg_invalid_input()
 end
 
 local function get_questinfo_for_listing(index)
-	local quest = C_QuestLog.GetInfo(index)
-	if quest then return
-		quest.title,
-		quest.isHeader,
-		quest.questID,
-		C_QuestLog.IsWorldQuest(quest.questID),
-		quest.isHidden,
-		C_QuestLog.IsQuestCalling(quest.questID),
-		C_QuestLog.GetQuestType(quest.questID),
-		quest.isOnMap,
-		quest.hasLocalPOI,
-		C_QuestLog.GetQuestWatchType(quest.questID),
-		quest.frequency,
-		quest.level,
-		quest.isTask,
-		quest.isBounty,
-		quest.isStory,
-		quest.startEvent,
-		C_QuestLog.IsImportantQuest(quest.questID),
-		C_QuestLog.IsAccountQuest(quest.questID),
-		C_QuestLog.IsComplete(quest.questID),
-		C_QuestLog.IsQuestReplayable(quest.questID),
-		C_QuestLog.IsQuestReplayedRecently(quest.questID),
-		C_QuestLog.IsRepeatableQuest(quest.questID),
-		C_QuestLog.IsQuestTrivial(quest.questID),
-		C_QuestLog.ReadyForTurnIn(quest.questID)
+	local info = C_QuestLog.GetInfo(index)
+	if info then return
+		info.title,
+		info.isHeader,
+		info.questID,
+		C_QuestLog.IsWorldQuest(info.questID),
+		info.isHidden,
+		C_QuestLog.IsQuestCalling(info.questID),
+		C_QuestLog.GetQuestType(info.questID),
+		info.isOnMap,
+		info.hasLocalPOI,
+		C_QuestLog.GetQuestWatchType(info.questID),
+		info.frequency,
+		info.level,
+		info.isTask,
+		info.isBounty,
+		info.isStory,
+		info.startEvent,
+		C_QuestLog.IsImportantQuest(info.questID),
+		C_QuestLog.IsAccountQuest(info.questID),
+		C_QuestLog.IsComplete(info.questID),
+		C_QuestLog.IsQuestReplayable(info.questID),
+		C_QuestLog.IsQuestReplayedRecently(info.questID),
+		C_QuestLog.IsRepeatableQuest(info.questID),
+		C_QuestLog.IsQuestTrivial(info.questID),
+		C_QuestLog.ReadyForTurnIn(info.questID)
 	end
 end
 

@@ -11,8 +11,16 @@ A.MYFULLNAME = 'Auto Quest Tracker'
 A.MYSHORTNAME = 'AQT'
 
 A.QUESTFREQUENCY_DAILY = Enum.QuestFrequency.Daily
+
 A.QWT_AUTOMATIC = Enum.QuestWatchType.Automatic
 A.QWT_MANUAL = Enum.QuestWatchType.Manual
+-- It seems since 11.0.0, Blizz is (ab)using quest watch type 1 (manual) for
+-- everything, e.g. also for auto-tracking after picking up a quest (which
+-- should be QWT 0 (auto)).
+-- It is currently impossible to set QWT 0, even explicitly.
+-- Our brute-force workaround is to treat every QWT as 0.
+A.IGNORE_QWT = true
+
 
 -- Serves as delay for update after zone change events and as throttle (new zone events are ignored during the time)
 A.DELAY_ZONE_CHANGE = 3 -- Testwise 3; we used to use 2
