@@ -171,74 +171,83 @@ local function msg_invalid_input()
 	.. CLR.AQT('/aqt h') .. ' for help.')
 end
 
-local function get_questinfo_for_listing(index)
-	local info = C_QuestLog.GetInfo(index)
-	if info then return
-		info.title,
-		info.isHeader,
-		info.questID,
-		C_QuestLog.IsWorldQuest(info.questID),
-		info.isHidden,
-		C_QuestLog.IsQuestCalling(info.questID),
-		C_QuestLog.GetQuestType(info.questID),
-		info.isOnMap,
-		info.hasLocalPOI,
-		C_QuestLog.GetQuestWatchType(info.questID),
-		info.frequency,
-		info.level,
-		info.isTask,
-		info.isBounty,
-		info.isStory,
-		info.startEvent,
-		C_QuestLog.IsImportantQuest(info.questID),
-		C_QuestLog.IsAccountQuest(info.questID),
-		C_QuestLog.IsComplete(info.questID),
-		C_QuestLog.IsQuestReplayable(info.questID),
-		C_QuestLog.IsQuestReplayedRecently(info.questID),
-		C_QuestLog.IsRepeatableQuest(info.questID),
-		C_QuestLog.IsQuestTrivial(info.questID),
-		C_QuestLog.ReadyForTurnIn(info.questID)
+-- I'm curious if Blizzard still uses QWT 0 somewhere outside WQs
+local function QWT0_alert(qid, qtitle, watchtype)
+	if not A.user_is_author then return end
+	if watchtype and watchtype ~=1 then
+		print(A.MSG_PREFIX, 'QWT Zero:', qid, qtitle)
+		PlaySoundFile(2013855)
 	end
 end
 
-local function msg_list_quests()
+-- https://warcraft.wiki.gg/wiki/API:C_QuestLog.GetInfo
+local function get_questinfo_for_listing(qidx, verbose)
+	local info = C_QuestLog.GetInfo(qidx)
+	if info then
+		info.isWQ = C_QuestLog.IsWorldQuest(info.questID)
+		info.isCalling = C_QuestLog.IsQuestCalling(info.questID)
+		info.type = C_QuestLog.GetQuestType(info.questID) or (C_QuestLog.GetQuestTagInfo(info.questID) or {}).tagID
+		info.typeName = verbose and (C_QuestLog.GetQuestTagInfo(info.questID) or {}).tagName
+		info.classificationName = verbose and tInvert(Enum.QuestClassification)[info.questClassification]
+		info.watchType = C_QuestLog.GetQuestWatchType(info.questID)
+		info.isImportant = C_QuestLog.IsImportantQuest(info.questID)
+		-- As of Oct 16, 2026, only in Forever
+		info.isElite = C_QuestLog.IsEliteQuest and C_QuestLog.IsEliteQuest(info.questID)
+		info.accountQuest = C_QuestLog.IsAccountQuest(info.questID)
+		info.isComplete = C_QuestLog.IsComplete(info.questID)
+		info.isQuestReplayable = C_QuestLog.IsQuestReplayable(info.questID)
+		info.isQuestReplayedRecently = C_QuestLog.IsQuestReplayedRecently(info.questID)
+		info.isRepeatableQuest = C_QuestLog.IsRepeatableQuest(info.questID)
+		info.isQuestTrivial = C_QuestLog.IsQuestTrivial(info.questID)
+		info.readyForTurnIn = C_QuestLog.ReadyForTurnIn(info.questID)
+		QWT0_alert(info.questID, info.title, info.watchType)
+	end
+	return info
+	-- info.keys of C_QuestLog.GetInfo:
+	-- title, questLogIndex, questID, campaignID, level, difficultyLevel, suggestedGroup, frequency, isHeader, useMinimalHeader, sortAsNormalQuest, isCollapsed, startEvent, isTask, isBounty, isStory, isScaling, isOnMap, hasLocalPOI, isHidden, isAutoComplete, overridesSortOrder, readyForTranslation, isInternalOnly, isAbandonOnDisable, headerSortKey, questClassification
+end
+
+local function msg_list_quests(verbose)
 	print(BLOCK_SEP)
-	print(A.MSG_PREFIX, 'Quests currently in quest log:\n[T = type; W = watch type]')
-	for questIndex = 1, C_QuestLog.GetNumQuestLogEntries() do
-		local questTitle, isHeader, questId, isWorldQuest, isHidden, isCalling, questType, isOnMap, hasLocalPOI, watchType, frequency, level, isTask, isBounty, isStory, startEvent, isImportant, accountQuest, isComplete, isQuestReplayable, isQuestReplayedRecently, isRepeatableQuest, isQuestTrivial, readyForTurnIn =
-			get_questinfo_for_listing(questIndex)
-		if isHeader then
-			print(format('%02d | [Header] %s', questIndex, questTitle))
+	print(A.MSG_PREFIX, 'Quests in quest log:\n[L=level, T=type, C=classification, W=watched]')
+	for qidx = 1, C_QuestLog.GetNumQuestLogEntries() do
+		local info = get_questinfo_for_listing(qidx, verbose)
+		if info.isHeader then
+			print(format('%02d | [Header] %s', qidx, info.title))
 		else
 			print(
 				format(
-					'%s%02d | %s%s (%s) | %s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s',
-					isHidden and '\124cnGRAY_FONT_COLOR:'
-						or isWorldQuest and '\124cnBLUE_FONT_COLOR:'
-						or isCalling and '\124cnDIM_GREEN_FONT_COLOR:'
-						or '\124cnORANGE_FONT_COLOR:',
-					questIndex,
-					isHidden and '[Hidden] ' or isWorldQuest and '[WQ] ' or isCalling and '[Calling] ' or '',
-					questTitle,
-					questId,
-					level,
-					questType ~= 0 and ', T' .. questType or '',
-					isOnMap and ', OnMap' or '',
-					hasLocalPOI and ', LocalPOI' or '',
-					frequency ~= 0 and ', ' .. (frequency == A.QUESTFREQUENCY_DAILY and 'Daily' or 'Weekly') or '',
-					watchType and ', W' .. watchType or '',
-					isTask and ', Task' or '',
-					isBounty and ', Bounty' or '',
-					isStory and ', Story' or '',
-					startEvent and ', StartEvent' or '',
-					isImportant and ', Imp!' or '',
-					isQuestReplayable and ', Replayable' or '',
-					isQuestReplayedRecently and ', ReplayedRecently' or '',
-					isRepeatableQuest and ', Repeatable' or '',
-					isQuestTrivial and ', Trivial' or '',
-					isComplete and ', Compl' or '',
-					readyForTurnIn and ', Ready' or '',
-					accountQuest and ', Acc' or ''
+					'%s%02d | %s%s (%s) | %s',
+					info.isHidden and '\124cff838996'
+						or info.isWorldQuest and '\124cffF4A460'
+						or info.isCalling and '\124cff736AFF'
+						or '\124cff12E193',
+					qidx,
+					info.isHidden and '[Hidden] ' or info.isWQ and '[WQ] ' or info.isCalling and '[Calling] ' or '',
+					info.title,
+					info.questID,
+					(info.level and 'L' .. info.level or 'L?')
+					.. (info.type ~= 0 and ', T' .. info.type or '')
+					.. (info.typeName and ' ' .. info.typeName or '')
+					.. (info.questClassification and ', C' .. info.questClassification or '')
+					.. (info.classificationName and ' ' .. info.classificationName or '')
+					.. (info.isOnMap and ', OnMap' or '')
+					.. (info.hasLocalPOI and ', LocalPOI' or '')
+					.. (info.frequency ~= 0 and ', ' .. (tInvert(Enum.QuestFrequency)[info.frequency]) or '')
+					.. (info.watchType and ', W' or '')
+					.. (info.isTask and ', Task' or '')
+					.. (info.isBounty and ', Bounty' or '')
+					.. (info.isStory and ', Story' or '')
+					.. (info.isImportant and ', Imp!' or '')
+					.. (info.isElite and ', Elite' or '')
+					.. (info.startEvent and ', StartEvent' or '')
+					.. (info.isQuestReplayable and ', Replayable' or '')
+					.. (info.isQuestReplayedRecently and ', ReplayedRecently' or '')
+					.. (info.isRepeatableQuest and ', Repeatable' or '')
+					.. (info.isQuestTrivial and ', Trivial' or '')
+					.. (info.isComplete and ', Compl' or '')
+					.. (info.readyForTurnIn and ', Ready' or '')
+					.. (info.accountQuest and ', Acc' or '')
 				)
 			)
 		end
@@ -412,7 +421,9 @@ SlashCmdList['AUTOQUESTTRACKER'] = function(msg)
 			)
 		-- PRINT LISTS
 		elseif msg == 'q' or msg == 'quests' then
-			msg_list_quests()
+			msg_list_quests(true)
+		elseif msg == 'qc' or msg == 'questscompact' then
+			msg_list_quests(false)
 		elseif msg == 'x' or msg == 'exceptions' then
 			msg_list_exceptions()
 		-- CLEAR EXCEPTION TABLES: IDs, Types, Headers, All
