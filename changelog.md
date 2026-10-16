@@ -4,6 +4,19 @@ To see all commits, including all alpha changes, [*go here*](https://github.com/
 
 ## Releases
 
+#### 5.0-beta2 (2026-10-16)
+
+- Beta1: Context menus for quests and quest headers, in log and tracker. Scroll down to check out the full 5.0-beta1 notes below (16 Oct).
+- Beta2:
+    - Update tracking immediately when settings changed, also if it’s a header.
+    - Overhaul of the quests listing (`/aqt q`):
+        - Show quest classification. Useful because we will add this as exceptions scope.
+        - For type and classification show the names in addition to the IDs; use `/aqt qc` for compact mode that only shows type and classification IDs.
+        - New color scheme.
+        - Watched (tracked) quests have a brighter color.
+        - Other improvements.
+    - Refactor some core parts of the code (WiP).
+
 #### 5.0-beta1 (2026-10-16)
 
 - Version 5 is pretty much a rewrite.
