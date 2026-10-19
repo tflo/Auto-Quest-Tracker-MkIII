@@ -241,7 +241,7 @@ local function msg_list_quests(verbose, showhidden)
 					info.isHidden and '\124cff838996'
 						or info.isWorldQuest and '\124cffF4A460'
 						or info.isCalling and '\124cff736AFF'
-						or info.watchType and '\124cff5FFB17'
+						or info.watchType and '\124cff57E964'
 						or '\124cff12E193',
 					qidx,
 					info.isHidden and '[Hidden] ' or info.isWQ and '[WQ] ' or info.isCalling and '[Calling] ' or '',

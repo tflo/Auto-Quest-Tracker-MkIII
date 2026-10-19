@@ -106,7 +106,7 @@ function A.update_quests_for_zone()
 					if C_QuestLog_GetQuestWatchType(info.questID) == nil then
 						auto_show_or_hide_quest(idx, info.questID, true)
 						if A.gdb.debug_mode and A.gdb.debug_level >= 1 then
-							A.dprint(0, format('Reason: %s%s%s%s%s', is_always(info.questID, info.type, header) == true and 'alwaysTracked ' or '', header == currentZone and 'currZone ' or '', header == minimapZone and 'mmZone ' or '', info.isOnMap and 'onMap ' or '', info.hasLocalPOI and 'hasPOI ' or ''))
+							A.dprint(0, format('Reason: %s%s%s%s%s', is_always(info.questID, info.type, header) == true and 'alwaysTracked ' or '', header == currentZone and 'header = zone ' or '', header == minimapZone and 'header = mminimap zone ' or '', info.isOnMap and 'onMap ' or '', info.hasLocalPOI and 'hasPOI ' or ''))
 						end
 					end
 				elseif A.IGNORE_QWT or is_never(info.questID, info.type, header) or C_QuestLog_GetQuestWatchType(info.questID) == A.QWT_AUTOMATIC then
