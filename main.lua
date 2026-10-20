@@ -88,18 +88,39 @@ end
 do
 	local header, currentZone, minimapZone
 
+	local function get_quest_action(info, header)
+		-- Single quest has priority
+		if is_always(info.questID) then return 'always' end
+		if is_never(info.questID)  then return 'never' end
+		if is_ignore(info.questID) then return 'ignore' end
+
+		-- Groups, undetermined priority
+		if is_always(nil, info.questClassification) or is_always(nil, info.type) or is_always(nil, nil, header) then return 'always' end
+		if is_never(nil, info.questClassification)  or is_never(nil, info.type)  or is_never(nil, nil, header)  then return 'never' end
+		if is_ignore(nil, info.questClassification) or is_ignore(nil, info.type) or is_ignore(nil, nil, header) then return 'ignore' end
+
+		return 'auto'
+	end
+
 	local function auto_show_or_hide_quest(qidx)
 		local info = get_questinfo(qidx)
 		if info.isWQ or info.isHidden then return end
-		local show = false
 
 		if info.isHeader then
 			header = info.title
 			return
-		elseif is_ignore(info.questID, info.type, header) then
-			return
-		else
-			if is_always(info.questID, info.type, header) or (header == currentZone or header == minimapZone or info.isOnMap or info.hasLocalPOI) and not is_never(info.questID, info.type) then
+		end
+
+		local action = get_quest_action(info, header)
+		if action == 'ignore' then return end
+
+		local show = false
+		if action == 'always' then
+			show = true
+		elseif action == 'never' then
+			show = false
+		else -- auto
+			if (header == currentZone or header == minimapZone or info.isOnMap or info.hasLocalPOI) then
 				show = true
 			end
 		end
