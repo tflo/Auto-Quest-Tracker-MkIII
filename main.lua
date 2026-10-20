@@ -91,13 +91,31 @@ do
 	local function get_quest_action(info, header)
 		-- Single quest has priority
 		if is_always(info.questID) then return 'always' end
-		if is_never(info.questID)  then return 'never' end
+		if is_never(info.questID) then return 'never' end
 		if is_ignore(info.questID) then return 'ignore' end
 
 		-- Groups, undetermined priority
-		if is_always(nil, info.questClassification) or is_always(nil, info.type) or is_always(nil, nil, header) then return 'always' end
-		if is_never(nil, info.questClassification)  or is_never(nil, info.type)  or is_never(nil, nil, header)  then return 'never' end
-		if is_ignore(nil, info.questClassification) or is_ignore(nil, info.type) or is_ignore(nil, nil, header) then return 'ignore' end
+		if
+			is_always(nil, info.questClassification)
+			or is_always(nil, info.type)
+			or is_always(nil, nil, header)
+		then
+			return 'always'
+		end
+		if
+			is_never(nil, info.questClassification)
+			or is_never(nil, info.type)
+			or is_never(nil, nil, header)
+		then
+			return 'never'
+		end
+		if
+			is_ignore(nil, info.questClassification)
+			or is_ignore(nil, info.type)
+			or is_ignore(nil, nil, header)
+		then
+			return 'ignore'
+		end
 
 		return 'auto'
 	end
@@ -120,7 +138,12 @@ do
 		elseif action == 'never' then
 			show = false
 		else -- auto
-			if (header == currentZone or header == minimapZone or info.isOnMap or info.hasLocalPOI) then
+			if
+				header == currentZone
+				or header == minimapZone
+				or info.isOnMap
+				or info.hasLocalPOI
+			then
 				show = true
 			end
 		end
