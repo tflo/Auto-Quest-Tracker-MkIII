@@ -57,6 +57,30 @@ local function get_header_from_header_idx(hidx)
 	if info and info.isHeader then return info.title end
 end
 
+local function get_type_from_quest_id(qid)
+	return C_QuestLog.GetQuestType(qid)
+end
+
+local function get_class_from_quest_id(qid)
+	local info = C_QuestLog.GetInfo(hidx)
+	if info then return info.questClassification end
+end
+
+local function get_qtagID_from_quest_id(qid)
+	local info = C_QuestLog_GetQuestTagInfo(qid)
+	if info then return info.tagID end
+end
+
+local function get_qtagName_from_quest_id(qid)
+	local info = C_QuestLog_GetQuestTagInfo(qid)
+	if info then return info.tagName end
+end
+
+local function get_qfrequency_from_quest_id(qid)
+	local info = C_QuestLog.GetInfo(hidx)
+	if info then return info.frequency end
+end
+
 ---------------------------------
 
 -- E.g. 'type', 'always', 95372
@@ -73,7 +97,7 @@ end
 local function populate_quest_contextmenu(owner, root_description, context_data)
 	-- C_QuestLog.RequestLoadQuestByID(qid) -- Seems we don't need this
 	local framename = owner.GetName and owner:GetName()
-	local object, qinfo, qid, qidx, qtitle, hidx, qheader, qtype, qclass
+	local object, qinfo, qid, qidx, qtitle, hidx, qheader, qtype, qclass, qfrequency, qtagID, qtagName
 	local quid_menu_is_shown
 
 	-- First, leverage the available data from the object itself
@@ -88,8 +112,9 @@ local function populate_quest_contextmenu(owner, root_description, context_data)
 		qidx = qinfo.questLogIndex
 		qtitle = qinfo.title
 		qheader = qinfo.header.title
-		qtype = qinfo.type -- not really useful; we want C_QuestLog.GetQuestTagInfo
+		qtype = qinfo.type
 		qclass = qinfo.questClassification
+		qfrequency = qinfo.frequency
 	elseif not framename and owner.questLogIndex then -- Quest Log header
 		object = 'header'
 		hidx = owner.questLogIndex
@@ -97,6 +122,7 @@ local function populate_quest_contextmenu(owner, root_description, context_data)
 
 	-- Get missing data
 	if not qidx and qid then qidx = C_QuestLog.GetLogIndexForQuestID(qid) end
+
 	if not qid and qidx then qid = C_QuestLog.GetQuestIDForLogIndex(qidx) end
 
 	if not qtitle and qidx then qtitle = C_QuestLog.GetTitleForLogIndex(qidx) end
@@ -105,6 +131,14 @@ local function populate_quest_contextmenu(owner, root_description, context_data)
 	if not qheader and qid then qheader = get_header_from_quest_id(qid) end
 	if not qheader and qidx then qheader = get_header_from_quest_idx(qidx) end
 	if not qheader and hidx then qheader = get_header_from_header_idx(hidx) end
+
+	if not qtype and qid then qtype = get_type_from_quest_id(qid) end
+	if not qclass and qid then qclass = get_class_from_quest_id(qid) end
+
+	if not qtagID and qid then qtagID = get_qtagID_from_quest_id(qid) end
+	if not qtagName and qid then qtagName = get_qtagName_from_quest_id(qid) end
+
+	if not qfrequency and qid then qfrequency = get_qfrequency_from_quest_id(qid) end
 
 	-- Get type
 	if qid then
