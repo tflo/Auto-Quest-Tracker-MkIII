@@ -89,18 +89,24 @@ function A.add_to_exceptions(scope, exc_key, target, target_text)
 	local db_target, target_name
 	if scope == 'quest' then
 		db_target = A.gdb.exceptions_id
-		target_name = format('Quest %d "%s"', target, name_str)
+		target_name = format('Quest %s "%s"', target, name_str)
 	elseif scope == 'header' then
 		db_target = A.gdb.exceptions_header
 		target_name = format('Header "%s"', target)
 	elseif scope == 'type' then
 		db_target = A.gdb.exceptions_type
-		target_name = format('Quest Type %d "%s"', target, name_str)
+		target_name = format('Quest Type %s "%s"', target, name_str)
 	elseif scope == 'class' then
 		db_target = A.gdb.exceptions_class
-		target_name = format('Quest Class %d "%s"', target, name_str)
+		target_name = format('Quest Class %s "%s"', target, name_str)
+	elseif scope == 'tag' then
+		db_target = A.gdb.exceptions_tag
+		target_name = format('Quest Tag %s "%s"', target, name_str)
+	elseif scope == 'frequency' then
+		db_target = A.gdb.exceptions_frequency
+		target_name = format('Quest Frequency %s "%s"', target, name_str)
 	else
-		error(format("AQT: Invalid scope '%s' passed to add_to_exceptions.", tostring(scope)), 2)
+		error(format('AQT: Invalid scope "%s" passed to add_to_exceptions.', tostring(scope)), 2)
 	end
 
 	local is_new = false
