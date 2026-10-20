@@ -4,12 +4,28 @@ To see all commits, including all alpha changes, [*go here*](https://github.com/
 
 ## Releases
 
+#### 5.0-beta3 (2026-10-20)
+
+- **Beta1:** Context menus for quests and quest headers, in log and tracker. Scroll down to check out the full 5.0-beta1 notes below (16 Oct).
+- **Beta3:** Many new things:
+    - **Context menu:**
+        - Add By Quest Type
+        - Add By Quest Tag
+        - Add By Quest Class(ification)
+        - Add By Quest Frequency (weekly, daily, scheduled)
+        - A leading **exclamation mark** before a submenu means an exception is applied ("this is not set to Auto Track”).
+    - We now have **strict rule priority**: Quest ID > Header > Type > Tag > Frequency > Classification
+    - I will probably remove Type later, as it seems this mostly has been superseeded by quest Tag. If both are present, they seem to be identical (subject to further beta testing).
+    - **Quest listing:** By default (`/aqt q`), hidden quests and headers containing only hidden quests are hidden now. Use `/aqt qh` to also show hidden quests.
+    - Lots of refactoring and rewriting.
+    - This beta (beta3) has not yet been tested much. Please roll back to Beta2 if you encounter serious issues.
+
 #### 5.0-beta2 (2026-10-16)
 
-- Beta1: Context menus for quests and quest headers, in log and tracker. Scroll down to check out the full 5.0-beta1 notes below (16 Oct).
-- Beta2:
-    - Update tracking immediately when settings changed, also if it’s a header.
-    - Overhaul of the quests listing (`/aqt q`):
+- **Beta1:** Context menus for quests and quest headers, in log and tracker. Scroll down to check out the full 5.0-beta1 notes below (16 Oct).
+- **Beta2:**
+    - **Update tracking immediately** when settings changed, also if it’s a header.
+    - Overhaul of the **quests listing** (`/aqt q`):
         - Show quest classification. Useful because we will add this as exceptions scope.
         - For type and classification show the names in addition to the IDs; use `/aqt qc` for compact mode that only shows type and classification IDs.
         - New color scheme.

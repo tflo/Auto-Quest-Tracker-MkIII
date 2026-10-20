@@ -84,7 +84,7 @@ function A.add_to_exceptions(scope, exc_key, target, target_text)
 		error(format("AQT: Invalid exception key '%s' passed to add_to_exceptions.", tostring(exc_key)), 2)
 	end
 
-	local name_str = target_text or '<no data yet>'
+	local name_str = target_text or '<no name>'
 
 	local db_target, target_name
 	if scope == 'quest' then
