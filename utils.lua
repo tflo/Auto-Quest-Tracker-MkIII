@@ -127,24 +127,48 @@ function A.dprint(lvl, ...)
 	end
 end
 
--- Print tags and types
-local function pqtt(qid)
-do
-	local info = C_QuestLog.GetQuestTagInfo(qid)
-	print(info.tagID, info.tagName, 'C_QuestLog.GetQuestTagInfo')
-end
-do
-   local num = C_QuestLog.GetQuestType(qid)
-	print(num, str, 'C_QuestLog.GetQuestType')
-end
-do
-   local isMeta = C_QuestLog.IsMetaQuest(qid)
-	print('meta:', isMeta, 'C_QuestLog.IsMetaQuest')
-end
-do
-   local isImportant = C_QuestLog.IsImportantQuest(qid)
-	print('impo:', isImportant, 'C_QuestLog.IsImportantQuest')
-end
+-- Debug: Print some quest info
+local function printsomequestinfo(qid)
+	local bool, str, num
+	local qidx = C_QuestLog.GetLogIndexForQuestID(qid)
+	local info_GetQuestTagInfo = C_QuestLog.GetQuestTagInfo(qid)
+	local info_GetInfo = C_QuestLog.GetInfo(qidx)
+	print(info_GetInfo.title, qidx, qid)
+
+	local function enum_to_name(enum, id)
+		if not enum then return 'INVALID ENUM TABLE!' end
+		return tInvert(enum)[id]
+	end
+
+	if not info_GetQuestTagInfo then
+		print 'NO INFO FROM GetQuestTagInfo!'
+	else
+		print('C_QuestLog.GetQuestTagInfo: tagID', info_GetQuestTagInfo.tagID,
+			'-->', enum_to_name(Enum.QuestTag, info_GetQuestTagInfo.tagID))
+		print('C_QuestLog.GetQuestTagInfo: tagName', info_GetQuestTagInfo.tagName)
+		print('C_QuestLog.GetQuestTagInfo: worldQuestType', info_GetQuestTagInfo.worldQuestType,
+			'-->', enum_to_name(Enum.QuestTagType, info_GetQuestTagInfo.worldQuestType))
+	end
+
+   num = C_QuestLog.GetQuestType(qid)
+	print('C_QuestLog.GetQuestType:', num)
+
+	num = C_QuestInfoSystem.GetQuestClassification(qid)
+	print('C_QuestInfoSystem.GetQuestClassification:', num)
+
+	if not info_GetInfo then
+		print 'NO INFO FROM GetInfo!'
+	else
+		print('C_QuestLog.GetInfo: questClassification:', info_GetInfo.questClassification)
+-- 		print('C_QuestLog.GetInfo: headerSortKey:', info_GetInfo.headerSortKey)
+	end
+
+--    bool = C_QuestLog.IsMetaQuest(qid)
+-- 	print('C_QuestLog.IsMetaQuest:', bool)
+--
+--    bool = C_QuestLog.IsImportantQuest(qid)
+-- 	print('C_QuestLog.IsImportantQuest:', bool)
+
 end
 
--- _G.pqtt = pqtt
+_G.pqi = printsomequestinfo

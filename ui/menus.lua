@@ -36,15 +36,6 @@ local LABEL = {
 }
 
 --[[---------------------------------------------------------------------------
-	Handlers for always, never, ignore
----------------------------------------------------------------------------]]--
-
--- local function should_show_feature_x()
--- 	return true
--- end
-
-
---[[---------------------------------------------------------------------------
 	Helpers for data
 ---------------------------------------------------------------------------]]--
 
@@ -68,6 +59,8 @@ end
 
 ---------------------------------
 
+-- E.g. 'type', 'always', 95372
+-- For headers, target is the header title, as headers have always ID 0
 local function get_state(scope, exc, target)
 	if scope == 'quest' then scope = 'id' end
 	return A.gdb['exceptions_' .. scope][target] == A.EXCEPTION_TYPES[exc].value
@@ -77,7 +70,7 @@ end
 	Populate menu
 ---------------------------------------------------------------------------]]--
 
-local function populate_quest_context_menu(owner, root_description, context_data)
+local function populate_quest_contextmenu(owner, root_description, context_data)
 	-- C_QuestLog.RequestLoadQuestByID(qid) -- Seems we don't need this
 	local framename = owner.GetName and owner:GetName()
 	local object, qinfo, qid, qidx, qtitle, hidx, qheader, qtype, qclass
@@ -357,9 +350,9 @@ end
 
 function A.register_menuitems()
 	-- Tracker quest title
-	Menu.ModifyMenu('MENU_QUEST_OBJECTIVE_TRACKER', populate_quest_context_menu)
+	Menu.ModifyMenu('MENU_QUEST_OBJECTIVE_TRACKER', populate_quest_contextmenu)
 	-- Quest Log quest title
-	Menu.ModifyMenu('MENU_QUEST_MAP_LOG_TITLE', populate_quest_context_menu)
+	Menu.ModifyMenu('MENU_QUEST_MAP_LOG_TITLE', populate_quest_contextmenu)
 	-- Quest Log header title
-	Menu.ModifyMenu('MENU_QUEST_MAP_FRAME', populate_quest_context_menu)
+	Menu.ModifyMenu('MENU_QUEST_MAP_FRAME', populate_quest_contextmenu)
 end
