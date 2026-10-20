@@ -15,30 +15,6 @@ local LABEL = {
 	never = 'Never Track',
 }
 
--- local LABEL = {
--- 	single = {
--- 		remove = 'Auto Track',
--- 		ignore = 'Ignore',
--- 		always = 'Always Track',
--- 		never = 'Never Track',
--- 	},
--- 	type = { -- NYI
--- 		remove = 'Auto track %s quests',
--- 		ignore = 'Ignore all %s quests',
--- 		always = 'Always track %s quests',
--- 		never = 'Never track %s quests',
--- 	},
--- 	header = { -- NYI
--- 		remove = 'Auto track %q quests',
--- 		ignore = 'Ignore %q quests',
--- 		always = 'Always track %q quests',
--- 		never = 'Never track %q quests',
--- 	},
--- 	-- We should remove quest groups entirely, as the hardcoding is maintenance-intensive
--- 	group = { -- NYI
--- 	},
--- }
-
 --[[---------------------------------------------------------------------------
 	Helpers for data
 ---------------------------------------------------------------------------]]--

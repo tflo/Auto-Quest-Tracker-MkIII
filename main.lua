@@ -42,52 +42,6 @@ local function get_questinfo(qidx)
 	-- title, questLogIndex, questID, campaignID, level, difficultyLevel, suggestedGroup, frequency, isHeader, useMinimalHeader, sortAsNormalQuest, isCollapsed, startEvent, isTask, isBounty, isStory, isScaling, isOnMap, hasLocalPOI, isHidden, isAutoComplete, overridesSortOrder, readyForTranslation, isInternalOnly, isAbandonOnDisable, headerSortKey, questClassification
 end
 
---[[---------------------------------------------------------------------------
-	Main function
----------------------------------------------------------------------------]]--
-
--- local function auto_show_or_hide_quest(qidx, qid, show)
--- 	local info = get_questinfo(qidx)
--- 	-- Check if the targeted quest is still in the log
--- 	if info.questID == qid then
--- 		-- TODO: check if we really need this guard
--- -- 	if not InCombatLockdown() and info.questID == qid then
--- 		if show then
--- 			A.dprint(1, format('Tracking: %s (%s)', info.title, qid))
--- 			C_QuestLog_AddQuestWatch(qid)
--- 		else
--- 			A.dprint(2, format('Removing: %s (%s)', info.title, qid))
--- 			C_QuestLog_RemoveQuestWatch(qid)
--- 		end
--- 	end
--- end
-
--- local function is_ignore(id, ty, he)
--- 	if A.gdb.ignoreInstances and (ty == A.TYPE_DUNG or ty == A.TYPE_RAID)
--- 		or A.gdb.exceptions_id[id] == 0 or A.gdb.exceptions_type[ty] == 0 or A.gdb.exceptions_header[he] == 0
--- 	then
--- 		return true
--- 	end
--- end
---
--- local function is_always(id, ty, he)
--- 	if A.gdb.exceptions_id[id] == 1 or A.gdb.exceptions_type[ty] == 1 or A.gdb.exceptions_header[he] == 1
--- 	then
--- 		return true
--- 	end
--- end
---
--- local function is_never(id, ty, he)
--- 	if A.gdb.exceptions_id[id] == -1 or A.gdb.exceptions_type[ty] == -1 or A.gdb.exceptions_header[he] == -1
--- 	then
--- 		return true
--- 	end
--- end
-
---[[---------------------------------------------------------------------------
-	Zone function
----------------------------------------------------------------------------]]--
-
 do
 	local header, currentZone, minimapZone
 
@@ -97,7 +51,7 @@ do
 		if A.gdb.exceptions_id[info.questID] == -1 then return 'never' end
 		if A.gdb.exceptions_id[info.questID] == 0 then return 'ignore' end
 
-		-- 2. Special settings (instances); might be removed
+		-- 2. Special settings (instances); might be removed, TODO
 		if A.gdb.ignoreInstances and (info.type == A.TYPE_DUNG or info.type == A.TYPE_RAID) then
 			return 'ignore'
 		end
@@ -107,7 +61,7 @@ do
 		if A.gdb.exceptions_header[header] == -1 then return 'never' end
 		if A.gdb.exceptions_header[header] == 0 then return 'ignore' end
 
-		-- 4. Type if non-zero
+		-- 4. Type if non-zero; will probably removed later, TODO
 		if info.type and info.type ~= A.NORMAL.type then
 			if A.gdb.exceptions_type[info.type] == 1 then return 'always' end
 			if A.gdb.exceptions_type[info.type] == -1 then return 'never' end
@@ -174,6 +128,10 @@ do
 			C_QuestLog_RemoveQuestWatch(info.questID)
 		end
 	end
+
+--[[---------------------------------------------------------------------------
+	Zone function
+---------------------------------------------------------------------------]]--
 
 	function A.update_quests_for_zone()
 		currentZone = GetRealZoneText()
