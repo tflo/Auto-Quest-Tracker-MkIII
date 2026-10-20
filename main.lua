@@ -108,7 +108,7 @@ do
 		if A.gdb.exceptions_header[header] == 0 then return 'ignore' end
 
 		-- 4. Type if non-zero
-		if info.type and info.type ~= 0 then
+		if info.type and info.type ~= A.NORMAL.type then
 			if A.gdb.exceptions_type[info.type] == 1 then return 'always' end
 			if A.gdb.exceptions_type[info.type] == -1 then return 'never' end
 			if A.gdb.exceptions_type[info.type] == 0 then return 'ignore' end
@@ -122,14 +122,14 @@ do
 		end
 
 		-- 6. Frequency if non-zero ("Default")
-		if info.frequency and info.frequency ~= 0 then
+		if info.frequency and info.frequency ~= A.NORMAL.frequency then
 			if A.gdb.exceptions_frequency[info.frequency] == 1 then return 'always' end
 			if A.gdb.exceptions_frequency[info.frequency] == -1 then return 'never' end
 			if A.gdb.exceptions_frequency[info.frequency] == 0 then return 'ignore' end
 		end
 
 		-- 7. Classification if non-7 ("Normal")
-		if info.questClassification and info.questClassification ~= 7 then
+		if info.questClassification and info.questClassification ~= A.NORMAL.class then
 			if A.gdb.exceptions_class[info.questClassification] == 1 then return 'always' end
 			if A.gdb.exceptions_class[info.questClassification] == -1 then return 'never' end
 			if A.gdb.exceptions_class[info.questClassification] == 0 then return 'ignore' end

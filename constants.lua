@@ -174,6 +174,13 @@ A.EXCEPTION_TYPES = {
 		['full'] = 'Removed from Exceptions',
 	}
 }
+
+A.NORMAL = {
+	class = 7,
+	type = 0,
+	frequency = 0,
+}
+
 -- There is no Blizz Enum for types
 A.QUEST_TYPE_NAMES = {
 	[1] = 'Group',
