@@ -85,40 +85,42 @@ end
 	Zone function
 ---------------------------------------------------------------------------]]--
 
-local header, currentZone, minimapZone
+do
+	local header, currentZone, minimapZone
 
-local function auto_show_or_hide_quest(qidx)
-	local info = get_questinfo(qidx)
-	if info.isWQ or info.isHidden then return end
-	local show = false
+	local function auto_show_or_hide_quest(qidx)
+		local info = get_questinfo(qidx)
+		if info.isWQ or info.isHidden then return end
+		local show = false
 
-	if info.isHeader then
-		header = info.title
-		return
-	elseif is_ignore(info.questID, info.type, header) then
-		return
-	else
-		if is_always(info.questID, info.type, header) or (header == currentZone or header == minimapZone or info.isOnMap or info.hasLocalPOI) and not is_never(info.questID, info.type) then
-			show = true
+		if info.isHeader then
+			header = info.title
+			return
+		elseif is_ignore(info.questID, info.type, header) then
+			return
+		else
+			if is_always(info.questID, info.type, header) or (header == currentZone or header == minimapZone or info.isOnMap or info.hasLocalPOI) and not is_never(info.questID, info.type) then
+				show = true
+			end
+		end
+
+		if show then
+			if C_QuestLog_GetQuestWatchType(info.questID) ~= nil then return end
+			C_QuestLog_AddQuestWatch(info.questID)
+		else
+			if C_QuestLog_GetQuestWatchType(info.questID) == nil then return end
+			C_QuestLog_RemoveQuestWatch(info.questID)
 		end
 	end
 
-	if show then
-		if C_QuestLog_GetQuestWatchType(info.questID) ~= nil then return end
-		C_QuestLog_AddQuestWatch(info.questID)
-	else
-		if C_QuestLog_GetQuestWatchType(info.questID) == nil then return end
-		C_QuestLog_RemoveQuestWatch(info.questID)
-	end
-end
+	function A.update_quests_for_zone()
+		currentZone = GetRealZoneText()
+		minimapZone = GetMinimapZoneText()
+		header = nil
+		if currentZone == nil and minimapZone == nil then return end
 
-function A.update_quests_for_zone()
-	currentZone = GetRealZoneText()
-	minimapZone = GetMinimapZoneText()
-	header = nil
-	if currentZone == nil and minimapZone == nil then return end
-
-	for idx = 1, C_QuestLog_GetNumQuestLogEntries() do
-		auto_show_or_hide_quest(idx)
+		for idx = 1, C_QuestLog_GetNumQuestLogEntries() do
+			auto_show_or_hide_quest(idx)
+		end
 	end
 end
