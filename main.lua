@@ -43,21 +43,21 @@ end
 	Main function
 ---------------------------------------------------------------------------]]--
 
-local function auto_show_or_hide_quest(qidx, qid, show)
-	local info = get_questinfo(qidx)
-	-- Check if the targeted quest is still in the log
-	if info.questID == qid then
-		-- TODO: check if we really need this guard
--- 	if not InCombatLockdown() and info.questID == qid then
-		if show then
-			A.dprint(1, format('Tracking: %s (%s)', info.title, qid))
-			C_QuestLog_AddQuestWatch(qid)
-		else
-			A.dprint(2, format('Removing: %s (%s)', info.title, qid))
-			C_QuestLog_RemoveQuestWatch(qid)
-		end
-	end
-end
+-- local function auto_show_or_hide_quest(qidx, qid, show)
+-- 	local info = get_questinfo(qidx)
+-- 	-- Check if the targeted quest is still in the log
+-- 	if info.questID == qid then
+-- 		-- TODO: check if we really need this guard
+-- -- 	if not InCombatLockdown() and info.questID == qid then
+-- 		if show then
+-- 			A.dprint(1, format('Tracking: %s (%s)', info.title, qid))
+-- 			C_QuestLog_AddQuestWatch(qid)
+-- 		else
+-- 			A.dprint(2, format('Removing: %s (%s)', info.title, qid))
+-- 			C_QuestLog_RemoveQuestWatch(qid)
+-- 		end
+-- 	end
+-- end
 
 local function is_ignore(id, ty, he)
 	if A.gdb.ignoreInstances and (ty == A.TYPE_DUNG or ty == A.TYPE_RAID)
@@ -85,34 +85,40 @@ end
 	Zone function
 ---------------------------------------------------------------------------]]--
 
+local header, currentZone, minimapZone
+
+local function auto_show_or_hide_quest(qidx)
+	local info = get_questinfo(qidx)
+	if info.isWQ or info.isHidden then return end
+	local show = false
+
+	if info.isHeader then
+		header = info.title
+		return
+	elseif is_ignore(info.questID, info.type, header) then
+		return
+	else
+		if is_always(info.questID, info.type, header) or (header == currentZone or header == minimapZone or info.isOnMap or info.hasLocalPOI) and not is_never(info.questID, info.type) then
+			show = true
+		end
+	end
+
+	if show then
+		if C_QuestLog_GetQuestWatchType(info.questID) ~= nil then return end
+		C_QuestLog_AddQuestWatch(info.questID)
+	else
+		if C_QuestLog_GetQuestWatchType(info.questID) == nil then return end
+		C_QuestLog_RemoveQuestWatch(info.questID)
+	end
+end
+
 function A.update_quests_for_zone()
-	local currentZone = GetRealZoneText()
-	local minimapZone = GetMinimapZoneText()
+	currentZone = GetRealZoneText()
+	minimapZone = GetMinimapZoneText()
+	header = nil
 	if currentZone == nil and minimapZone == nil then return end
 
-	A.dprint(1, 'Updating quests for: ' .. currentZone .. ' or ' .. minimapZone)
-
-	local header = nil
-
 	for idx = 1, C_QuestLog_GetNumQuestLogEntries() do
-		local info = get_questinfo(idx)
-		if not info.isWQ and not info.isHidden then
-			if info.isHeader then
-				header = info.title
-			elseif is_ignore(info.questID, info.type, header) then
-				-- Nop
-			else
-				if is_always(info.questID, info.type, header) or (header == currentZone or header == minimapZone or info.isOnMap or info.hasLocalPOI) and not is_never(info.questID, info.type) then
-					if C_QuestLog_GetQuestWatchType(info.questID) == nil then
-						auto_show_or_hide_quest(idx, info.questID, true)
-						if A.gdb.debug_mode and A.gdb.debug_level >= 1 then
-							A.dprint(0, format('Reason: %s%s%s%s%s', is_always(info.questID, info.type, header) == true and 'alwaysTracked ' or '', header == currentZone and 'header = zone ' or '', header == minimapZone and 'header = mminimap zone ' or '', info.isOnMap and 'onMap ' or '', info.hasLocalPOI and 'hasPOI ' or ''))
-						end
-					end
-				elseif A.IGNORE_QWT or is_never(info.questID, info.type, header) or C_QuestLog_GetQuestWatchType(info.questID) == A.QWT_AUTOMATIC then
-					auto_show_or_hide_quest(idx, info.questID, false)
-				end
-			end
-		end
+		auto_show_or_hide_quest(idx)
 	end
 end
