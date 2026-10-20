@@ -8,32 +8,36 @@ local CLR = A.CLR
 	Context menu for tracker and log
 ===========================================================================]]--
 
--- Context menu in quest log: MENU_QUEST_MAP_LOG_TITLE
--- Context menu in objective tracker: MENU_QUEST_OBJECTIVE_TRACKER
-
 local LABEL = {
-	single = {
-		remove = 'Auto Track',
-		ignore = 'Ignore',
-		always = 'Always Track',
-		never = 'Never Track',
-	},
-	type = { -- NYI
-		remove = 'Auto track %s quests',
-		ignore = 'Ignore all %s quests',
-		always = 'Always track %s quests',
-		never = 'Never track %s quests',
-	},
-	header = { -- NYI
-		remove = 'Auto track %q quests',
-		ignore = 'Ignore %q quests',
-		always = 'Always track %q quests',
-		never = 'Never track %q quests',
-	},
-	-- We should remove quest groups entirely, as the hardcoding is maintenance-intensive
-	group = { -- NYI
-	},
+	remove = 'Auto Track',
+	ignore = 'Ignore',
+	always = 'Always Track',
+	never = 'Never Track',
 }
+
+-- local LABEL = {
+-- 	single = {
+-- 		remove = 'Auto Track',
+-- 		ignore = 'Ignore',
+-- 		always = 'Always Track',
+-- 		never = 'Never Track',
+-- 	},
+-- 	type = { -- NYI
+-- 		remove = 'Auto track %s quests',
+-- 		ignore = 'Ignore all %s quests',
+-- 		always = 'Always track %s quests',
+-- 		never = 'Never track %s quests',
+-- 	},
+-- 	header = { -- NYI
+-- 		remove = 'Auto track %q quests',
+-- 		ignore = 'Ignore %q quests',
+-- 		always = 'Always track %q quests',
+-- 		never = 'Never track %q quests',
+-- 	},
+-- 	-- We should remove quest groups entirely, as the hardcoding is maintenance-intensive
+-- 	group = { -- NYI
+-- 	},
+-- }
 
 --[[---------------------------------------------------------------------------
 	Helpers for data
@@ -61,23 +65,27 @@ local function get_type_from_quest_id(qid)
 	return C_QuestLog.GetQuestType(qid)
 end
 
-local function get_class_from_quest_id(qid)
-	local info = C_QuestLog.GetInfo(hidx)
+local function get_class_from_quest_idx(qidx)
+	local info = C_QuestLog.GetInfo(qidx)
 	if info then return info.questClassification end
 end
 
+local function get_class_from_quest_id(qid)
+	return C_QuestInfoSystem.GetQuestClassification(qid)
+end
+
 local function get_qtagID_from_quest_id(qid)
-	local info = C_QuestLog_GetQuestTagInfo(qid)
+	local info = C_QuestLog.GetQuestTagInfo(qid)
 	if info then return info.tagID end
 end
 
 local function get_qtagName_from_quest_id(qid)
-	local info = C_QuestLog_GetQuestTagInfo(qid)
+	local info = C_QuestLog.GetQuestTagInfo(qid)
 	if info then return info.tagName end
 end
 
-local function get_qfrequency_from_quest_id(qid)
-	local info = C_QuestLog.GetInfo(hidx)
+local function get_qfrequency_from_quest_idx(qidx)
+	local info = C_QuestLog.GetInfo(qidx)
 	if info then return info.frequency end
 end
 
@@ -90,6 +98,14 @@ local function get_state(scope, exc, target)
 	return A.gdb['exceptions_' .. scope][target] == A.EXCEPTION_TYPES[exc].value
 end
 
+local function get_all_states(scope, target)
+	local ignore = get_state(scope, 'ignore', target)
+	local always = get_state(scope, 'always', target)
+	local never = get_state(scope, 'never', target)
+	local auto = not(ignore or always or never)
+	return { auto=auto, ignore=ignore, always=always, never=never }
+end
+
 --[[---------------------------------------------------------------------------
 	Populate menu
 ---------------------------------------------------------------------------]]--
@@ -97,7 +113,7 @@ end
 local function populate_quest_contextmenu(owner, root_description, context_data)
 	-- C_QuestLog.RequestLoadQuestByID(qid) -- Seems we don't need this
 	local framename = owner.GetName and owner:GetName()
-	local object, qinfo, qid, qidx, qtitle, hidx, qheader, qtype, qclass, qfrequency, qtagID, qtagName
+	local object, qinfo, qid, qidx, qtitle, hidx, qheader, qtype, qclass, qfrequency, qtag, qtagName
 	local quid_menu_is_shown
 
 	-- First, leverage the available data from the object itself
@@ -133,12 +149,13 @@ local function populate_quest_contextmenu(owner, root_description, context_data)
 	if not qheader and hidx then qheader = get_header_from_header_idx(hidx) end
 
 	if not qtype and qid then qtype = get_type_from_quest_id(qid) end
+
+	if not qclass and qidx then qclass = get_class_from_quest_idx(qidx) end
 	if not qclass and qid then qclass = get_class_from_quest_id(qid) end
 
-	if not qtagID and qid then qtagID = get_qtagID_from_quest_id(qid) end
-	if not qtagName and qid then qtagName = get_qtagName_from_quest_id(qid) end
+	if not qtag and qid then qtag = get_qtagID_from_quest_id(qid) end
 
-	if not qfrequency and qid then qfrequency = get_qfrequency_from_quest_id(qid) end
+	if not qfrequency and qidx then qfrequency = get_qfrequency_from_quest_idx(qidx) end
 
 	-- Get type
 	if qid then
@@ -168,9 +185,12 @@ local function populate_quest_contextmenu(owner, root_description, context_data)
 		print('framename:', framename)
 		print('qid:', qid)
 		print('qtitle:', qtitle)
+		print('qheader:', qheader)
 		print('qtype:', qtype)
 		print('qclass:', qclass)
-		print('qheader:', qheader)
+		print('qtag:', qtag)
+		print('qtagName:', qtagName)
+		print('qfrequency:', qfrequency)
 		print('context_data:', context_data)
 		if IsMetaKeyDown() then A.tabledump_first(GetMouseFoci()[1]:GetParent().HeaderText) end
 		if IsAltKeyDown() then A.tabledump_first(owner.ButtonText) end
@@ -185,11 +205,12 @@ local function populate_quest_contextmenu(owner, root_description, context_data)
 	if qid then
 		quid_menu_is_shown = true
 		root_description:CreateTitle(format('Tracking for Quest ID %s:', qid or '???'))
+		local state = get_all_states('quest', qid)
 		-- Auto
 		root_description:CreateRadio(
-			LABEL.single.remove,
+			LABEL.remove,
 			function()
-				return not (get_state('quest', 'ignore', qid) or get_state('quest', 'always', qid) or get_state('quest', 'never', qid))
+				return state.auto
 			end,
 			function()
 				A.add_to_exceptions('quest', 'remove', qid, qtitle)
@@ -197,9 +218,9 @@ local function populate_quest_contextmenu(owner, root_description, context_data)
 		)
 		-- Ignore
 		root_description:CreateRadio(
-			LABEL.single.ignore,
+			LABEL.ignore,
 			function()
-				return get_state('quest', 'ignore', qid)
+				return state.ignore
 			end,
 			function()
 				A.add_to_exceptions('quest', 'ignore', qid, qtitle)
@@ -207,9 +228,9 @@ local function populate_quest_contextmenu(owner, root_description, context_data)
 		)
 		-- Always
 		root_description:CreateRadio(
-			LABEL.single.always,
+			LABEL.always,
 			function()
-				return get_state('quest', 'always', qid)
+				return state.always
 			end,
 			function()
 				A.add_to_exceptions('quest', 'always', qid, qtitle)
@@ -217,9 +238,9 @@ local function populate_quest_contextmenu(owner, root_description, context_data)
 		)
 		-- Never
 		root_description:CreateRadio(
-			LABEL.single.never,
+			LABEL.never,
 			function()
-				return get_state('quest', 'never', qid)
+				return state.never
 			end,
 			function()
 				A.add_to_exceptions('quest', 'never', qid, qtitle)
@@ -228,52 +249,51 @@ local function populate_quest_contextmenu(owner, root_description, context_data)
 	end
 
 	if qheader then
-		local has_any_exception =
-			get_state('header', 'ignore', qheader)
-			or get_state('header', 'always', qheader)
-			or get_state('header', 'never', qheader)
 		local menu
+		local state = get_all_states('header', qheader)
+		-- The first menu is in any case either the quest ID or the header menu, depending on
+		-- what is clicked.
+		-- So the header menu is either the 1st one (expanded), or the first *sub* menu.
+		-- All subsequent menus are always sub menus.
 		if quid_menu_is_shown then
-			menu = root_description:CreateButton(format('%sThis Quest Header', has_any_exception and '! ' or ''))
+			menu = root_description:CreateButton(format('%sThis Quest Header', not state.auto and '! ' or ''))
 		else
 			menu = root_description
 		end
 		menu:CreateTitle(format('Quests with Header %q:', qheader or '???'))
 
+		-- Header
 		menu:CreateRadio(
-			LABEL.single.remove,
+			LABEL.remove,
 			function()
-				return not has_any_exception
+				return state.auto
 			end,
 			function()
 				A.add_to_exceptions('header', 'remove', qheader, qheader)
 			end
 		)
-
 		menu:CreateRadio(
-			LABEL.single.ignore,
+			LABEL.ignore,
 			function()
-				return get_state('header', 'ignore', qheader)
+				return state.ignore
 			end,
 			function()
 				A.add_to_exceptions('header', 'ignore', qheader, qheader)
 			end
 		)
-
 		menu:CreateRadio(
-			LABEL.single.always,
+			LABEL.always,
 			function()
-				return get_state('header', 'always', qheader)
+				return state.always
 			end,
 			function()
 				A.add_to_exceptions('header', 'always', qheader, qheader)
 			end
 		)
-
 		menu:CreateRadio(
-			LABEL.single.never,
+			LABEL.never,
 			function()
-				return get_state('header', 'never', qheader)
+				return state.never
 			end,
 			function()
 				A.add_to_exceptions('header', 'never', qheader, qheader)
@@ -281,96 +301,184 @@ local function populate_quest_contextmenu(owner, root_description, context_data)
 		)
 	end
 
-	if false then -- By type
-		local submenu = root_description:CreateButton('This Quest Type')
+	-- Menu is always submenu from here on
 
--- 		local qtype_name =
-		submenu:CreateTitle(format('Tracking for Type %s %q:', qtype or '???', qtype_name or '???'))
-		submenu:CreateRadio(
-			LABEL.single.remove,
+	if qtype and qtype ~= A.NORMAL.type then -- By type
+		local state = get_all_states('type', qtype)
+		local menu = root_description:CreateButton(format('%sThis Quest Type', not state.auto and '! ' or ''))
+		local qtype_name = A.QUEST_TYPE_NAMES[qtype]
+		menu:CreateTitle(format('Tracking for Type %s %q:', qtype or '???', qtype_name or '???'))
+
+		-- Type
+		menu:CreateRadio(
+			LABEL.remove,
 			function()
-				return not(is_ignore(qid) or is_always(qid) or is_never(qid))
+				return state.auto
 			end,
 			function()
-				--on_qid(qid, 'remove')
+				A.add_to_exceptions('type', 'remove', qtype, nil)
 			end
 		)
-
-		submenu:CreateRadio(
-			LABEL.single.ignore,
+		menu:CreateRadio(
+			LABEL.ignore,
 			function()
-				return is_ignore(qid)
+				return state.ignore
 			end,
 			function()
-				--on_qid(qid, 'ignore')
+				A.add_to_exceptions('type', 'ignore', qtype, nil)
 			end
 		)
-
-		submenu:CreateRadio(
-			LABEL.single.always,
+		menu:CreateRadio(
+			LABEL.always,
 			function()
-				return is_always(qid)
+				return state.always
 			end,
 			function()
-				--on_qid(qid, 'always')
+				A.add_to_exceptions('type', 'always', qtype, nil)
 			end
 		)
-
-		submenu:CreateRadio(
-			LABEL.single.never,
+		menu:CreateRadio(
+			LABEL.never,
 			function()
-				return is_never(qid)
+				return state.never
 			end,
 			function()
-				--on_qid(qid, 'never')
+				A.add_to_exceptions('type', 'never', qtype, nil)
 			end
 		)
 	end
 
-	if false then
-		local submenu = root_description:CreateButton('This Quest Class')
+	if qtag and qtag ~= A.NORMAL.class then
+		local state = get_all_states('tag', qtag)
+		local menu = root_description:CreateButton(format('%sThis Quest Tag', not state.auto and '! ' or ''))
+		local qtag_name = get_qtagName_from_quest_id(qid)
+		menu:CreateTitle(format('Tracking for Tag %s %q:', qtag or '???', qtag_name or '???'))
 
-		qclass = qclass or C_QuestInfoSystem.GetQuestClassification(qid)
+		-- Tag
+		menu:CreateRadio(
+			LABEL.remove,
+			function()
+				return state.auto
+			end,
+			function()
+				A.add_to_exceptions('tag', 'remove', qtag, qtag_name)
+			end
+		)
+		menu:CreateRadio(
+			LABEL.ignore,
+			function()
+				return state.ignore
+			end,
+			function()
+				A.add_to_exceptions('tag', 'ignore', qtag, qtag_name)
+			end
+		)
+		menu:CreateRadio(
+			LABEL.always,
+			function()
+				return state.always
+			end,
+			function()
+				A.add_to_exceptions('tag', 'always', qtag, qtag_name)
+			end
+		)
+		menu:CreateRadio(
+			LABEL.never,
+			function()
+				return state.never
+			end,
+			function()
+				A.add_to_exceptions('tag', 'never', qtag, qtag_name)
+			end
+		)
+	end
+
+	if qfrequency and qfrequency ~= A.NORMAL.frequency then
+		local state = get_all_states('frequency', qfrequency)
+		local menu = root_description:CreateButton(format('%sThis Quest Frequency', not state.auto and '! ' or ''))
+		local qfrequency_name = tInvert(Enum.QuestFrequency)[qfrequency]
+		menu:CreateTitle(format('Tracking for Frequency %s %q:', qfrequency or '???', qfrequency_name or '???'))
+
+		-- Tag
+		menu:CreateRadio(
+			LABEL.remove,
+			function()
+				return state.auto
+			end,
+			function()
+				A.add_to_exceptions('frequency', 'remove', qfrequency, qfrequency_name)
+			end
+		)
+		menu:CreateRadio(
+			LABEL.ignore,
+			function()
+				return state.ignore
+			end,
+			function()
+				A.add_to_exceptions('frequency', 'ignore', qfrequency, qfrequency_name)
+			end
+		)
+		menu:CreateRadio(
+			LABEL.always,
+			function()
+				return state.always
+			end,
+			function()
+				A.add_to_exceptions('frequency', 'always', qfrequency, qfrequency_name)
+			end
+		)
+		menu:CreateRadio(
+			LABEL.never,
+			function()
+				return state.never
+			end,
+			function()
+				A.add_to_exceptions('frequency', 'never', qfrequency, qfrequency_name)
+			end
+		)
+	end
+
+	if qclass and qclass ~= A.NORMAL.class then
+		local state = get_all_states('class', qclass)
+		local menu = root_description:CreateButton(format('%sThis Quest Class', not state.auto and '! ' or ''))
 		local qclass_name = tInvert(Enum.QuestClassification)[qclass]
+		menu:CreateTitle(format('Tracking for Class %s %q:', qclass or '???', qclass_name or '???'))
 
-		submenu:CreateTitle(format('Tracking for Class %s %q:', qclass or '???', qclass_name or '???'))
-		submenu:CreateRadio(
-			LABEL.single.remove,
+		-- Class
+		menu:CreateRadio(
+			LABEL.remove,
 			function()
-				return not(is_ignore(qid) or is_always(qid) or is_never(qid))
+				return state.auto
 			end,
 			function()
-				--on_qid(qid, 'remove')
+				A.add_to_exceptions('class', 'remove', qclass, qclass_name)
 			end
 		)
-
-		submenu:CreateRadio(
-			LABEL.single.ignore,
+		menu:CreateRadio(
+			LABEL.ignore,
 			function()
-				return is_ignore(qid)
+				return state.ignore
 			end,
 			function()
-				--on_qid(qid, 'ignore')
+				A.add_to_exceptions('class', 'ignore', qclass, qclass_name)
 			end
 		)
-
-		submenu:CreateRadio(
-			LABEL.single.always,
+		menu:CreateRadio(
+			LABEL.always,
 			function()
-				return is_always(qid)
+				return state.always
 			end,
 			function()
-				--on_qid(qid, 'always')
+				A.add_to_exceptions('class', 'always', qclass, qclass_name)
 			end
 		)
-
-		submenu:CreateRadio(
-			LABEL.single.never,
+		menu:CreateRadio(
+			LABEL.never,
 			function()
-				return is_never(qid)
+				return state.never
 			end,
 			function()
-				--on_qid(qid, 'never')
+				A.add_to_exceptions('class', 'never', qclass, qclass_name)
 			end
 		)
 	end
