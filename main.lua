@@ -59,27 +59,27 @@ end
 -- 	end
 -- end
 
-local function is_ignore(id, ty, he)
-	if A.gdb.ignoreInstances and (ty == A.TYPE_DUNG or ty == A.TYPE_RAID)
-		or A.gdb.exceptions_id[id] == 0 or A.gdb.exceptions_type[ty] == 0 or A.gdb.exceptions_header[he] == 0
-	then
-		return true
-	end
-end
-
-local function is_always(id, ty, he)
-	if A.gdb.exceptions_id[id] == 1 or A.gdb.exceptions_type[ty] == 1 or A.gdb.exceptions_header[he] == 1
-	then
-		return true
-	end
-end
-
-local function is_never(id, ty, he)
-	if A.gdb.exceptions_id[id] == -1 or A.gdb.exceptions_type[ty] == -1 or A.gdb.exceptions_header[he] == -1
-	then
-		return true
-	end
-end
+-- local function is_ignore(id, ty, he)
+-- 	if A.gdb.ignoreInstances and (ty == A.TYPE_DUNG or ty == A.TYPE_RAID)
+-- 		or A.gdb.exceptions_id[id] == 0 or A.gdb.exceptions_type[ty] == 0 or A.gdb.exceptions_header[he] == 0
+-- 	then
+-- 		return true
+-- 	end
+-- end
+--
+-- local function is_always(id, ty, he)
+-- 	if A.gdb.exceptions_id[id] == 1 or A.gdb.exceptions_type[ty] == 1 or A.gdb.exceptions_header[he] == 1
+-- 	then
+-- 		return true
+-- 	end
+-- end
+--
+-- local function is_never(id, ty, he)
+-- 	if A.gdb.exceptions_id[id] == -1 or A.gdb.exceptions_type[ty] == -1 or A.gdb.exceptions_header[he] == -1
+-- 	then
+-- 		return true
+-- 	end
+-- end
 
 --[[---------------------------------------------------------------------------
 	Zone function
@@ -89,30 +89,37 @@ do
 	local header, currentZone, minimapZone
 
 	local function get_quest_action(info, header)
-		-- Single quest has priority
-		if is_always(info.questID) then return 'always' end
-		if is_never(info.questID) then return 'never' end
-		if is_ignore(info.questID) then return 'ignore' end
+		-- 1. Single quest ID has absolute priority
+		if A.gdb.exceptions_id[info.questID] == 1 then return 'always' end
+		if A.gdb.exceptions_id[info.questID] == -1 then return 'never' end
+		if A.gdb.exceptions_id[info.questID] == 0 then return 'ignore' end
 
-		-- Groups, undetermined priority
+		-- 2. Special settings (instances)
+		if A.gdb.ignoreInstances and (info.type == A.TYPE_DUNG or info.type == A.TYPE_RAID) then
+			return 'ignore'
+		end
+
+		-- 3. Groups (Class, Type, Header) - Undetermined priority
 		if
-			is_always(nil, info.questClassification)
-			or is_always(nil, info.type)
-			or is_always(nil, nil, header)
+			A.gdb.exceptions_class[info.questClassification] == 1
+			or A.gdb.exceptions_type[info.type] == 1
+			or A.gdb.exceptions_header[header] == 1
 		then
 			return 'always'
 		end
+
 		if
-			is_never(nil, info.questClassification)
-			or is_never(nil, info.type)
-			or is_never(nil, nil, header)
+			A.gdb.exceptions_class[info.questClassification] == -1
+			or A.gdb.exceptions_type[info.type] == -1
+			or A.gdb.exceptions_header[header] == -1
 		then
 			return 'never'
 		end
+
 		if
-			is_ignore(nil, info.questClassification)
-			or is_ignore(nil, info.type)
-			or is_ignore(nil, nil, header)
+			A.gdb.exceptions_class[info.questClassification] == 0
+			or A.gdb.exceptions_type[info.type] == 0
+			or A.gdb.exceptions_header[header] == 0
 		then
 			return 'ignore'
 		end
