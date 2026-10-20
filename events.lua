@@ -22,9 +22,13 @@ local function on_event(_, event, ...)
 			A.gdb.debug_mode = A.gdb.debug_mode or false
 			A.gdb.debug_level = A.gdb.debug_level or 1
 			A.cdb.time_logout = A.cdb.time_logout or 0
+
 			A.gdb.exceptions_id = A.gdb.exceptions_id or {}
 			A.gdb.exceptions_type = A.gdb.exceptions_type or {}
 			A.gdb.exceptions_header = A.gdb.exceptions_header or {}
+			A.gdb.exceptions_class = A.gdb.exceptions_class or {}
+			A.gdb.exceptions_tag = A.gdb.exceptions_tag or {}
+			A.gdb.exceptions_frequency = A.gdb.exceptions_frequency or {}
 
 			A.register_menuitems()
 

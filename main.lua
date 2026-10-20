@@ -15,6 +15,7 @@ local C_QuestLog_AddQuestWatch = C_QuestLog.AddQuestWatch
 local C_QuestLog_RemoveQuestWatch = C_QuestLog.RemoveQuestWatch
 local C_QuestLog_GetNumQuestLogEntries = C_QuestLog.GetNumQuestLogEntries
 local C_QuestLog_GetQuestWatchType = C_QuestLog.GetQuestWatchType
+local C_QuestLog_GetQuestTagInfo = C_QuestLog.GetQuestTagInfo
 -- local C_QuestLog_GetTitleForQuestID = C_QuestLog.GetTitleForQuestID
 -- local C_QuestLog_IsQuestCalling = C_QuestLog.IsQuestCalling
 
@@ -33,6 +34,8 @@ local function get_questinfo(qidx)
 	if info then
 		info.isWQ = C_QuestLog_IsWorldQuest(info.questID)
 		info.type = C_QuestLog_GetQuestType(info.questID)
+		local tagInfo = C_QuestLog_GetQuestTagInfo(info.questID)
+		info.tagID = tagInfo and tagInfo.tagID
 	end
 	return info
 	-- info.keys of C_QuestLog.GetInfo:
@@ -89,39 +92,47 @@ do
 	local header, currentZone, minimapZone
 
 	local function get_quest_action(info, header)
-		-- 1. Single quest ID has absolute priority
+		-- 1. Single quest ID (absolute priority)
 		if A.gdb.exceptions_id[info.questID] == 1 then return 'always' end
 		if A.gdb.exceptions_id[info.questID] == -1 then return 'never' end
 		if A.gdb.exceptions_id[info.questID] == 0 then return 'ignore' end
 
-		-- 2. Special settings (instances)
+		-- 2. Special settings (instances); might be removed
 		if A.gdb.ignoreInstances and (info.type == A.TYPE_DUNG or info.type == A.TYPE_RAID) then
 			return 'ignore'
 		end
 
-		-- 3. Groups (Class, Type, Header) - Undetermined priority
-		if
-			A.gdb.exceptions_class[info.questClassification] == 1
-			or A.gdb.exceptions_type[info.type] == 1
-			or A.gdb.exceptions_header[header] == 1
-		then
-			return 'always'
+		-- 3. Header
+		if A.gdb.exceptions_header[header] == 1 then return 'always' end
+		if A.gdb.exceptions_header[header] == -1 then return 'never' end
+		if A.gdb.exceptions_header[header] == 0 then return 'ignore' end
+
+		-- 4. Type if non-zero
+		if info.type and info.type ~= 0 then
+			if A.gdb.exceptions_type[info.type] == 1 then return 'always' end
+			if A.gdb.exceptions_type[info.type] == -1 then return 'never' end
+			if A.gdb.exceptions_type[info.type] == 0 then return 'ignore' end
 		end
 
-		if
-			A.gdb.exceptions_class[info.questClassification] == -1
-			or A.gdb.exceptions_type[info.type] == -1
-			or A.gdb.exceptions_header[header] == -1
-		then
-			return 'never'
+		-- 5. TagID if it exists
+		if info.tagID then
+			if A.gdb.exceptions_tag[info.tagID] == 1 then return 'always' end
+			if A.gdb.exceptions_tag[info.tagID] == -1 then return 'never' end
+			if A.gdb.exceptions_tag[info.tagID] == 0 then return 'ignore' end
 		end
 
-		if
-			A.gdb.exceptions_class[info.questClassification] == 0
-			or A.gdb.exceptions_type[info.type] == 0
-			or A.gdb.exceptions_header[header] == 0
-		then
-			return 'ignore'
+		-- 6. Frequency if non-zero ("Default")
+		if info.frequency and info.frequency ~= 0 then
+			if A.gdb.exceptions_frequency[info.frequency] == 1 then return 'always' end
+			if A.gdb.exceptions_frequency[info.frequency] == -1 then return 'never' end
+			if A.gdb.exceptions_frequency[info.frequency] == 0 then return 'ignore' end
+		end
+
+		-- 7. Classification if non-7 ("Normal")
+		if info.questClassification and info.questClassification ~= 7 then
+			if A.gdb.exceptions_class[info.questClassification] == 1 then return 'always' end
+			if A.gdb.exceptions_class[info.questClassification] == -1 then return 'never' end
+			if A.gdb.exceptions_class[info.questClassification] == 0 then return 'ignore' end
 		end
 
 		return 'auto'
