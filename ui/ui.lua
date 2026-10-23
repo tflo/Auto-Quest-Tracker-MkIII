@@ -364,20 +364,20 @@ local function aqt_enable(on, disablemode)
 	if disablemode and not A.is_integer_in_range(disablemode, 0, 2) then
 		error('Arg2 (disablemode) must be nil|0|1|2', 1)
 	end
-	A.ef:UnregisterAllEvents()
+	A.unregister_events()
 	A.cdb.enable_nextsession, A.cdb.enable_nextinstance = nil, nil
 	if on then
 		-- Serves as force update if already enabled
 		A.update_quests_for_zone()
-		A.ef:register_zone_events()
+		A.register_zone_events()
 	else
 		-- Only an explicit `0` disables permanently
 		if not disablemode or disablemode == 1 then
 			A.cdb.enable_nextsession = true
-			A.ef:RegisterEvent 'PLAYER_LOGOUT'
+			A.register_events('PLAYER_LOGOUT')
 		elseif disablemode == 2 then
 			A.cdb.enable_nextinstance = true
-			A.ef:RegisterEvent 'PLAYER_ENTERING_WORLD'
+			A.register_events('PLAYER_ENTERING_WORLD')
 		end
 	end
 	A.cdb.enabled = on
